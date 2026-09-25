@@ -32,6 +32,16 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;padding-top:env(safe-area
 .mono img{width:100%;height:100%;object-fit:contain}
 nav.links{display:flex;gap:24px;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
 nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
+.cat-dd{position:relative;display:flex;align-items:center}
+.cat-dd summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:4px;opacity:.7;transition:.2s}
+.cat-dd summary:hover{opacity:1}.cat-dd[open] summary{opacity:1}
+.cat-dd summary::-webkit-details-marker{display:none}
+.cat-dd .chev{width:10px;height:10px;transition:.25s}
+.cat-dd[open] .chev{transform:rotate(180deg)}
+.cat-menu{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%);min-width:210px;border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:2px;box-shadow:0 18px 40px rgba(28,26,23,.18);z-index:150;background:rgba(255,255,255,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.7)}
+.cat-menu a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;font-size:12.5px;text-transform:none;letter-spacing:0;opacity:1}
+.cat-menu a:hover{background:rgba(169,120,47,.1)}
+.pro{font-size:9px;letter-spacing:.1em;padding:2px 7px;border-radius:20px;background:linear-gradient(120deg,#a9782f,#c9a24a);color:#fff;font-weight:700}
 .hdr-right{display:flex;align-items:center;gap:10px}
 .icon-btn{position:relative;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;background:none;border:none;color:var(--ink)}
 .icon-btn:hover{background:rgba(28,26,23,.06)}.icon-btn svg{width:17px;height:17px}
@@ -332,7 +342,14 @@ a.pm-badge{text-decoration:none}
   <div class="bar glass">
     <a class="brand" href="index.html"><span class="mono"><img class="logo-img" alt="Winfum"></span>WINFUM</a>
     <nav class="links">
-      <a href="#parfums">Parfums</a><a href="#vins">Vins</a><a href="#annonces">Actualités</a><a href="espace.html">Mon espace</a><a href="apropos.html">À propos</a><a href="#contact">Contact</a>
+      <a href="#annonces">Actualités</a>
+      <details class="cat-dd"><summary>Catégorie<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="cat-menu">
+          <a href="jbparfumerie.html"><span>JB Parfumerie</span><span class="pro">PRO</span></a>
+          <a href="funforus.html"><span>Fun For Us · Vins</span><span class="pro">PRO</span></a>
+        </div>
+      </details>
+      <a href="apropos.html">À propos</a><a href="Contact-Support.html">Contact</a><a href="espace.html">Mon espace</a>
     </nav>
     <div class="hdr-right">
       <button class="icon-btn" onclick="openSearch()" aria-label="Rechercher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
@@ -346,13 +363,13 @@ a.pm-badge{text-decoration:none}
 <div class="ov" id="menu-overlay" onclick="toggleMenu(false)"></div>
 <div id="mobile-menu">
   <div class="menu-top"><span class="brand" style="font-size:18px;gap:8px"><span class="mono" style="width:26px;height:26px"><img class="logo-img" alt="Winfum"></span>WINFUM</span><span class="x" onclick="toggleMenu(false)">✕</span></div>
-  <a href="#parfums" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#a9782f"><path d="M9 3h6l1 4H8l1-4z"/><path d="M8 7h8l1 5a5 5 0 01-10 0l1-5z"/><path d="M12 16v5M9 21h6"/></svg><span>Parfums</span></a>
-  <a href="#vins" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#7a1128"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Vins</span></a>
+  <a href="jbparfumerie.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#a9782f"><path d="M9 3h6l1 4H8l1-4z"/><path d="M8 7h8l1 5a5 5 0 01-10 0l1-5z"/><path d="M12 16v5M9 21h6"/></svg><span>JB Parfumerie</span><span class="pro" style="margin-left:auto">PRO</span></a>
+  <a href="funforus.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#7a1128"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Fun For Us · Vins</span><span class="pro" style="margin-left:auto">PRO</span></a>
   <a href="#annonces" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13v16H6a2 2 0 01-2-2V4z"/><path d="M17 8h3v10a2 2 0 01-2 2M8 8h5M8 12h5"/></svg><span>Actualités</span></a>
   <div class="m-div"></div>
   <a href="espace.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Mon espace</span></a>
   <a href="apropos.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01"/></svg><span>À propos de nous</span></a>
-  <a href="Contact&Support.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v13H7l-3 3V4z"/></svg><span>Contact &amp; Support</span></a>
+  <a href="Contact-Support.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v13H7l-3 3V4z"/></svg><span>Contact &amp; Support</span></a>
 </div>
 
 <div class="ov" id="search-overlay" onclick="if(event.target===this)closeSearch()">
@@ -407,7 +424,7 @@ a.pm-badge{text-decoration:none}
     <div class="cols">
       <div><div class="brand" style="font-size:18px;margin-bottom:10px"><span class="mono"><img class="logo-img" alt="Winfum"></span>WINFUM</div><p style="max-width:220px">Parfums et vins sélectionnés avec exigence.</p></div>
       <div><h4>Boutique</h4><div class="l"><a href="jbparfumerie.html">JB Parfumerie</a><a href="funforus.html">Fun For Us</a></div></div>
-      <div><h4>Liens</h4><div class="l"><a href="apropos.html">À propos de nous</a><a href="Contact&Support.html">Contact &amp; Support</a><a href="espace.html">Mon espace</a><a href="confidentiality.html">Politique de confidentialité</a></div></div>
+      <div><h4>Liens</h4><div class="l"><a href="apropos.html">À propos de nous</a><a href="Contact-Support.html">Contact &amp; Support</a><a href="espace.html">Mon espace</a><a href="confidentiality.html">Politique de confidentialité</a></div></div>
       <div><h4>Contact</h4><div class="l"><a href="tel:35697028">35 69 70 28</a><a href="tel:48821521">48 82 15 21</a><a href="https://wa.me/50948821521" target="_blank">WhatsApp</a></div></div>
     </div>
     <div class="bottom"><span>© 2026 Winfum</span><span>Conçu avec exigence</span></div>
@@ -562,7 +579,12 @@ function renderAnn(){
 
 /* favoris */
 let favs=[];try{favs=JSON.parse(localStorage.getItem('winfum_favs_home')||'[]')}catch(e){}
-function toggleFav(id,el){favs=favs.includes(id)?favs.filter(x=>x!==id):[...favs,id];try{localStorage.setItem('winfum_favs_home',JSON.stringify(favs))}catch(e){}el.classList.toggle('active');}
+function toggleFav(id,el){
+  if(el.dataset.busy)return;el.dataset.busy='1';setTimeout(()=>{delete el.dataset.busy;},400);
+  const on=!favs.includes(id);favs=on?[...favs,id]:favs.filter(x=>x!==id);
+  try{localStorage.setItem('winfum_favs_home',JSON.stringify(favs))}catch(e){}
+  el.classList.toggle('active',on);toast(on?'Ajouté à vos favoris ♥':'Retiré des favoris');
+}
 
 /* grilles */
 function renderGrids(){
@@ -583,6 +605,7 @@ function renderGrids(){
 
 /* menu + recherche */
 function toggleMenu(o){$('mobile-menu').classList.toggle('open',o);$('menu-overlay').classList.toggle('open',o);}
+document.addEventListener('click',e=>{document.querySelectorAll('.cat-dd[open]').forEach(d=>{if(!d.contains(e.target))d.removeAttribute('open')})});
 function openSearch(){$('search-overlay').classList.add('open');setTimeout(()=>$('search-input').focus(),250);renderSearch('');}
 function closeSearch(){$('search-overlay').classList.remove('open');$('search-input').value='';}
 $('search-input').addEventListener('input',e=>renderSearch(e.target.value));
@@ -667,7 +690,12 @@ $('viewer').addEventListener('touchend',e=>{if(tx===null)return;const d=e.change
 /* panier */
 let cart=[];try{cart=JSON.parse(localStorage.getItem('winfum_cart')||'[]')}catch(e){}
 function save(){try{localStorage.setItem('winfum_cart',JSON.stringify(cart.map(c=>({id:c.id,qty:c.qty}))))}catch(e){}renderCart();}
-function addToCart(id){const h=cart.find(c=>c.id===id);if(h)h.qty++;else cart.push({id,qty:1});save();openCart();}
+let addLock=false;
+function addToCart(id){
+  if(addLock)return;addLock=true;setTimeout(()=>addLock=false,500);
+  const h=cart.find(c=>c.id===id);if(h)h.qty++;else cart.push({id,qty:1});save();openCart();
+  toast('Produit ajouté au panier ✓');
+}
 function changeQty(id,d){const h=cart.find(c=>c.id===id);if(!h)return;h.qty+=d;if(h.qty<=0)cart=cart.filter(c=>c.id!==id);save();}
 function removeItem(id){cart=cart.filter(c=>c.id!==id);save();}
 const TRASH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0l-1 14a1 1 0 01-1 1H7a1 1 0 01-1-1L5 6"/></svg>';
