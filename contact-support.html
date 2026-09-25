@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script>(function(){try{var p=location.pathname,c=p.replace(/\/index\.html$/i,'/').replace(/\.html$/i,'');if(c!==p)history.replaceState(history.state,'',c+location.search+location.hash);}catch(e){}})();</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Contact & Support — Winfum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap">
+<style>
+:root{--ink:#1c1a17;--bg:#f7f5f0;--gold:#a9782f;--wine:#7a1128;--muted:rgba(28,26,23,.55);--line:rgba(28,26,23,.12);--glass:rgba(255,255,255,.55);--brd:rgba(255,255,255,.7);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth}*{margin:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;overflow-x:hidden}
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif}
+a{color:inherit;text-decoration:none}.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+.tag{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.glass{background:var(--glass);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border:1px solid var(--brd)}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}
+header{position:fixed;top:0;left:0;right:0;z-index:100;padding-top:env(safe-area-inset-top,0px)}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;margin:12px;border-radius:40px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:.15em}
+.mono{width:32px;height:32px}.mono img{width:100%;height:100%;object-fit:contain}
+nav.links{display:flex;align-items:center;gap:22px;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
+.cat-dd{position:relative}
+.cat-dd summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:4px;opacity:.7;transition:.2s}
+.cat-dd summary:hover{opacity:1}.cat-dd[open] summary{opacity:1}
+.cat-dd summary::-webkit-details-marker{display:none}
+.cat-dd .chev{width:10px;height:10px;transition:.25s}
+.cat-dd[open] .chev{transform:rotate(180deg)}
+.cat-menu{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%);min-width:210px;border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:2px;box-shadow:0 18px 40px rgba(28,26,23,.18);z-index:150}
+.cat-menu a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;font-size:12.5px;text-transform:none;letter-spacing:0;opacity:1;color:var(--ink)}
+.cat-menu a:hover{background:rgba(169,120,47,.1)}
+.pro{font-size:9px;letter-spacing:.1em;padding:2px 7px;border-radius:20px;background:linear-gradient(120deg,#a9782f,#c9a24a);color:#fff;font-weight:700}
+@media(max-width:760px){nav.links{display:none}}
+.hero{padding:calc(env(safe-area-inset-top,0px) + 130px) 0 50px;text-align:center}
+.hero h1{font-size:clamp(40px,8vw,72px);font-style:italic}
+.hero p{max-width:480px;margin:14px auto 0;color:var(--muted);font-size:15px;line-height:1.6}
+
+.channels{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px 0 50px}
+.chan{border-radius:20px;padding:24px 20px;text-align:center;transition:transform .3s}
+.chan:hover{transform:translateY(-5px)}
+.chan .ic{width:46px;height:46px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
+.chan .ic svg{width:19px;height:19px}
+.chan.wa .ic{background:#25d366}.chan.tel .ic{background:var(--wine)}.chan.mail .ic{background:var(--gold)}
+.chan h3{font-size:17px;margin-bottom:4px}.chan a{font-size:14px;color:var(--muted);display:block;margin-top:2px}
+.chan a:hover{color:var(--wine)}
+@media(max-width:700px){.channels{grid-template-columns:1fr}}
+
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;padding:30px 0 50px;align-items:start}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.form-card{border-radius:24px;padding:30px}
+.form-card h2{font-size:26px;font-style:italic;margin-bottom:18px}
+.field{margin-bottom:14px}
+.field label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.field input,.field textarea{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:14px;background:#fff;font-size:14.5px;font-family:inherit;outline:none;transition:.2s;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(169,120,47,.15)}
+.submit{padding:13px 26px;background:var(--ink);color:#fff;border:none;border-radius:30px;font-size:11px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:.2s}
+.submit:hover{background:var(--wine)}
+.hoursbox{border-radius:24px;padding:28px}
+.hoursbox h3{font-size:20px;font-style:italic;margin-bottom:14px}
+.hr{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.hr:last-child{border:none}.hr span:last-child{color:var(--muted)}
+.addr{margin-top:18px;font-size:13.5px;color:var(--muted);line-height:1.7}
+
+.faq{padding:10px 0 60px}
+.fitem{border-bottom:1px solid var(--line)}
+.fq{display:flex;justify-content:space-between;align-items:center;padding:18px 4px;cursor:pointer;font-size:15px;font-weight:500}
+.fq svg{width:16px;height:16px;transition:transform .3s;flex:none}
+.fitem.open .fq svg{transform:rotate(180deg)}
+.fa{max-height:0;overflow:hidden;transition:max-height .35s ease;color:var(--muted);font-size:13.5px;line-height:1.7;padding:0 4px}
+.fitem.open .fa{max-height:200px;padding-bottom:16px}
+footer{padding:50px 24px 36px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+<header><div class="bar glass"><a class="brand" href="index.html"><span class="mono"><img class="logo-img" alt="Winfum"></span>WINFUM</a>
+<nav class="links">
+  <a href="index.html">Accueil</a>
+  <details class="cat-dd"><summary>Catégorie<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+    <div class="cat-menu glass">
+      <a href="jbparfumerie.html"><span>JB Parfumerie</span><span class="pro">PRO</span></a>
+      <a href="funforus.html"><span>Fun For Us · Vins</span><span class="pro">PRO</span></a>
+    </div>
+  </details>
+  <a href="apropos.html">À propos</a><a href="espace.html">Mon espace</a>
+</nav></div></header>
+
+<section class="hero"><span class="tag">Nous sommes là</span><h1 class="serif" style="margin-top:14px">Contact &amp; Support</h1>
+<p>Une question sur une commande, un devis en gros, ou juste envie de nous écrire ? Choisissez le canal qui vous convient.</p></section>
+
+<div class="wrap">
+  <div class="channels reveal">
+    <a class="chan wa glass" href="https://wa.me/50948821521" target="_blank"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 01-13.4 7.8L3 21l1.3-4.4A9 9 0 1121 12z"/></svg></div><h3 class="serif">WhatsApp</h3><a href="https://wa.me/50948821521" target="_blank">48 82 15 21</a></a>
+    <div class="chan tel glass"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.1-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.5 2.1L8 9.7a16 16 0 006 6l1.2-1.2a2 2 0 012.1-.5c.9.3 1.8.5 2.7.6a2 2 0 011.7 2z"/></svg></div><h3 class="serif">Téléphone</h3><a href="tel:35697028">35 69 70 28</a><a href="tel:48821521">48 82 15 21</a></div>
+    <div class="chan mail glass"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4V4z"/><path d="M4 6l8 7 8-7"/></svg></div><h3 class="serif">Réseaux</h3><a href="#">Instagram</a><a href="#">Facebook</a></div>
+  </div>
+
+  <div class="grid2">
+    <div class="form-card glass reveal">
+      <h2 class="serif">Écrivez-nous</h2>
+      <form id="cform" onsubmit="return sendForm(event)">
+        <div class="field"><label>Nom</label><input type="text" required></div>
+        <div class="field"><label>Téléphone ou WhatsApp</label><input type="text" required></div>
+        <div class="field"><label>Message</label><textarea rows="4" required placeholder="Votre question, votre demande de devis gros volume…"></textarea></div>
+        <button class="submit" type="submit">Envoyer via WhatsApp</button>
+      </form>
+    </div>
+    <div class="hoursbox glass reveal">
+      <h3 class="serif">Disponibilités</h3>
+      <div class="hr"><span>Lundi – Vendredi</span><span>8h – 18h</span></div>
+      <div class="hr"><span>Samedi</span><span>9h – 15h</span></div>
+      <div class="hr"><span>Dimanche</span><span>Fermé</span></div>
+      <div class="addr">Winfum — Haïti<br>Vente au détail &amp; en gros pour particuliers, boutiques, hôtels et restaurants.</div>
+    </div>
+  </div>
+
+  <div class="faq reveal">
+    <span class="tag">Questions fréquentes</span>
+    <div class="fitem" onclick="this.classList.toggle('open')"><div class="fq">Proposez-vous la vente en gros ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="fa">Oui, dès 6 unités par produit, avec des tarifs dégressifs. Contactez-nous pour un devis adapté à votre volume.</div></div>
+    <div class="fitem" onclick="this.classList.toggle('open')"><div class="fq">Comment passer une commande ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="fa">Ajoutez vos produits au panier sur nos boutiques Parfums ou Vins, puis validez : votre commande est envoyée directement sur WhatsApp.</div></div>
+    <div class="fitem" onclick="this.classList.toggle('open')"><div class="fq">Livrez-vous partout en Haïti ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="fa">La livraison est organisée au cas par cas selon votre localisation. Écrivez-nous pour connaître les délais et frais applicables.</div></div>
+    <div class="fitem" onclick="this.classList.toggle('open')"><div class="fq">Puis-je retourner un produit ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="fa">Contactez notre support avec votre numéro de commande dans les 48h suivant réception ; nous étudions chaque cas individuellement.</div></div>
+  </div>
+</div>
+
+<footer>© 2026 Winfum — Contact &amp; Support</footer>
+
+<script>
+const LOGO_URL="https://i.postimg.cc/cH4Hyzb7/Logo-winfum.png";
+document.querySelectorAll('.logo-img').forEach(i=>i.src=LOGO_URL);
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+document.addEventListener('click',e=>{document.querySelectorAll('.cat-dd[open]').forEach(d=>{if(!d.contains(e.target))d.removeAttribute('open')})});
+function sendForm(e){
+  e.preventDefault();
+  const i=e.target.querySelectorAll('input,textarea');
+  const msg=`Bonjour Winfum,%0ANom: ${i[0].value}%0AContact: ${i[1].value}%0AMessage: ${i[2].value}`;
+  window.open('https://wa.me/50948821521?text='+msg,'_blank');
+  return false;
+}
+</script>
+</body>
+</html>
