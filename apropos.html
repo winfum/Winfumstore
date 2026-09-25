@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script>(function(){try{var p=location.pathname,c=p.replace(/\/index\.html$/i,'/').replace(/\.html$/i,'');if(c!==p)history.replaceState(history.state,'',c+location.search+location.hash);}catch(e){}})();</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>À propos de nous — Winfum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap">
+<style>
+:root{--ink:#1c1a17;--bg:#f7f5f0;--gold:#a9782f;--wine:#7a1128;--muted:rgba(28,26,23,.55);--line:rgba(28,26,23,.12);--glass:rgba(255,255,255,.55);--brd:rgba(255,255,255,.7);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth}*{margin:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;overflow-x:hidden}
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif}
+a{color:inherit;text-decoration:none}.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+.tag{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.glass{background:var(--glass);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border:1px solid var(--brd)}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}
+header{position:fixed;top:0;left:0;right:0;z-index:100;padding-top:env(safe-area-inset-top,0px)}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;margin:12px;border-radius:40px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:.15em}
+.mono{width:32px;height:32px}.mono img{width:100%;height:100%;object-fit:contain}
+nav.links{display:flex;align-items:center;gap:22px;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
+.cat-dd{position:relative}
+.cat-dd summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:4px;opacity:.7;transition:.2s}
+.cat-dd summary:hover{opacity:1}.cat-dd[open] summary{opacity:1}
+.cat-dd summary::-webkit-details-marker{display:none}
+.cat-dd .chev{width:10px;height:10px;transition:.25s}
+.cat-dd[open] .chev{transform:rotate(180deg)}
+.cat-menu{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%);min-width:210px;border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:2px;box-shadow:0 18px 40px rgba(28,26,23,.18);z-index:150}
+.cat-menu a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;font-size:12.5px;text-transform:none;letter-spacing:0;opacity:1;color:var(--ink)}
+.cat-menu a:hover{background:rgba(169,120,47,.1)}
+.pro{font-size:9px;letter-spacing:.1em;padding:2px 7px;border-radius:20px;background:linear-gradient(120deg,#a9782f,#c9a24a);color:#fff;font-weight:700}
+@media(max-width:760px){nav.links{display:none}}
+.hero{padding:calc(env(safe-area-inset-top,0px) + 130px) 0 60px;text-align:center}
+.hero h1{font-size:clamp(44px,9vw,84px);font-style:italic}
+.hero p{max-width:520px;margin:16px auto 0;color:var(--muted);font-size:15px;line-height:1.7}
+.story{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;padding:50px 0}
+.story .ph{aspect-ratio:4/5;border-radius:24px;background:linear-gradient(155deg,#2b2925,#7a1128 60%,#a9782f);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:.15em;text-align:center}
+.story h2{font-size:34px;font-style:italic}
+.story p{color:var(--muted);margin-top:14px;line-height:1.75;font-size:14.5px}
+@media(max-width:700px){.story{grid-template-columns:1fr}}
+.values{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:50px 0}
+.vcard{border-radius:20px;padding:26px 22px;text-align:center}
+.vcard .ic{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--wine));display:flex;align-items:center;justify-content:center;color:#fff}
+.vcard .ic svg{width:18px;height:18px}
+.vcard h3{font-size:19px;font-style:italic}
+.vcard p{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6}
+@media(max-width:700px){.values{grid-template-columns:1fr}}
+.timeline{padding:50px 0}
+.tl-item{display:flex;gap:20px;padding:20px 0;border-top:1px solid var(--line)}
+.tl-item:first-child{border-top:none}
+.tl-item .yr{font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:var(--wine);flex:none;width:80px}
+.tl-item p{color:var(--muted);font-size:14px;line-height:1.6}
+.cta{margin:50px 0;padding:50px 24px;text-align:center;border-radius:24px}
+.cta h3{font-size:clamp(24px,4vw,32px);font-style:italic}
+.cta .btns{display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.btn{padding:13px 26px;border-radius:30px;font-size:11px;letter-spacing:.15em;text-transform:uppercase;background:var(--ink);color:#fff}
+.btn.outline{background:none;border:1px solid var(--line);color:var(--ink)}
+footer{padding:50px 24px 36px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+<header><div class="bar glass"><a class="brand" href="index.html"><span class="mono"><img class="logo-img" alt="Winfum"></span>WINFUM</a>
+<nav class="links">
+  <a href="index.html">Accueil</a>
+  <details class="cat-dd"><summary>Catégorie<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+    <div class="cat-menu glass">
+      <a href="jbparfumerie.html"><span>JB Parfumerie</span><span class="pro">PRO</span></a>
+      <a href="funforus.html"><span>Fun For Us · Vins</span><span class="pro">PRO</span></a>
+    </div>
+  </details>
+  <a href="Contact-Support.html">Contact</a><a href="espace.html">Mon espace</a>
+</nav></div></header>
+
+<section class="hero"><span class="tag">Notre histoire</span><h1 class="serif" style="margin-top:14px">À propos de Winfum</h1>
+<p>Une maison haïtienne née de l'exigence : offrir des parfums de caractère et des vins d'exception, choisis avec le même souci du détail.</p></section>
+
+<main class="wrap">
+  <div class="story reveal">
+    <div class="ph">Notre atelier</div>
+    <div><h2 class="serif">Deux passions, une seule exigence</h2>
+      <p>Winfum est née de la rencontre entre deux univers : celui du parfum, où chaque note raconte une émotion, et celui du vin, où chaque récolte raconte une terre. À travers <b>JB Parfumerie</b> et <b>Fun For Us</b>, nous réunissons ces deux passions sous une même maison, fidèle à un principe simple : ne proposer que ce que nous choisirions nous-mêmes.</p>
+      <p>Basés en Haïti, nous travaillons avec des partenaires et producteurs locaux pour offrir des produits authentiques, en vente au détail comme en gros, aux particuliers comme aux professionnels.</p>
+    </div>
+  </div>
+
+  <div class="values reveal">
+    <div class="vcard glass"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg></div><h3 class="serif">Exigence</h3><p>Chaque produit est sélectionné pour sa qualité, jamais pour son prix seul.</p></div>
+    <div class="vcard glass"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 10-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z"/></svg></div><h3 class="serif">Authenticité</h3><p>Des produits vrais, des origines claires, aucune promesse exagérée.</p></div>
+    <div class="vcard glass"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></div><h3 class="serif">Proximité</h3><p>Gros ou détail, particulier ou professionnel : un service à taille humaine.</p></div>
+  </div>
+
+  <div class="timeline reveal">
+    <div class="sec-head" style="padding-bottom:20px"><span class="tag">Notre parcours</span></div>
+    <div class="tl-item"><div class="yr">2024</div><p>Naissance du projet Winfum, avec l'idée de réunir parfums et vins sous une même exigence de qualité.</p></div>
+    <div class="tl-item"><div class="yr">2025</div><p>Lancement de JB Parfumerie, notre collection de fragrances pour Homme, Femme et Mixte.</p></div>
+    <div class="tl-item"><div class="yr">2026</div><p>Lancement de Fun For Us, notre collection de vins 100% haïtiens, et ouverture de la vente en gros pour les professionnels.</p></div>
+  </div>
+
+  <div class="cta glass reveal">
+    <h3 class="serif">Envie d'en savoir plus ?</h3>
+    <div class="btns">
+      <a class="btn" href="Contact-Support.html">Contactez-nous</a>
+      <a class="btn outline" href="index.html">Retour à l'accueil</a>
+    </div>
+  </div>
+</main>
+
+<footer>© 2026 Winfum — Maison de parfums &amp; vins d'exception</footer>
+
+<script>
+const LOGO_URL="https://i.postimg.cc/cH4Hyzb7/Logo-winfum.png";
+document.querySelectorAll('.logo-img').forEach(i=>i.src=LOGO_URL);
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+document.addEventListener('click',e=>{document.querySelectorAll('.cat-dd[open]').forEach(d=>{if(!d.contains(e.target))d.removeAttribute('open')})});
+</script>
+</body>
+</html>
