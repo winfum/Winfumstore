@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script>(function(){try{var p=location.pathname,c=p.replace(/\/index\.html$/i,'/').replace(/\.html$/i,'');if(c!==p)history.replaceState(history.state,'',c+location.search+location.hash);}catch(e){}})();</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mon espace — Winfum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+:root{--ink:#1c1a17;--bg:#f7f5f0;--gold:#a9782f;--wine:#7a1128;--deep:#1c1a17;--muted:rgba(28,26,23,.55);--line:rgba(28,26,23,.12);--glass:rgba(255,255,255,.58);--glass2:rgba(255,255,255,.88);--brd:rgba(255,255,255,.75);--ok:#2f7a4b;box-sizing:border-box}
+*{margin:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-variant-numeric:lining-nums;overflow-x:hidden;min-height:100vh}
+h1,h2,h3,h4,.serif{font-family:'Cormorant Garamond',serif;font-variant-numeric:lining-nums}
+a{color:inherit;text-decoration:none}
+button,input,select{font-family:inherit;font-size:15px;color:var(--ink)}
+img,video{max-width:100%;display:block}
+[hidden]{display:none!important}
+.wrap{max-width:1000px;margin:0 auto;padding:0 22px}
+.tag{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.glass{background:var(--glass);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border:1px solid var(--brd)}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+.aurora{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.aurora span{position:absolute;border-radius:50%;filter:blur(70px);opacity:.32;animation:float 16s ease-in-out infinite}
+.aurora span:nth-child(1){width:440px;height:440px;background:var(--gold);top:-140px;left:-110px}
+.aurora span:nth-child(2){width:400px;height:400px;background:var(--wine);top:25%;right:-150px;animation-duration:20s;animation-delay:-4s}
+.aurora span:nth-child(3){width:340px;height:340px;background:#c9ab6d;bottom:-110px;left:20%;animation-duration:23s;animation-delay:-8s}
+@keyframes float{50%{transform:translate(40px,-30px) scale(1.15)}}
+
+header{position:fixed;top:0;left:0;right:0;z-index:100;padding-top:env(safe-area-inset-top,0px)}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;margin:12px;border-radius:40px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:.15em}
+.mono{width:32px;height:32px;display:flex}.mono img{width:100%;height:100%;object-fit:contain}
+nav.links{display:flex;gap:24px;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
+@media(max-width:640px){nav.links a:not(:last-child){display:none}}
+.page{padding:calc(env(safe-area-inset-top,0px) + 100px) 0 70px;min-height:100vh}
+
+/* boutons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 24px;border-radius:30px;border:1px solid var(--deep);background:var(--deep);color:#fff;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:.25s}
+.btn:hover{background:var(--wine);border-color:var(--wine);transform:translateY(-1px)}
+.btn svg{width:15px;height:15px;flex:none}
+.btn.ghost{background:rgba(255,255,255,.7);color:var(--ink);border-color:var(--line)}.btn.ghost:hover{background:#fff;border-color:var(--gold);color:var(--wine)}
+.btn.gold{background:linear-gradient(120deg,#a9782f,#c9a24a);border-color:#a9782f;color:#fff}.btn.gold:hover{filter:brightness(1.08);background:linear-gradient(120deg,#a9782f,#c9a24a);border-color:#a9782f}
+.btn.wa{background:#25d366;border-color:#25d366}.btn.wa:hover{background:#1fb457;border-color:#1fb457}
+.btn.sm{padding:9px 16px;font-size:10px}.btn.full{width:100%}
+.btn[disabled]{opacity:.6;pointer-events:none}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:none}
+.loading .spin{display:block}@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ===== AUTH ===== */
+#auth{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:center;min-height:calc(100vh - 190px)}
+@media(max-width:860px){#auth{grid-template-columns:1fr;gap:26px}}
+.hero{animation:rise .8s cubic-bezier(.16,1,.3,1)}
+.hero h1{font-size:clamp(42px,6.5vw,74px);line-height:.98;font-style:italic;font-weight:600;margin:14px 0 16px}
+.hero h1 em{color:var(--wine)}
+.hero>p{color:var(--muted);line-height:1.7;max-width:440px;font-size:15px}
+.perks{list-style:none;padding:0;margin:26px 0 0;display:flex;flex-direction:column;gap:14px}
+.perks li{display:flex;align-items:center;gap:14px;font-size:14px}
+.perks i{width:42px;height:42px;border-radius:14px;background:var(--glass2);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 6px 18px rgba(169,120,47,.14)}
+.perks svg{width:19px;height:19px;color:var(--gold)}
+.perks b{display:block;font-weight:600}.perks span{font-size:12.5px;color:var(--muted)}
+@media(max-width:860px){.perks{display:none}}
+.acard{border-radius:30px;padding:10px;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(28,26,23,.13);animation:rise .8s .1s cubic-bezier(.16,1,.3,1) backwards}
+.alogo{display:flex;justify-content:center;padding:22px 0 2px}.alogo .mono{width:54px;height:54px}
+.tabs{display:flex;position:relative;margin:14px 18px 4px;background:rgba(28,26,23,.06);border-radius:30px;padding:4px}
+.tabs button{flex:1;padding:11px;border:none;background:none;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;color:var(--muted);position:relative;z-index:2;transition:color .3s;font-weight:500}
+.tabs button.on{color:#fff}
+.tthumb{position:absolute;top:4px;left:4px;width:calc(50% - 4px);height:calc(100% - 8px);background:var(--ink);border-radius:26px;transition:transform .45s cubic-bezier(.16,1,.3,1)}
+.tabs.s .tthumb{transform:translateX(100%)}
+.form{padding:14px 22px 22px;display:flex;flex-direction:column;gap:14px}
+.form h2{font-size:28px;font-style:italic;font-weight:600}
+.fld>label{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;font-weight:500}
+.inp{position:relative}
+.inp>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--muted);pointer-events:none}
+.inp input,.inp select,.plain{width:100%;padding:14px 14px 14px 42px;border:1px solid var(--line);border-radius:14px;background:#fff;outline:none;transition:.2s}
+.plain,.inp .plain{padding-left:14px}
+.inp input:focus,.plain:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(169,120,47,.16)}
+.inp .eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;width:36px;height:36px;border-radius:50%;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.inp .eye:hover{background:rgba(28,26,23,.06)}.inp .eye svg{position:static;transform:none;width:17px;height:17px}
+.inp input[type=password],.inp input.pw{padding-right:46px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:420px){.row2{grid-template-columns:1fr}}
+.gchips{display:flex;gap:8px}
+.gchips label{flex:1;margin:0;cursor:pointer}
+.gchips input{display:none}
+.gchips span{display:block;text-align:center;padding:12px 6px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ink);transition:.2s}
+.gchips input:checked+span{background:var(--ink);color:#fff;border-color:var(--ink)}
+.meter{height:5px;border-radius:5px;background:rgba(28,26,23,.09);overflow:hidden;margin-top:8px}
+.meter i{display:block;height:100%;width:0;border-radius:5px;background:#b7791f;transition:.3s}
+.mtxt{font-size:11.5px;color:var(--muted);margin-top:5px}
+.err{color:var(--wine);font-size:13px;background:rgba(122,17,40,.07);border-radius:12px;padding:10px 14px;display:none}
+.err.on{display:block;animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.sw{text-align:center;font-size:12.5px;color:var(--muted)}.sw a{text-decoration:underline;color:var(--wine);cursor:pointer}
+.mask{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:0;visibility:hidden;transition:.4s;z-index:5;border-radius:30px}
+.mask.on{opacity:1;visibility:visible}
+.check{width:68px;height:68px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;transform:scale(0)}
+.mask.on .check{animation:pop .5s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes pop{to{transform:scale(1)}}
+.check svg{width:30px;height:30px;color:#fff;stroke-dasharray:24;stroke-dashoffset:24}.mask.on .check svg{animation:draw .4s .3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* ===== DASHBOARD ===== */
+#dash{animation:rise .6s cubic-bezier(.16,1,.3,1)}
+.pcard{border-radius:28px;padding:26px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 24px 60px rgba(28,26,23,.09)}
+.avatar{width:76px;height:76px;border-radius:50%;background:conic-gradient(from 180deg,var(--gold),var(--wine),var(--gold));padding:3px;flex:none}
+.avatar b{width:100%;height:100%;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600}
+.pinfo{flex:1;min-width:200px}
+.nline{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.nline h2{font-size:32px;font-style:italic;font-weight:600;line-height:1.05}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;white-space:nowrap}
+.badge svg{width:12px;height:12px}
+.badge.admin{background:linear-gradient(120deg,#a9782f,#d4af69);color:#fff;box-shadow:0 4px 14px rgba(169,120,47,.35)}
+.badge.team{background:var(--ink);color:#e9c988}
+.badge.member{background:rgba(169,120,47,.13);color:var(--gold)}
+.handle{font-size:13px;color:var(--muted);margin-top:4px}
+.chips{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.chip{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:20px;border:1px solid var(--line);color:var(--muted);background:rgba(255,255,255,.6)}
+.pact{display:flex;gap:8px;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.stat{border-radius:22px;padding:18px 16px;text-align:center}
+.stat b{display:block;font-size:30px;font-weight:600;letter-spacing:-.02em;color:var(--wine);line-height:1}
+.stat span{display:block;margin-top:8px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+@media(max-width:520px){.stat b{font-size:24px}.stats{gap:10px}}
+.seg{display:flex;position:relative;background:rgba(28,26,23,.06);border-radius:30px;padding:4px;margin:24px 0 18px;max-width:460px}
+.seg button{flex:1;padding:11px 8px;border:none;background:none;font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--muted);position:relative;z-index:2;transition:color .3s;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
+.seg button.on{color:#fff}.seg button em{font-style:normal;font-size:10px;background:rgba(169,120,47,.2);border-radius:10px;padding:1px 7px}.seg button.on em{background:rgba(255,255,255,.25)}
+.sthumb{position:absolute;top:4px;bottom:4px;left:4px;width:calc(33.333% - 2.7px);background:var(--ink);border-radius:26px;transition:transform .45s cubic-bezier(.16,1,.3,1)}
+.pane{animation:rise .45s cubic-bezier(.16,1,.3,1)}
+.empty{text-align:center;padding:56px 20px;color:var(--muted);border-radius:24px;line-height:1.7}
+.empty svg{width:42px;height:42px;color:var(--gold);margin:0 auto 12px;display:block}
+.empty a{color:var(--wine);text-decoration:underline}
+
+/* annonces */
+.rail{display:flex;gap:16px;overflow-x:auto;padding:4px 2px 14px;scrollbar-width:none;scroll-snap-type:x proximity}
+.rail::-webkit-scrollbar{display:none}
+.ann{position:relative;flex:none;height:clamp(280px,46vh,400px);aspect-ratio:var(--r,.8);max-width:86vw;border-radius:22px;overflow:hidden;cursor:pointer;scroll-snap-align:start;background:linear-gradient(150deg,#2b1015,#7a1128 60%,#a9782f);color:#fff;display:flex;align-items:center;justify-content:center;transition:.4s;box-shadow:0 10px 30px rgba(28,26,23,.12)}
+.ann:hover{transform:translateY(-5px);box-shadow:0 22px 46px rgba(28,26,23,.22)}
+.ann::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),transparent 30%,transparent 40%,rgba(10,5,7,.85));pointer-events:none}
+.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph-t{position:relative;z-index:1;font-family:'Cormorant Garamond',serif;letter-spacing:.14em;text-transform:uppercase;font-size:14px;opacity:.55;text-align:center;padding:0 14px}
+.ann .t{position:absolute;top:14px;left:14px;z-index:2;padding:6px 12px;border-radius:20px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(8px)}
+.ann .pl{position:absolute;top:12px;right:12px;z-index:2;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--wine);display:flex;align-items:center;justify-content:center}
+.ann .pl svg{width:14px;height:14px;margin-left:2px}
+.ann .tx{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:18px 20px 20px}
+.ann h3{font-size:clamp(22px,3vw,29px);font-style:italic;line-height:1.05}
+.ann p{font-size:13px;line-height:1.5;opacity:.85;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ann .cta{display:inline-block;margin-top:12px;padding:8px 16px;border-radius:30px;background:#fff;color:var(--deep);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+
+/* favoris */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.fcard{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;position:relative;animation:rise .45s cubic-bezier(.16,1,.3,1) backwards;transition:.3s}
+.fcard:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(28,26,23,.1)}
+.fph{height:128px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Cormorant Garamond',serif;font-size:26px;letter-spacing:.1em;position:relative}
+.g-homme{background:linear-gradient(155deg,#2b2925,#4a463e)}.g-femme{background:linear-gradient(155deg,#e8b9c4,#f3d9db);color:rgba(28,26,23,.45)}.g-mixte{background:linear-gradient(155deg,#c9ab6d,#e6d9bd);color:rgba(28,26,23,.45)}
+.g-rouge{background:linear-gradient(155deg,#4a0a17,#7a1128)}.g-blanc{background:linear-gradient(155deg,#c9b06a,#efe4c4);color:rgba(28,26,23,.45)}.g-rose{background:linear-gradient(155deg,#d98fa0,#f3d3db);color:rgba(28,26,23,.45)}
+.frm{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s}
+.frm:hover{transform:scale(1.12)}.frm svg{width:15px;height:15px;color:var(--wine)}
+.finfo{padding:14px 16px 16px}
+.finfo .k{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.finfo .nm{font-family:'Cormorant Garamond',serif;font-size:21px;line-height:1.1;margin-top:4px}
+.finfo .pr{font-weight:600;font-size:16px;margin-top:8px}.finfo .pr span{color:var(--gold);font-size:12px;margin-left:3px;font-weight:500}
+.finfo .btn{margin-top:12px;width:100%}
+
+/* panier */
+.clist{display:flex;flex-direction:column;gap:10px}
+.crow{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:12px 14px;animation:rise .45s cubic-bezier(.16,1,.3,1) backwards}
+.crow .fph{width:58px;height:58px;border-radius:14px;flex:none;font-size:15px}
+.cinfo{flex:1;min-width:0}.cinfo .nm{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:19px;line-height:1.1}.cinfo .sm{font-size:12px;color:var(--muted);margin-top:3px}
+.qty{display:flex;align-items:center;background:#f3eee4;border-radius:30px;padding:3px;flex:none}
+.qty button{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:15px;line-height:1;cursor:pointer;transition:.2s}
+.qty button:hover{background:var(--wine);color:#fff;border-color:var(--wine)}.qty span{width:30px;text-align:center;font-size:13px;font-weight:600}
+.cline{font-weight:600;font-size:15px;min-width:74px;text-align:right}
+.crm{width:32px;height:32px;border-radius:50%;border:none;background:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
+.crm:hover{background:rgba(122,17,40,.08);color:var(--wine)}.crm svg{width:15px;height:15px}
+@media(max-width:560px){.crow{flex-wrap:wrap}.cinfo{flex-basis:calc(100% - 80px)}}
+.cfoot{margin-top:16px;border-radius:24px;padding:20px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.cfoot .tot small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.cfoot .tot b{font-size:30px;font-weight:600;letter-spacing:-.02em;color:var(--deep)}.cfoot .tot b span{font-size:15px;color:var(--gold);margin-left:4px}
+.cfoot .acts{display:flex;gap:8px;flex-wrap:wrap}
+
+/* modales */
+.ov{position:fixed;inset:0;background:rgba(20,18,15,.55);backdrop-filter:blur(8px);z-index:300;display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;visibility:hidden;transition:.3s}
+.ov.on{opacity:1;visibility:visible}
+.sheet{width:min(440px,100%);max-height:92vh;overflow-y:auto;background:#fff;border-radius:28px;padding:26px;transform:translateY(24px) scale(.98);transition:.4s cubic-bezier(.16,1,.3,1);box-shadow:0 40px 100px rgba(20,10,12,.35)}
+.ov.on .sheet{transform:none}
+.sheet h3{font-size:28px;font-style:italic;font-weight:600;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.x{width:36px;height:36px;border-radius:50%;border:none;background:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}.x:hover{background:rgba(28,26,23,.07)}
+@media(max-width:560px){.ov{align-items:flex-end;padding:0}.sheet{border-radius:28px 28px 0 0}}
+#viewer{background:rgba(10,5,7,.85)}
+.vbox{width:min(720px,100%);display:flex;flex-direction:column;align-items:center;color:#fff}
+.vmedia{position:relative;width:100%;height:62vh;border-radius:20px;overflow:hidden;background:#2b1015;display:flex;align-items:center;justify-content:center}
+.vmedia .cover{position:static;object-fit:contain}
+.vcap{text-align:center;margin-top:14px}.vcap h3{font-size:26px;font-style:italic}.vcap p{font-size:13px;opacity:.75;margin-top:4px;line-height:1.5}
+.vact{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;justify-content:center;align-items:center}
+.vb{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff}
+.vb:hover{background:rgba(255,255,255,.22)}.vb svg{width:17px;height:17px}
+.vcta{padding:0 22px;height:42px;border-radius:30px;background:#fff;color:var(--deep);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center}
+.vclose{position:fixed;top:calc(env(safe-area-inset-top,0px) + 18px);right:20px;color:#fff;font-size:24px;cursor:pointer;z-index:2}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 26px);transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:30px;font-size:13px;opacity:0;pointer-events:none;transition:.3s;z-index:800;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.note{margin-top:14px;padding:14px 18px;border-radius:18px;background:rgba(183,121,31,.12);border:1px solid rgba(183,121,31,.3);color:#7a5210;font-size:13.5px;line-height:1.55}
+.note.bad{background:rgba(164,38,44,.09);border-color:rgba(164,38,44,.3);color:#a4262c}
+.syncline{margin-top:14px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px}
+.syncline i{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block}.syncline i.off{background:#b7791f}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="aurora"><span></span><span></span><span></span></div>
+
+<header>
+  <div class="bar glass">
+    <a class="brand" href="index.html"><span class="mono"><img class="logo-img" alt="Winfum"></span>WINFUM</a>
+    <nav class="links"><a href="jbparfumerie.html">Parfums</a><a href="funforus.html">Vins</a><a href="index.html">Accueil</a></nav>
+  </div>
+</header>
+
+<div class="page wrap">
+
+  <!-- ===== CONNEXION / INSCRIPTION ===== -->
+  <div id="auth" hidden>
+    <div class="hero">
+      <span class="tag">Mon espace</span>
+      <h1 class="serif">Votre univers <em>Winfum</em></h1>
+      <p>Retrouvez vos favoris, votre panier et les annonces de la maison, au même endroit.</p>
+      <ul class="perks">
+        <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 10-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z"/></svg></i><div><b>Vos coups de cœur</b><span>Gardez vos parfums et vins préférés sous la main.</span></div></li>
+        <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2l-2 4v14a1 1 0 001 1h14a1 1 0 001-1V6l-2-4z"/><path d="M4 6h16"/><path d="M16 10a4 4 0 01-8 0"/></svg></i><div><b>Un panier unifié</b><span>Parfums et vins réunis, commande en un message WhatsApp.</span></div></li>
+        <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 001 1h3l6 4V6L7 10H4a1 1 0 00-1 1z"/><path d="M16 9a4 4 0 010 6"/></svg></i><div><b>Annonces exclusives</b><span>Nouveautés, vendanges, offres gros volume.</span></div></li>
+      </ul>
+    </div>
+
+    <div class="acard glass">
+      <div class="mask" id="mask"><div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></div><span class="tag" id="mask-t">Bienvenue</span></div>
+      <div class="alogo"><span class="mono"><img class="logo-img" alt="Winfum"></span></div>
+      <div class="tabs" id="tabs"><div class="tthumb"></div><button class="on" data-m="login">Connexion</button><button data-m="signup">Créer un compte</button></div>
+
+      <form class="form" id="f-login" autocomplete="on">
+        <h2 class="serif">Content de vous revoir</h2>
+        <div class="fld"><label>Pseudo ou email</label><div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><input type="text" id="li-id" autocomplete="username" required></div></div>
+        <div class="fld"><label>Mot de passe</label><div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><input type="password" id="li-pw" autocomplete="current-password" required><button type="button" class="eye" data-eye="li-pw" aria-label="Afficher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+        <div class="err" id="li-err"></div>
+        <button class="btn full" id="li-btn"><span class="spin"></span><span>Se connecter</span></button>
+        <div class="sw">Pas encore de compte ? <a data-go="signup">Créer un compte</a></div>
+      </form>
+
+      <form class="form" id="f-signup" autocomplete="on" hidden>
+        <h2 class="serif">Rejoignez la maison</h2>
+        <div class="fld"><label>Pseudo (unique)</label><div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><input type="text" id="su-pseudo" autocomplete="username" required minlength="3" maxlength="20" placeholder="ex : marie509"></div></div>
+        <div class="row2">
+          <div class="fld"><label>Nom (facultatif)</label><input class="plain" type="text" id="su-name" autocomplete="name"></div>
+          <div class="fld"><label>Année de naissance</label><input class="plain" type="number" id="su-year" min="1930" max="2018" placeholder="1998"></div>
+        </div>
+        <div class="fld"><label>Genre (facultatif)</label><div class="gchips" id="su-gender"><label><input type="radio" name="g" value="homme"><span>Homme</span></label><label><input type="radio" name="g" value="femme"><span>Femme</span></label><label><input type="radio" name="g" value="autre"><span>Autre</span></label></div></div>
+        <div class="fld"><label>Mot de passe (6 caractères min.)</label><div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><input type="password" id="su-pw" autocomplete="new-password" required minlength="6"><button type="button" class="eye" data-eye="su-pw" aria-label="Afficher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="meter"><i id="meter"></i></div><div class="mtxt" id="mtxt">&nbsp;</div></div>
+        <div class="err" id="su-err"></div>
+        <button class="btn full" id="su-btn"><span class="spin"></span><span>Créer mon compte</span></button>
+        <div class="sw">Déjà inscrit ? <a data-go="login">Se connecter</a></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== TABLEAU DE BORD ===== -->
+  <div id="dash" hidden>
+    <div class="pcard glass">
+      <div class="avatar"><b id="av"></b></div>
+      <div class="pinfo">
+        <div class="nline"><h2 class="serif" id="p-name"></h2><span id="p-badge"></span></div>
+        <div class="handle" id="p-handle"></div>
+        <div class="chips" id="p-chips"></div>
+      </div>
+      <div class="pact">
+        <a class="btn gold sm" id="admin-link" href="admin.html" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/></svg>Administration</a>
+        <button class="btn ghost sm" id="b-edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Modifier</button>
+        <button class="btn ghost sm" id="b-out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Déconnexion</button>
+      </div>
+    </div>
+
+    <div class="note" id="notice" hidden></div>
+    <div class="stats">
+      <div class="stat glass"><b id="s-fav">0</b><span>Favoris</span></div>
+      <div class="stat glass"><b id="s-cart">0</b><span>Articles</span></div>
+      <div class="stat glass"><b id="s-tot">0 G</b><span>Panier</span></div>
+    </div>
+
+    <div class="syncline" id="sync" hidden></div>
+    <div class="seg" id="seg"><div class="sthumb"></div>
+      <button class="on" data-t="ann">Annonces <em id="n-ann">0</em></button>
+      <button data-t="fav">Favoris <em id="n-fav">0</em></button>
+      <button data-t="cart">Panier <em id="n-cart">0</em></button>
+    </div>
+
+    <div id="pane-ann" class="pane"></div>
+    <div id="pane-fav" class="pane" hidden></div>
+    <div id="pane-cart" class="pane" hidden></div>
+  </div>
+</div>
+
+<!-- modale profil -->
+<div class="ov" id="ed-ov"><div class="sheet">
+  <h3 class="serif">Modifier mon profil <button class="x" data-close="ed-ov">✕</button></h3>
+  <div class="form" style="padding:0">
+    <div class="fld"><label>Nom</label><input class="plain" type="text" id="ed-name"></div>
+    <div class="row2"><div class="fld"><label>Année de naissance</label><input class="plain" type="number" id="ed-year" min="1930" max="2018"></div>
+    <div class="fld"><label>Genre</label><select class="plain" id="ed-gender"><option value="">—</option><option value="homme">Homme</option><option value="femme">Femme</option><option value="autre">Autre</option></select></div></div>
+    <div class="fld"><label>Nouveau mot de passe (facultatif)</label><div class="inp"><input class="plain pw" type="password" id="ed-pw" placeholder="Laisser vide pour ne pas changer" autocomplete="new-password"><button type="button" class="eye" data-eye="ed-pw" aria-label="Afficher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+    <div class="err" id="ed-err"></div>
+    <button class="btn full" id="ed-btn"><span class="spin"></span><span>Enregistrer</span></button>
+  </div>
+</div></div>
+
+<!-- visionneuse annonce -->
+<div class="ov" id="viewer" onclick="if(event.target===this)closeViewer()">
+  <div class="vclose" onclick="closeViewer()">✕</div>
+  <div class="vbox">
+    <div class="vmedia" id="v-media"></div>
+    <div class="vcap"><h3 class="serif" id="v-title"></h3><p id="v-text"></p></div>
+    <div class="vact">
+      <a class="vb" id="v-dl" target="_blank" download title="Enregistrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg></a>
+      <div class="vb" id="v-share" title="Partager"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 3.9M15.4 6.6L8.6 10.5"/></svg></div>
+      <div class="vb" id="v-copy" title="Copier le lien"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg></div>
+      <a class="vcta" id="v-cta" hidden></a>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ============================================================ CONFIG */
+const LOGO_URL="https://i.postimg.cc/cH4Hyzb7/Logo-winfum.png";
+const SUPABASE_URL="https://cxobpfaffgevxblnbwft.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_bA-89TIqjkUhoA5NIlf7uQ_UUbb8oSB";
+const DOM="@winfum.local";
+const WA="50948821521";
+const ADMIN_PAGE="admin.html";
+/* Catalogue local (mêmes identifiants que jbparfumerie.html / funforus.html) */
+const CATALOG={
+ p1:{name:'Ambre Noir',cat:'homme',retail:65},p2:{name:'Cèdre Royal',cat:'homme',retail:58},
+ p3:{name:'Fleur de Lune',cat:'femme',retail:70},p4:{name:'Rose Éclat',cat:'femme',retail:66},
+ p5:{name:'Petit Prince',cat:'mixte',retail:35},p6:{name:'Neutre Absolu',cat:'mixte',retail:60},
+ v1:{name:'Château Rouge',cat:'rouge',retail:233},v2:{name:'Domaine Blanc',cat:'blanc',retail:198},
+ v3:{name:'Rosé Éclat',cat:'rose',retail:182},v4:{name:'Terre Ardente',cat:'rouge',retail:245},
+ v5:{name:'Brise Dorée',cat:'blanc',retail:210},v6:{name:'Aurore Rosée',cat:'rose',retail:175}};
+/* ============================================================ */
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CATL={homme:'Homme',femme:'Femme',mixte:'Mixte',rouge:'Rouge',blanc:'Blanc',rose:'Rosé'};
+document.querySelectorAll('.logo-img').forEach(i=>i.src=LOGO_URL);
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+window.WINFUM_SB=sb;window.WINFUM_MANUAL=true;
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2400);}
+const slugify=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const cleanPseudo=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9._-]/g,'');
+const nameEmail=n=>slugify(n).replace(/-/g,'.')+DOM;
+const initials=n=>n.split(/[\s-]+/).map(w=>w[0]).join('').slice(0,3);
+const loading=(id,on)=>{const b=$(id);b.disabled=on;b.classList.toggle('loading',on);};
+function setErr(id,m){const e=$(id);e.textContent=m||'';e.classList.remove('on');if(m){void e.offsetWidth;e.classList.add('on');}}
+
+/* ---------- favoris & panier (localStorage partagé avec les pages) ---------- */
+const CART_KEYS=['winfum_cart','winfum_cart_parfum','winfum_cart_vin'],FAV_KEYS=['winfum_favs','winfum_favs_home','winfum_favs_vin'];
+const rd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}};
+const homeKey=id=>id[0]==='v'?'winfum_cart_vin':'winfum_cart_parfum';
+const pageOf=id=>id[0]==='v'?`funforus.html#v-${id}`:`jbparfumerie.html#p-${id}`;
+const favs=()=>[...new Set(FAV_KEYS.flatMap(k=>rd(k,[])))].filter(id=>CATALOG[id]);
+function cart(){const m={};CART_KEYS.forEach(k=>rd(k,[]).forEach(it=>{if(CATALOG[it.id])m[it.id]=Math.max(m[it.id]||0,it.qty||1);}));return Object.entries(m).map(([id,qty])=>({id,qty}));}
+function setQty(id,q){CART_KEYS.forEach(k=>{const l=rd(k,[]).filter(x=>x.id!==id);if(k===homeKey(id)&&q>0)l.push({id,qty:q});localStorage.setItem(k,JSON.stringify(l));});}
+function rmFav(id){FAV_KEYS.forEach(k=>localStorage.setItem(k,JSON.stringify(rd(k,[]).filter(x=>x!==id))));}
+const qtyOf=id=>(cart().find(c=>c.id===id)||{qty:0}).qty;
+
+const I={
+ heart:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 10-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z"/></svg>',
+ trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0l-1 14a1 1 0 01-1 1H7a1 1 0 01-1-1L5 6"/></svg>',
+ play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+ bag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.6a2 2 0 002-1.6L23 6H6"/></svg>',
+ mega:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 11v2a1 1 0 001 1h3l6 4V6L7 10H4a1 1 0 00-1 1z"/><path d="M16 9a4 4 0 010 6"/></svg>',
+ wa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 01-13.4 7.8L3 21l1.3-4.4A9 9 0 1121 12z"/></svg>',
+ star:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9 7.1.6-5.4 4.9 1.7 7-6.3-3.9L5.7 21l1.7-7L2 8.5l7.1-.6z"/></svg>',
+ team:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3l8 3v6c0 5-3.500 8-8 9-4.500-1-8-4-8-9V6l8-3z"/></svg>'};
+
+/* ---------- rendus ---------- */
+let annList=[];
+function renderStats(){
+  const c=cart(),tot=c.reduce((s,i)=>s+CATALOG[i.id].retail*i.qty,0),n=c.reduce((s,i)=>s+i.qty,0);
+  $('s-fav').textContent=favs().length;$('s-cart').textContent=n;$('s-tot').textContent=tot.toLocaleString('fr-FR')+' G';
+  $('n-fav').textContent=favs().length;$('n-cart').textContent=n;$('n-ann').textContent=annList.length;
+}
+function renderFav(){
+  const ids=favs(),box=$('pane-fav');
+  if(!ids.length){box.innerHTML=`<div class="empty glass">${I.heart}Aucun favori pour l'instant.<br>Parcourez les <a href="jbparfumerie.html">parfums</a> ou les <a href="funforus.html">vins</a> et touchez le cœur.</div>`;return;}
+  box.innerHTML='<div class="fgrid"></div>';const g=box.firstChild;
+  ids.forEach((id,i)=>{const p=CATALOG[id],el=document.createElement('div');el.className='fcard';el.style.animationDelay=i*.05+'s';
+    el.innerHTML=`<a href="${pageOf(id)}" class="fph g-${p.cat}">${esc(initials(p.name))}</a><button class="frm" data-rf="${id}" aria-label="Retirer">${I.heart}</button>
+      <div class="finfo"><div class="k">${CATL[p.cat]}</div><a href="${pageOf(id)}" class="nm">${esc(p.name)}</a><div class="pr">${p.retail}<span>G</span></div><button class="btn ghost sm" data-add="${id}">Ajouter au panier</button></div>`;
+    g.appendChild(el);});
+}
+function renderCart(){
+  const items=cart(),box=$('pane-cart');
+  if(!items.length){box.innerHTML=`<div class="empty glass">${I.bag}Votre panier est vide.<br>Parcourez les <a href="jbparfumerie.html">parfums</a> ou les <a href="funforus.html">vins</a>.</div>`;return;}
+  let tot=0;
+  box.innerHTML='<div class="clist"></div>';const l=box.firstChild;
+  items.forEach((it,i)=>{const p=CATALOG[it.id];tot+=p.retail*it.qty;const r=document.createElement('div');r.className='crow';r.style.animationDelay=i*.05+'s';
+    r.innerHTML=`<div class="fph g-${p.cat}">${esc(initials(p.name))}</div><div class="cinfo"><div class="nm">${esc(p.name)}</div><div class="sm">${p.retail} G · l'unité</div></div>
+      <div class="qty"><button data-q="${it.id}" data-d="-1">−</button><span>${it.qty}</span><button data-q="${it.id}" data-d="1">+</button></div>
+      <div class="cline">${(p.retail*it.qty).toLocaleString('fr-FR')} G</div><button class="crm" data-rc="${it.id}" aria-label="Retirer">${I.trash}</button>`;
+    l.appendChild(r);});
+  box.insertAdjacentHTML('beforeend',`<div class="cfoot glass"><div class="tot"><small>Total</small><b>${tot.toLocaleString('fr-FR')}<span>G</span></b></div><div class="acts"><button class="btn ghost sm" data-a="clear">Vider</button><button class="btn wa" data-a="order">${I.wa}Commander via WhatsApp</button></div></div>`);
+}
+function renderAnn(){
+  const box=$('pane-ann');
+  if(!annList.length){box.innerHTML=`<div class="empty glass">${I.mega}Aucune annonce pour le moment.<br>Revenez bientôt : nouveautés et offres arrivent.</div>`;return;}
+  box.innerHTML='<div class="rail"></div>';const rail=box.firstChild;
+  annList.forEach((a,i)=>{const el=document.createElement('div');el.className='ann';el.style.setProperty('--r',a.ratio||(a.media_type==='video'?1.78:.8));
+    const u=a.image_url,vid=a.media_type==='video';
+    const med=!u?`<span class="ph-t">${esc(a.title)}</span>`:vid?`<video class="cover" src="${esc(u)}" muted autoplay loop playsinline></video>`:`<img class="cover" src="${esc(u)}" alt="">`;
+    el.innerHTML=med+`<div class="t">${esc(a.tag||(vid?'Vidéo':'Affiche'))}</div>${vid?`<div class="pl">${I.play}</div>`:''}<div class="tx"><h3 class="serif">${esc(a.title)}</h3><p>${esc(a.body||'')}</p>${a.cta_label?`<span class="cta">${esc(a.cta_label)}</span>`:''}</div>`;
+    el.onclick=()=>openViewer(i);rail.appendChild(el);
+    const m=el.querySelector('img,video');if(m){const set=(w,h)=>{if(w&&h)el.style.setProperty('--r',Math.min(2.2,Math.max(.55,w/h)));};if(m.tagName==='IMG')m.onload=()=>set(m.naturalWidth,m.naturalHeight);else m.onloadedmetadata=()=>set(m.videoWidth,m.videoHeight);}
+  });
+}
+const renderAll=()=>{renderStats();renderFav();renderCart();};
+
+/* actions déléguées */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-rf],[data-add],[data-q],[data-rc],[data-a],[data-eye],[data-go],[data-close]');if(!t)return;
+  const d=t.dataset;
+  if(d.rf){rmFav(d.rf);renderAll();toast('Retiré des favoris');}
+  else if(d.add){setQty(d.add,qtyOf(d.add)+1);renderAll();toast('Ajouté au panier');}
+  else if(d.q){setQty(d.q,qtyOf(d.q)+parseInt(d.d));renderAll();}
+  else if(d.rc){setQty(d.rc,0);renderAll();toast('Retiré du panier');}
+  else if(d.a==='clear'){cart().forEach(c=>setQty(c.id,0));renderAll();toast('Panier vidé');}
+  else if(d.a==='order'){const it=cart();if(!it.length)return;let tot=0,m='Bonjour Winfum, je souhaite commander :\n';it.forEach(c=>{const p=CATALOG[c.id];tot+=p.retail*c.qty;m+=`- ${p.name} x${c.qty} (${p.retail*c.qty} G)\n`;});m+=`Total : ${tot} G`;window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(m),'_blank');}
+  else if(d.eye){const i=$(d.eye);i.type=i.type==='password'?'text':'password';}
+  else if(d.go)setMode(d.go);
+  else if(d.close)$(d.close).classList.remove('on');
+});
+window.addEventListener('storage',()=>$('dash').hidden||renderAll());
+$('seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  const ts=['ann','fav','cart'],i=ts.indexOf(b.dataset.t);
+  $('seg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  $('seg').querySelector('.sthumb').style.transform=`translateX(${i*100}%)`;
+  ts.forEach(t=>$('pane-'+t).hidden=t!==b.dataset.t);renderAll();});
+
+/* visionneuse */
+let vI=0;
+function openViewer(i){
+  vI=i;const a=annList[i],u=a.image_url,vid=a.media_type==='video';
+  $('v-media').innerHTML=!u?`<span class="ph-t">${esc(a.title)}</span>`:vid?`<video class="cover" src="${esc(u)}" controls autoplay playsinline></video>`:`<img class="cover" src="${esc(u)}" alt="">`;
+  $('v-title').textContent=a.title;$('v-text').textContent=a.body||'';
+  const dl=$('v-dl');dl.style.display=u?'flex':'none';if(u)dl.href=u;
+  const c=$('v-cta');if(a.cta_label&&a.link_url){c.hidden=false;c.textContent=a.cta_label;c.href=a.link_url;}else c.hidden=true;
+  $('viewer').classList.add('on');
+}
+function closeViewer(){$('viewer').classList.remove('on');$('v-media').innerHTML='';}
+const aLink=()=>{const a=annList[vI];return a.link_url&&/^https?:/.test(a.link_url)?a.link_url:(a.image_url||location.href);};
+$('v-share').onclick=()=>{const a=annList[vI];if(navigator.share)navigator.share({title:a.title,text:a.body||a.title,url:aLink()}).catch(()=>{});else copy(aLink());};
+$('v-copy').onclick=()=>copy(aLink());
+async function copy(u){try{await navigator.clipboard.writeText(u);toast('Lien copié');}catch(e){prompt('Copiez ce lien :',u);}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeViewer();$('ed-ov').classList.remove('on');}});
+
+/* ---------- AUTH ---------- */
+function setMode(m){
+  $('tabs').classList.toggle('s',m==='signup');
+  $('tabs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  $('f-login').hidden=m!=='login';$('f-signup').hidden=m!=='signup';
+}
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setMode(b.dataset.m);});
+$('su-pw').addEventListener('input',e=>{
+  const v=e.target.value;let s=0;if(v.length>=6)s++;if(v.length>=9)s++;if(/[A-Z]/.test(v)&&/[a-z]/.test(v))s++;if(/\d/.test(v)&&/[^A-Za-z0-9]/.test(v))s++;
+  const L=[['0','#b7791f',''],['25%','#a4262c','Faible'],['50%','#b7791f','Moyen'],['75%','#7a9a2f','Bon'],['100%','#2f7a4b','Excellent']][v?Math.max(1,s):0];
+  $('meter').style.width=L[0];$('meter').style.background=L[1];$('mtxt').textContent=L[2]||'\u00a0';
+});
+function celebrate(txt){$('mask-t').textContent=txt;$('mask').classList.add('on');setTimeout(()=>{$('mask').classList.remove('on');loadDashboard();},1200);}
+$('f-login').addEventListener('submit',async e=>{
+  e.preventDefault();setErr('li-err','');
+  const raw=$('li-id').value.trim(),pw=$('li-pw').value;
+  const cands=[...new Set(raw.includes('@')?[raw.toLowerCase()]:[cleanPseudo(raw)+DOM,nameEmail(raw)])];
+  loading('li-btn',true);let last=null,ok=false;
+  for(const em of cands){const {error}=await sb.auth.signInWithPassword({email:em,password:pw});if(!error){ok=true;break;}last=error;if(!/invalid login/i.test(error.message))break;}
+  loading('li-btn',false);
+  if(!ok){const m=last?last.message:'';setErr('li-err',/invalid login/i.test(m)?'Pseudo ou mot de passe incorrect.':/not confirmed/i.test(m)?"Ce compte n'est pas encore activé. Contactez Winfum.":m||'Connexion impossible.');return;}
+  celebrate('Content de vous revoir !');
+});
+$('f-signup').addEventListener('submit',async e=>{
+  e.preventDefault();setErr('su-err','');
+  const pseudo=cleanPseudo($('su-pseudo').value),name=$('su-name').value.trim(),year=parseInt($('su-year').value)||null,pw=$('su-pw').value;
+  const g=(document.querySelector('input[name=g]:checked')||{}).value||null;
+  if(pseudo.length<3)return setErr('su-err','Le pseudo doit contenir au moins 3 caractères (lettres, chiffres, . _ -).');
+  loading('su-btn',true);
+  const {data,error}=await sb.auth.signUp({email:pseudo+DOM,password:pw,options:{data:{pseudo,full_name:name||'',gender:g||'',birth_year:year}}});
+  if(error||(data.user&&data.user.identities&&!data.user.identities.length)){
+    loading('su-btn',false);const m=error?error.message:'already';
+    return setErr('su-err',/already|registered|database error|duplicate/i.test(m)?'Ce pseudo est déjà pris, choisissez-en un autre.':m);}
+  if(!data.session){loading('su-btn',false);return setErr('su-err',"Compte créé, mais son activation est en attente. Contactez Winfum pour l'activer.");}
+  loading('su-btn',false);
+  celebrate('Bienvenue chez Winfum !');
+});
+document.querySelectorAll('[data-eye]').forEach(()=>{});
+
+/* ---------- TABLEAU DE BORD ---------- */
+let cust=null;
+async function loadDashboard(){
+  const {data:{session}}=await sb.auth.getSession();const user=session&&session.user;
+  if(!user){$('dash').hidden=true;$('auth').hidden=false;return;}
+  const [c,p]=await Promise.all([sb.from('customers').select('*').eq('id',user.id).maybeSingle(),sb.from('profiles').select('full_name,role,is_active').eq('id',user.id).maybeSingle()]);
+  cust=c.data||null;const prof=p.data&&p.data.is_active&&['super_admin','manager'].includes(p.data.role)?p.data:null;
+  const name=prof?prof.full_name:(cust&&(cust.full_name||cust.pseudo))||user.email.split('@')[0];
+  $('auth').hidden=true;$('dash').hidden=false;
+  $('av').textContent=initials(name).toUpperCase()||'?';$('p-name').textContent=name;
+  $('p-badge').innerHTML=prof?(prof.role==='super_admin'?`<span class="badge admin">${I.star}Admin</span>`:`<span class="badge team">${I.team}Équipe Winfum</span>`):'<span class="badge member">Membre</span>';
+  $('p-handle').textContent=cust?'@'+cust.pseudo:user.email;
+  const ch=[];if(prof)ch.push('Équipe Winfum');if(cust&&cust.gender)ch.push(cust.gender.charAt(0).toUpperCase()+cust.gender.slice(1));if(cust&&cust.birth_year)ch.push((new Date().getFullYear()-cust.birth_year)+' ans');
+  $('p-chips').innerHTML=ch.map(x=>`<span class="chip">${esc(x)}</span>`).join('');
+  $('admin-link').hidden=!prof;$('admin-link').href=ADMIN_PAGE;
+  $('b-edit').hidden=!cust;
+  const st=cust&&cust.status,nb=$('notice');
+  nb.hidden=!(st==='pending'||st==='blocked');nb.classList.toggle('bad',st==='blocked');
+  nb.textContent=st==='blocked'?"Ce compte est suspendu. Contactez l'équipe Winfum.":"Votre compte est en attente de validation par l'équipe Winfum. Vos favoris et votre panier seront sauvegardés sur votre compte dès sa validation.";
+  renderAll();
+  if(window.WinfumAccount){
+    const r=await WinfumAccount.init({reload:false});
+    const sy=$('sync');sy.hidden=false;sy.innerHTML=r.synced?'<i></i>Favoris et panier sauvegardés sur votre compte':'<i class="off"></i>Enregistrés sur cet appareil'+(st==='pending'?' (en attente de validation)':'');
+    if(r.changed)renderAll();
+  }
+  const {data:an}=await sb.from('banners').select('*').eq('placement','home_announce').eq('is_active',true).order('sort_order');
+  annList=an||[];renderAnn();renderStats();
+}
+$('b-out').onclick=async()=>{if(window.WinfumAccount)WinfumAccount.clearLocal();await sb.auth.signOut();location.reload();};
+$('b-edit').onclick=()=>{
+  $('ed-name').value=cust.full_name||'';$('ed-gender').value=cust.gender||'';$('ed-year').value=cust.birth_year||'';$('ed-pw').value='';setErr('ed-err','');$('ed-ov').classList.add('on');};
+$('ed-ov').addEventListener('mousedown',e=>{if(e.target.id==='ed-ov')$('ed-ov').classList.remove('on');});
+$('ed-btn').onclick=async()=>{
+  setErr('ed-err','');loading('ed-btn',true);
+  const {data:{user}}=await sb.auth.getUser();
+  const {error}=await sb.from('customers').update({full_name:$('ed-name').value.trim()||null,gender:$('ed-gender').value||null,birth_year:parseInt($('ed-year').value)||null}).eq('id',user.id);
+  const pw=$('ed-pw').value;let pe=null;if(pw){({error:pe}=await sb.auth.updateUser({password:pw}));}
+  loading('ed-btn',false);
+  if(error||pe)return setErr('ed-err',(error||pe).message);
+  $('ed-ov').classList.remove('on');toast('Profil mis à jour');loadDashboard();
+};
+window.addEventListener('load',loadDashboard);
+</script>
+<script src="winfum-account.js"></script>
+</body>
+</html>
