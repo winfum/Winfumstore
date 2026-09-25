@@ -37,7 +37,17 @@ header{position:fixed;top:0;left:0;right:0;z-index:100;padding-top:env(safe-area
 .mono{width:32px;height:32px;display:flex}.mono img{width:100%;height:100%;object-fit:contain}
 nav.links{display:flex;gap:24px;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
 nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
-@media(max-width:640px){nav.links a:not(:last-child){display:none}}
+.cat-dd{position:relative;display:flex;align-items:center}
+.cat-dd summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:4px;opacity:.7;transition:.2s}
+.cat-dd summary:hover{opacity:1}.cat-dd[open] summary{opacity:1}
+.cat-dd summary::-webkit-details-marker{display:none}
+.cat-dd .chev{width:10px;height:10px;transition:.25s}
+.cat-dd[open] .chev{transform:rotate(180deg)}
+.cat-menu{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%);min-width:210px;border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:2px;box-shadow:0 18px 40px rgba(28,26,23,.18);z-index:150;background:rgba(255,255,255,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.7)}
+.cat-menu a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;font-size:12.5px;text-transform:none;letter-spacing:0;opacity:1}
+.cat-menu a:hover{background:rgba(169,120,47,.1)}
+.pro{font-size:9px;letter-spacing:.1em;padding:2px 7px;border-radius:20px;background:linear-gradient(120deg,#a9782f,#c9a24a);color:#fff;font-weight:700}
+@media(max-width:640px){nav.links{display:none}}
 .page{padding:calc(env(safe-area-inset-top,0px) + 100px) 0 70px;min-height:100vh}
 
 /* boutons */
@@ -55,6 +65,15 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 /* ===== AUTH ===== */
 #auth{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:center;min-height:calc(100vh - 190px)}
 @media(max-width:860px){#auth{grid-template-columns:1fr;gap:26px}}
+@media(max-width:480px){
+  .page{padding-top:calc(env(safe-area-inset-top,0px) + 84px)}
+  .acard{border-radius:22px}
+  .form{padding:12px 16px 18px}
+  .form h2{font-size:23px}
+  .tabs button{padding:12px 6px;font-size:10.5px}
+  .inp input,.inp select,.plain{padding:13px 12px 13px 40px;font-size:14px}
+  .gchips span{padding:10px 4px;font-size:12px}
+}
 .hero{animation:rise .8s cubic-bezier(.16,1,.3,1)}
 .hero h1{font-size:clamp(42px,6.5vw,74px);line-height:.98;font-style:italic;font-weight:600;margin:14px 0 16px}
 .hero h1 em{color:var(--wine)}
@@ -217,7 +236,16 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 <header>
   <div class="bar glass">
     <a class="brand" href="index.html"><span class="mono"><img class="logo-img" alt="Winfum"></span>WINFUM</a>
-    <nav class="links"><a href="jbparfumerie.html">Parfums</a><a href="funforus.html">Vins</a><a href="index.html">Accueil</a></nav>
+    <nav class="links">
+      <a href="index.html">Accueil</a>
+      <details class="cat-dd"><summary>Catégorie<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="cat-menu">
+          <a href="jbparfumerie.html"><span>JB Parfumerie</span><span class="pro">PRO</span></a>
+          <a href="funforus.html"><span>Fun For Us · Vins</span><span class="pro">PRO</span></a>
+        </div>
+      </details>
+      <a href="apropos.html">À propos</a><a href="Contact-Support.html">Contact</a>
+    </nav>
   </div>
 </header>
 
@@ -243,7 +271,7 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 
       <form class="form" id="f-login" autocomplete="on">
         <h2 class="serif">Content de vous revoir</h2>
-        <div class="fld"><label>Pseudo ou email</label><div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><input type="text" id="li-id" autocomplete="username" required></div></div>
+        <div class="fld"><label>Pseudo</label><div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><input type="text" id="li-id" autocomplete="username" required placeholder="ex : marie509"></div></div>
         <div class="fld"><label>Mot de passe</label><div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><input type="password" id="li-pw" autocomplete="current-password" required><button type="button" class="eye" data-eye="li-pw" aria-label="Afficher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
         <div class="err" id="li-err"></div>
         <button class="btn full" id="li-btn"><span class="spin"></span><span>Se connecter</span></button>
@@ -336,9 +364,13 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 const LOGO_URL="https://i.postimg.cc/cH4Hyzb7/Logo-winfum.png";
 const SUPABASE_URL="https://cxobpfaffgevxblnbwft.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_bA-89TIqjkUhoA5NIlf7uQ_UUbb8oSB";
-const DOM="@winfum.local";
+/* IMPORTANT : "@winfum.local" est refusé par Supabase (TLD réservé, jugé invalide).
+   On utilise ici votre propre domaine Vercel comme domaine technique — vérifiez qu'il
+   correspond bien à celui affiché dans la barre d'adresse de votre site déployé,
+   sinon remplacez-le ci-dessous (même valeur à reporter dans admin.html et manager.html). */
+const DOM="@winfumstore.vercel.app";
 const WA="50948821521";
-const ADMIN_PAGE="admin.html";
+const ADMIN_PAGE="admin";
 /* Catalogue local (mêmes identifiants que jbparfumerie.html / funforus.html) */
 const CATALOG={
  p1:{name:'Ambre Noir',cat:'homme',retail:65},p2:{name:'Cèdre Royal',cat:'homme',retail:58},
@@ -496,7 +528,11 @@ $('f-signup').addEventListener('submit',async e=>{
   const {data,error}=await sb.auth.signUp({email:pseudo+DOM,password:pw,options:{data:{pseudo,full_name:name||'',gender:g||'',birth_year:year}}});
   if(error||(data.user&&data.user.identities&&!data.user.identities.length)){
     loading('su-btn',false);const m=error?error.message:'already';
-    return setErr('su-err',/already|registered|database error|duplicate/i.test(m)?'Ce pseudo est déjà pris, choisissez-en un autre.':m);}
+    return setErr('su-err',
+      /already|registered|database error|duplicate/i.test(m)?'Ce pseudo est déjà pris, choisissez-en un autre.':
+      /rate limit/i.test(m)?"Trop de tentatives en peu de temps. Patientez quelques minutes avant de réessayer.":
+      /invalid/i.test(m)&&/email/i.test(m)?"Ce pseudo donne une adresse technique invalide pour notre système. Essayez un pseudo composé uniquement de lettres et de chiffres.":
+      m);}
   if(!data.session){loading('su-btn',false);return setErr('su-err',"Compte créé, mais son activation est en attente. Contactez Winfum pour l'activer.");}
   loading('su-btn',false);
   celebrate('Bienvenue chez Winfum !');
@@ -545,6 +581,7 @@ $('ed-btn').onclick=async()=>{
   $('ed-ov').classList.remove('on');toast('Profil mis à jour');loadDashboard();
 };
 window.addEventListener('load',loadDashboard);
+document.addEventListener('click',e=>{document.querySelectorAll('.cat-dd[open]').forEach(d=>{if(!d.contains(e.target))d.removeAttribute('open')})});
 </script>
 <script src="winfum-account.js"></script>
 </body>
