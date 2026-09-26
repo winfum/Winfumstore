@@ -608,10 +608,8 @@ A.mpwsave=async d=>{const pw=$('npw').value;if(pw.length<6)return toast('6 carac
 
 /* clients (comptes « Mon espace ») */
 V.customers=async()=>{
-  $('view').innerHTML=head('Clients','Comptes créés sur « Mon espace ».')+`<div class="panel glass" style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap"><div style="max-width:560px"><b>Validation manuelle des nouveaux comptes</b><div class="hint">Activée : chaque nouvelle inscription reste « en attente » jusqu'à votre approbation ; favoris et panier ne sont sauvegardés sur le compte qu'après validation.</div></div><label class="sw"><input type="checkbox" id="apr"><i></i><span id="aprt"></span></label></div><div id="list"><div class="spin"></div></div>`;
-  const [c,f,k,s]=await Promise.all([sb.from('customers').select('*').order('created_at',{ascending:false}),sb.from('customer_favorites').select('customer_id'),sb.from('customer_cart').select('customer_id,qty'),sb.from('site_content').select('value').eq('key','customer_approval').maybeSingle()]);
-  const on=s.data&&s.data.value==='1';$('apr').checked=on;$('aprt').textContent=on?'Activée':'Désactivée';
-  $('apr').addEventListener('change',async e=>{const {error}=await sb.from('site_content').upsert({key:'customer_approval',value:e.target.checked?'1':'0',updated_by:me.id,updated_at:new Date().toISOString()},{onConflict:'key'});$('aprt').textContent=e.target.checked?'Activée':'Désactivée';toast(error?err(error):'Réglage enregistré',!!error);});
+  $('view').innerHTML=head('Clients','Comptes créés librement sur « Mon espace ». Vous pouvez bloquer un compte à tout moment.')+'<div id="list"><div class="spin"></div></div>';
+  const [c,f,k]=await Promise.all([sb.from('customers').select('*').order('created_at',{ascending:false}),sb.from('customer_favorites').select('customer_id'),sb.from('customer_cart').select('customer_id,qty')]);
   if(c.error)return $('list').innerHTML=`<div class="tbl"><div class="empty"><h3 class="serif">Erreur</h3><p>${esc(err(c.error))} Avez-vous exécuté winfum_espace_setup.sql et winfum_compte_setup.sql ?</p></div></div>`;
   const nf={},nc={};(f.data||[]).forEach(r=>nf[r.customer_id]=(nf[r.customer_id]||0)+1);(k.data||[]).forEach(r=>nc[r.customer_id]=(nc[r.customer_id]||0)+r.qty);
   cache.customers=c.data;
