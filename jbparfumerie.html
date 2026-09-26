@@ -92,6 +92,7 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 #mobile-menu>a::after{content:'›';margin-left:auto;color:var(--muted);font-size:20px;line-height:1}
 #mobile-menu>a:hover{background:rgba(122,17,40,.08)}
 .m-div{height:1px;background:var(--line);margin:6px}
+.m-sub{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);padding:12px 14px 2px}
 
 /* hero */
 .hero{position:relative;height:78vh;min-height:480px;overflow:hidden;display:flex;align-items:flex-end;background:linear-gradient(150deg,#1c1a17,#4a463e 70%,#a9782f)}
@@ -288,10 +289,14 @@ footer .l{display:flex;flex-direction:column;gap:6px}footer .l a{opacity:.75}
   <a href="#homme" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#4a463e"><path d="M9 3h6l1 4H8l1-4z"/><path d="M8 7h8l1 5a5 5 0 01-10 0l1-5z"/><path d="M12 16v5M9 21h6"/></svg><span>Homme</span></a>
   <a href="#femme" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#d98fa0"><path d="M9 3h6l1 4H8l1-4z"/><path d="M8 7h8l1 5a5 5 0 01-10 0l1-5z"/><path d="M12 16v5M9 21h6"/></svg><span>Femme</span></a>
   <a href="#mixte" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#c9ab6d"><path d="M9 3h6l1 4H8l1-4z"/><path d="M8 7h8l1 5a5 5 0 01-10 0l1-5z"/><path d="M12 16v5M9 21h6"/></svg><span>Mixte</span></a>
-  <a href="index.html#annonces" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13v16H6a2 2 0 01-2-2V4z"/><path d="M17 8h3v10a2 2 0 01-2 2M8 8h5M8 12h5"/></svg><span>Actualités</span></a>
+  <a href="index.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Accueil</span></a>
+  <div class="m-sub">Nos catégories</div>
+  <a href="jbparfumerie.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#a9782f"><path d="M9 3h6l1 4H8l1-4z"/><path d="M8 7h8l1 5a5 5 0 01-10 0l1-5z"/><path d="M12 16v5M9 21h6"/></svg><span>JB Parfumerie</span><span class="pro" style="margin-left:auto">PRO</span></a>
   <a href="funforus.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#7a1128"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Fun For Us · Vins</span><span class="pro" style="margin-left:auto">PRO</span></a>
   <div class="m-div"></div>
   <a href="espace.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Mon espace</span></a>
+  <div class="m-div"></div>
+  <a href="index.html#annonces" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13v16H6a2 2 0 01-2-2V4z"/><path d="M17 8h3v10a2 2 0 01-2 2M8 8h5M8 12h5"/></svg><span>Actualités</span></a>
   <a href="apropos.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01"/></svg><span>À propos de nous</span></a>
   <a href="Contact-Support.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v13H7l-3 3V4z"/></svg><span>Contact</span></a>
   <div class="m-div"></div>
@@ -418,14 +423,42 @@ const PROMO_WINE_TEXT="Découvrez Fun For Us, vins blancs et rouges 100% haïtie
 const PROMO_WINE_LINK="funforus.html";
 
 /* Produits — prix en G. Pour chaque média : t = 'image' ou 'video', u = lien (laisser "" si vide) */
-const products=[
- {id:'p1',name:'Ambre Noir',cat:'homme',retail:65,pack:'Pack de 6 pour 350 G',rating:4.6,ph:'AN',desc:"Un sillage boisé et ambré, profond et racé, pour l'homme qui affirme sa présence sans un mot.",media:[{t:'image',u:''},{t:'image',u:''},{t:'video',u:''}]},
- {id:'p2',name:'Cèdre Royal',cat:'homme',retail:58,pack:'Pack de 6 pour 310 G',rating:4.4,ph:'CR',desc:"Notes de cèdre et de vétiver pour une signature olfactive intemporelle et élégante.",media:[{t:'image',u:''},{t:'image',u:''}]},
- {id:'p3',name:'Fleur de Lune',cat:'femme',retail:70,pack:'Pack de 6 pour 380 G',rating:4.8,ph:'FL',desc:"Un bouquet floral lumineux, entre jasmin et musc blanc, pour une élégance douce et féminine.",media:[{t:'image',u:''},{t:'image',u:''},{t:'video',u:''}]},
- {id:'p4',name:'Rose Éclat',cat:'femme',retail:66,pack:'Pack de 6 pour 355 G',rating:4.5,ph:'RE',desc:"Rose de Damas et fruits rouges, une fragrance vibrante et sophistiquée.",media:[{t:'image',u:''},{t:'image',u:''}]},
- {id:'p5',name:'Petit Prince',cat:'mixte',retail:35,pack:'Pack de 6 pour 190 G',rating:4.3,ph:'PP',desc:"Une fragrance douce et fraîche, pensée pour toute la famille, homme comme femme.",media:[{t:'image',u:''},{t:'image',u:''}]},
- {id:'p6',name:'Neutre Absolu',cat:'mixte',retail:60,pack:'Pack de 6 pour 320 G',rating:4.7,ph:'NA',desc:"Musc blanc et bois clair : une signature épurée, universelle et raffinée.",media:[{t:'image',u:''},{t:'image',u:''},{t:'video',u:''}]},
-];
+/* ============================================================ */
+/* Produits & catégories chargés depuis Supabase (department = parfum) */
+const SUPABASE_URL="https://cxobpfaffgevxblnbwft.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_bA-89TIqjkUhoA5NIlf7uQ_UUbb8oSB";
+let products=[];
+let CATL={};
+function slugCat(name){return (name||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')||'autre';}
+function mapProduct(r,catsById){
+  const c=catsById[r.category_id];const label=c?c.name:'Autre';
+  const media=[...(r.images||[]).filter(Boolean).map(u=>({t:'image',u})),...(r.videos||[]).filter(Boolean).map(u=>({t:'video',u}))];
+  return {id:r.id,name:r.name,cat:slugCat(label),catLabel:label,retail:r.price_retail,pack:r.pack_label||'',rating:r.rating||0,ph:(r.name||'').slice(0,2).toUpperCase(),desc:r.description||'',media:media.length?media:[{t:'image',u:''}]};
+}
+async function loadShop(){
+  try{
+    if(!window.supabase){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+    const sb=window.WINFUM_SB||(window.WINFUM_SB=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY));
+    const [catsRes,prodRes]=await Promise.all([
+      sb.from('categories').select('*').eq('department','parfum').eq('is_active',true).order('sort_order'),
+      sb.from('products').select('*').eq('department','parfum').eq('is_active',true).order('created_at',{ascending:false})
+    ]);
+    const cats=catsRes.data||[];const catsById={};cats.forEach(c=>catsById[c.id]=c);
+    CATL={};cats.forEach(c=>{CATL[slugCat(c.name)]=c.name;});
+    products=(prodRes.data||[]).map(r=>mapProduct(r,catsById));
+    buildChips(cats);
+    renderGrid();
+  }catch(e){
+    console.warn('Chargement produits :',e.message);
+    $('grid').innerHTML='<div class="sempty" style="grid-column:1/-1;padding:60px 0">Impossible de charger les produits pour le moment.</div>';
+  }
+}
+function buildChips(cats){
+  const box=$('chips');if(!box)return;
+  box.innerHTML='<span class="chip active" data-f="all">Tout</span>'+cats.map(c=>`<span class="chip" data-f="${slugCat(c.name)}">${esc0(c.name)}</span>`).join('');
+  box.querySelectorAll('.chip').forEach(c=>c.onclick=()=>setFilter(c.dataset.f));
+}
+function esc0(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 /* ============================================================ */
 
 const $=id=>document.getElementById(id);
@@ -602,7 +635,7 @@ function checkout(){
   window.open('https://wa.me/50948821521?text='+encodeURIComponent(msg),'_blank');
 }
 
-renderGrid();renderCart();
+loadShop();renderCart();
 window.addEventListener('load',()=>{
   const m=location.hash.match(/^#p-(.+)/);
   if(m&&products.find(p=>p.id===m[1]))openProduct(m[1],true);
