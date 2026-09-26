@@ -92,6 +92,7 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 #mobile-menu>a::after{content:'›';margin-left:auto;color:var(--muted);font-size:20px;line-height:1}
 #mobile-menu>a:hover{background:rgba(122,17,40,.08)}
 .m-div{height:1px;background:var(--line);margin:6px}
+.m-sub{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);padding:12px 14px 2px}
 
 /* hero */
 .hero{position:relative;height:78vh;min-height:480px;overflow:hidden;display:flex;align-items:flex-end;background:linear-gradient(150deg,#2a0810,#7a1128 70%,#a02a44)}
@@ -292,10 +293,14 @@ footer .l{display:flex;flex-direction:column;gap:6px}footer .l a{opacity:.75}
   <a href="#rouge" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#7a1128"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Rouge</span></a>
   <a href="#blanc" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#c9a24a"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Blanc</span></a>
   <a href="#rose" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#d98fa0"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Rosé</span></a>
-  <a href="#moments" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-5-5-8 8"/></svg><span>Moments partagés</span></a>
+  <a href="index.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Accueil</span></a>
+  <div class="m-sub">Nos catégories</div>
   <a href="jbparfumerie.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#a9782f"><path d="M9 3h6l1 4H8l1-4z"/><path d="M8 7h8l1 5a5 5 0 01-10 0l1-5z"/><path d="M12 16v5M9 21h6"/></svg><span>JB Parfumerie</span><span class="pro" style="margin-left:auto">PRO</span></a>
+  <a href="funforus.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#7a1128"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Fun For Us · Vins</span><span class="pro" style="margin-left:auto">PRO</span></a>
   <div class="m-div"></div>
   <a href="espace.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Mon espace</span></a>
+  <div class="m-div"></div>
+  <a href="#moments" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-5-5-8 8"/></svg><span>Moments partagés</span></a>
   <a href="apropos.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01"/></svg><span>À propos de nous</span></a>
   <a href="Contact-Support.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v13H7l-3 3V4z"/></svg><span>Contact</span></a>
   <div class="m-div"></div>
@@ -435,32 +440,47 @@ const PROMO_JB_TEXT="Découvrez des fragrances signées pour Homme, Femme et Mix
 const PROMO_JB_LINK="jbparfumerie.html";
 
 /* Produits — prix en G. Pour chaque média : t = 'image' ou 'video', u = lien (laisser "" si vide) */
-const products=[
- {id:'v1',name:'Château Rouge',cat:'rouge',region:'Plaine du Cul-de-Sac, Haïti',retail:233,pack:'Pack de 6 pour 1290 G',abv:'13%',vol:'75 cl',rating:4.7,ph:'CR',
-  desc:"Un rouge corsé aux tanins soyeux, notes de fruits noirs mûrs et pointe d'épices boisées. Idéal avec des grillades ou des fromages affinés.",
-  ing:[['Cépage','Cabernet Sauvignon & Merlot'],['Élevage','12 mois en fût de chêne'],['Origine du raisin','Terroir haïtien sélectionné'],['Sucre résiduel','< 2 g/L (sec)']],
-  media:[{t:'image',u:''},{t:'image',u:''},{t:'video',u:''}]},
- {id:'v2',name:'Domaine Blanc',cat:'blanc',region:'Léogâne, Haïti',retail:198,pack:'Pack de 6 pour 1080 G',abv:'12%',vol:'75 cl',rating:4.5,ph:'DB',
-  desc:"Un blanc frais et vif, arômes d'agrumes et de fleurs blanches, parfait à l'apéritif ou avec des fruits de mer.",
-  ing:[['Cépage','Chardonnay & Ugni Blanc'],['Élevage','6 mois en cuve inox'],['Origine du raisin','Terroir haïtien sélectionné'],['Sucre résiduel','< 3 g/L (sec)']],
-  media:[{t:'image',u:''},{t:'image',u:''}]},
- {id:'v3',name:'Rosé Éclat',cat:'rose',region:'Kenscoff, Haïti',retail:182,pack:'Pack de 6 pour 990 G',abv:'11.5%',vol:'75 cl',rating:4.6,ph:'RE',
-  desc:"Robe pâle et lumineuse, notes de fraise et de pêche blanche. Un rosé léger et gourmand pour toutes les occasions.",
-  ing:[['Cépage','Grenache & Syrah'],['Élevage','4 mois en cuve inox'],['Origine du raisin','Terroir haïtien sélectionné'],['Sucre résiduel','4 g/L (demi-sec)']],
-  media:[{t:'image',u:''},{t:'image',u:''},{t:'video',u:''}]},
- {id:'v4',name:'Terre Ardente',cat:'rouge',region:'Jacmel, Haïti',retail:245,pack:'Pack de 6 pour 1350 G',abv:'13.5%',vol:'75 cl',rating:4.8,ph:'TA',
-  desc:"Puissant et généreux, arômes de cerise noire et de cacao. Un rouge de caractère à carafer avant dégustation.",
-  ing:[['Cépage','Syrah & Malbec'],['Élevage','14 mois en fût de chêne'],['Origine du raisin','Terroir haïtien sélectionné'],['Sucre résiduel','< 2 g/L (sec)']],
-  media:[{t:'image',u:''},{t:'image',u:''}]},
- {id:'v5',name:'Brise Dorée',cat:'blanc',region:'Kenscoff, Haïti',retail:210,pack:'Pack de 6 pour 1150 G',abv:'12.5%',vol:'75 cl',rating:4.4,ph:'BD',
-  desc:"Un blanc élégant aux notes miellées et florales, équilibre parfait entre fraîcheur et rondeur.",
-  ing:[['Cépage','Sauvignon Blanc'],['Élevage','8 mois en cuve inox'],['Origine du raisin','Terroir haïtien sélectionné'],['Sucre résiduel','3 g/L (sec)']],
-  media:[{t:'image',u:''},{t:'image',u:''}]},
- {id:'v6',name:'Aurore Rosée',cat:'rose',region:'Plaine du Cul-de-Sac, Haïti',retail:175,pack:'Pack de 6 pour 950 G',abv:'11%',vol:'75 cl',rating:4.3,ph:'AR',
-  desc:"Rosé délicat et fruité, notes de framboise et de melon. La fraîcheur idéale pour vos moments partagés.",
-  ing:[['Cépage','Cinsault & Grenache'],['Élevage','3 mois en cuve inox'],['Origine du raisin','Terroir haïtien sélectionné'],['Sucre résiduel','5 g/L (demi-sec)']],
-  media:[{t:'image',u:''},{t:'image',u:''},{t:'video',u:''}]},
-];
+/* ============================================================ */
+/* Produits & catégories chargés depuis Supabase (department = vin) */
+const SUPABASE_URL="https://cxobpfaffgevxblnbwft.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_bA-89TIqjkUhoA5NIlf7uQ_UUbb8oSB";
+let products=[];
+let CATL={};
+function slugCat(name){return (name||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')||'autre';}
+function mapWine(r,catsById){
+  const c=catsById[r.category_id];const label=c?c.name:'Autre';
+  const media=[...(r.images||[]).filter(Boolean).map(u=>({t:'image',u})),...(r.videos||[]).filter(Boolean).map(u=>({t:'video',u}))];
+  const ing=[];
+  if(r.grape)ing.push(['Cépage',r.grape]);
+  if(r.aging)ing.push(['Élevage',r.aging]);
+  ing.push(['Origine du raisin',r.region||'Haïti']);
+  if(r.residual_sugar)ing.push(['Sucre résiduel',r.residual_sugar]);
+  return {id:r.id,name:r.name,cat:slugCat(label),catLabel:label,region:r.region||'',retail:r.price_retail,pack:r.pack_label||'',abv:r.abv!=null?r.abv+'%':'',vol:r.volume_cl?r.volume_cl+' cl':'',rating:r.rating||0,ph:(r.name||'').slice(0,2).toUpperCase(),desc:r.description||'',ing,media:media.length?media:[{t:'image',u:''}]};
+}
+async function loadShop(){
+  try{
+    if(!window.supabase){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+    const sb=window.WINFUM_SB||(window.WINFUM_SB=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY));
+    const [catsRes,prodRes]=await Promise.all([
+      sb.from('categories').select('*').eq('department','vin').eq('is_active',true).order('sort_order'),
+      sb.from('products').select('*').eq('department','vin').eq('is_active',true).order('created_at',{ascending:false})
+    ]);
+    const cats=catsRes.data||[];const catsById={};cats.forEach(c=>catsById[c.id]=c);
+    CATL={};cats.forEach(c=>{CATL[slugCat(c.name)]=c.name;});
+    products=(prodRes.data||[]).map(r=>mapWine(r,catsById));
+    buildChips(cats);
+    renderGrid();
+  }catch(e){
+    console.warn('Chargement produits :',e.message);
+    $('grid').innerHTML='<div class="sempty" style="grid-column:1/-1;padding:60px 0">Impossible de charger les produits pour le moment.</div>';
+  }
+}
+function buildChips(cats){
+  const box=$('chips');if(!box)return;
+  box.innerHTML='<span class="chip active" data-f="all">Tout</span>'+cats.map(c=>`<span class="chip" data-f="${slugCat(c.name)}">${esc0(c.name)}</span>`).join('');
+  box.querySelectorAll('.chip').forEach(c=>c.onclick=()=>setFilter(c.dataset.f));
+}
+function esc0(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 /* Moments partagés — collez vos liens photo/vidéo dans u */
 const moments=[
  {t:'image',u:'',title:"Entre amis",cls:'tall'},
@@ -520,7 +540,7 @@ function renderGrid(){
     const el=document.createElement('div');el.className='card reveal';
     el.innerHTML=`<div class="ph g-${p.cat}">${mediaEl(p.media[0].t==='image'?p.media[0]:null,false,p.name)}
       <span class="abv">${p.abv} vol.</span><div class="fav ${favs.includes(p.id)?'active':''}">${HEART}</div></div>
-      <div class="info"><div class="k">${p.cat==='rose'?'rosé':p.cat}</div><h3 class="serif">${p.name}</h3><div class="rg">${p.region}</div>
+      <div class="info"><div class="k">${p.catLabel}</div><h3 class="serif">${p.name}</h3><div class="rg">${p.region}</div>
       <div class="price">${p.retail}<span>G</span></div><div class="pack">${p.pack}</div>
       <button class="add">Ajouter au panier</button></div>`;
     el.querySelector('.fav').onclick=e=>{e.stopPropagation();toggleFav(p.id,e.currentTarget)};
@@ -673,7 +693,7 @@ function checkout(){
   window.open('https://wa.me/50948821521?text='+encodeURIComponent(msg),'_blank');
 }
 
-renderGrid();renderMoments();renderCart();
+loadShop();renderMoments();renderCart();
 window.addEventListener('load',()=>{
   const m=location.hash.match(/^#v-(.+)/);
   if(m&&products.find(p=>p.id===m[1]))openProduct(m[1],true);
