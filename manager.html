@@ -239,6 +239,27 @@ async function wfUpload(input){
   }
   label.classList.remove('busy');span.textContent=orig;input.value='';
 }
+async function wfUploadMulti(input){
+  const files=input.files?[...input.files]:[];if(!files.length)return;
+  const wrap=input.closest('.urlsfield'),label=input.closest('label'),ta=wrap.querySelector('textarea');
+  label.classList.add('busy');const span=label.querySelector('span'),orig=span.textContent;
+  let done=0;const urls=[];
+  for(const file of files){
+    span.textContent=`Envoi ${++done}/${files.length}…`;
+    try{
+      const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+      const path=`${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+      const {error}=await sb.storage.from(MEDIA_BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||undefined});
+      if(error)throw error;
+      const {data}=sb.storage.from(MEDIA_BUCKET).getPublicUrl(path);
+      urls.push(data.publicUrl);
+    }catch(e){
+      toast(/bucket not found/i.test(e.message)?'Bucket « media » introuvable : créez-le dans Supabase → Storage.':err(e),1);
+    }
+  }
+  if(urls.length){ta.value=(ta.value.trim()?ta.value.trim()+'\n':'')+urls.join('\n');toast(urls.length+' fichier(s) envoyé(s) ✓');}
+  label.classList.remove('busy');span.textContent=orig;input.value='';
+}
 function err(e){
   const m=(e&&e.message)||String(e);
   if(/duplicate key|unique/i.test(m))return 'Cette valeur existe déjà (slug, SKU, nom…).';
@@ -441,7 +462,7 @@ function fieldHTML(f,row){
   if(f.t==='text')inp=`<input type="text" name="${f.k}" value="${esc(v)}" placeholder="${esc(f.ph||'')}">`;
   else if(f.t==='num')inp=`<input type="number" name="${f.k}" step="${f.step||'any'}" value="${esc(v)}">`;
   else if(f.t==='area')inp=`<textarea name="${f.k}">${esc(v)}</textarea>`;
-  else if(f.t==='urls')inp=`<textarea name="${f.k}" placeholder="https://…">${esc(Array.isArray(v)?v.join('\n'):v)}</textarea>`;
+  else if(f.t==='urls')inp=`<div class="urlsfield"><textarea name="${f.k}" placeholder="https://…">${esc(Array.isArray(v)?v.join('\n'):v)}</textarea><label class="btn ghost sm upl" style="margin-top:8px;display:inline-flex">${svg('upload')}<span>Ajouter des photos / vidéos</span><input type="file" accept="image/*,video/*" multiple style="display:none" onchange="wfUploadMulti(this)"></label></div>`;
   else if(f.t==='url')inp=`<div class="urlfield"><input type="text" name="${f.k}" value="${esc(v)}" placeholder="https://… ou téléversez un fichier" data-prev="1"><label class="btn ghost sm upl">${svg('upload')}<span>Envoyer</span><input type="file" accept="image/*,video/*" style="display:none" onchange="wfUpload(this)"></label></div><div class="pv">${v?`<img src="${esc(v)}" alt="" onerror="this.remove()">`:''}</div>`;
   else if(f.t==='sel'){const o=typeof f.o==='function'?f.o():f.o;inp=`<select name="${f.k}">${o.map(([a,b])=>`<option value="${esc(a)}" ${String(a)===String(v)?'selected':''}>${esc(b)}</option>`).join('')}</select>`;}
   else if(f.t==='ref')inp=`<select name="${f.k}" data-ref="1">${refOpts(f,row.department||f.dd,row.id,v)}</select>`;
