@@ -473,7 +473,6 @@ function esc0(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;'
 /* ============================================================ */
 
 const $=id=>document.getElementById(id);
-const CATL={homme:'Homme',femme:'Femme',mixte:'Mixte'};
 const cssImg=(k,u)=>document.documentElement.style.setProperty(k,u?`url("${u}")`:'none');
 document.querySelectorAll('.logo-img').forEach(i=>i.src=LOGO_URL);
 cssImg('--hero-img',PARFUM_POSTER_URL);cssImg('--homme-img',THEME_HOMME_URL);cssImg('--femme-img',THEME_FEMME_URL);cssImg('--mixte-img',THEME_MIXTE_URL);cssImg('--promo-img',PROMO_WINE_IMG_URL);
