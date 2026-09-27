@@ -44,10 +44,17 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
 .sw i::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .sw input:checked+i{background:var(--ok)}.sw input:checked+i::after{transform:translateX(18px)}
 .pv{min-height:0}.pv img{max-height:110px;border-radius:10px;border:1px solid var(--line);margin-top:4px;max-width:100%}
-.urlfield{display:flex;gap:8px;align-items:center}
-.urlfield input{flex:1;min-width:0}
-.urlfield .upl{flex:none;white-space:nowrap;cursor:pointer}
-.urlfield .upl.busy{opacity:.6;pointer-events:none}
+.urlfield{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;transition:.2s}
+.urlfield:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(169,120,47,.13)}
+.urlfield input{flex:1;min-width:0;border:none;border-radius:0;background:transparent}
+.urlfield input:focus{box-shadow:none;outline:none}
+.urlfield .upl{flex:none;display:flex;align-items:center;gap:6px;padding:0 14px;border:none;border-left:1px solid var(--line);background:rgba(169,120,47,.07);color:var(--gold);cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.02em;white-space:nowrap;transition:.2s}
+.urlfield .upl:hover{background:rgba(169,120,47,.16)}
+.urlfield .upl.busy{opacity:.55;pointer-events:none}
+.urlsfield textarea{margin-bottom:8px}
+.urlsfield .upl{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:30px;border:1px dashed var(--gold);background:rgba(169,120,47,.06);color:var(--gold);cursor:pointer;font-size:11.5px;font-weight:700;letter-spacing:.02em;transition:.2s}
+.urlsfield .upl:hover{background:rgba(169,120,47,.15);border-style:solid}
+.urlsfield .upl.busy{opacity:.55;pointer-events:none}
 
 /* boutons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:30px;border:1px solid var(--deep);background:var(--deep);color:#fff;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:.2s;font-weight:500}
@@ -287,7 +294,7 @@ const icons={
  customers:'<circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2 20c0-3.6 3-6 7-6s7 2.4 7 6\"/>',
  check:'<path d=\"M4 12l5 5L20 6\"/>',
  ban:'<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M5.6 5.6l12.8 12.8\"/>',
- upload:'<path d=\"M12 16V4M7 9l5-5 5 5\"/><path d=\"M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3\"/>'
+ upload:'<path d=\"M4 8h3l1.6-2.2A1 1 0 019.4 5h5.2a1 1 0 01.8.4L17 8h3a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z\"/><circle cx=\"12\" cy=\"14\" r=\"3.6\"/>'
 };
 const svg=(k,extra='')=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ${extra}>${icons[k]}</svg>`;
 
@@ -462,8 +469,8 @@ function fieldHTML(f,row){
   if(f.t==='text')inp=`<input type="text" name="${f.k}" value="${esc(v)}" placeholder="${esc(f.ph||'')}">`;
   else if(f.t==='num')inp=`<input type="number" name="${f.k}" step="${f.step||'any'}" value="${esc(v)}">`;
   else if(f.t==='area')inp=`<textarea name="${f.k}">${esc(v)}</textarea>`;
-  else if(f.t==='urls')inp=`<div class="urlsfield"><textarea name="${f.k}" placeholder="https://…">${esc(Array.isArray(v)?v.join('\n'):v)}</textarea><label class="btn ghost sm upl" style="margin-top:8px;display:inline-flex">${svg('upload')}<span>Ajouter des photos / vidéos</span><input type="file" accept="image/*,video/*" multiple style="display:none" onchange="wfUploadMulti(this)"></label></div>`;
-  else if(f.t==='url')inp=`<div class="urlfield"><input type="text" name="${f.k}" value="${esc(v)}" placeholder="https://… ou téléversez un fichier" data-prev="1"><label class="btn ghost sm upl">${svg('upload')}<span>Envoyer</span><input type="file" accept="image/*,video/*" style="display:none" onchange="wfUpload(this)"></label></div><div class="pv">${v?`<img src="${esc(v)}" alt="" onerror="this.remove()">`:''}</div>`;
+  else if(f.t==='urls')inp=`<div class="urlsfield"><textarea name="${f.k}" placeholder="Un lien par ligne — ou utilisez le bouton ci-dessous">${esc(Array.isArray(v)?v.join('\n'):v)}</textarea><label class="upl">${svg('upload')}<span>Choisir depuis mon téléphone</span><input type="file" accept="image/*,video/*" multiple style="display:none" onchange="wfUploadMulti(this)"></label></div>`;
+  else if(f.t==='url')inp=`<div class="urlfield"><input type="text" name="${f.k}" value="${esc(v)}" placeholder="Collez un lien, ou choisissez un fichier →" data-prev="1"><label class="upl">${svg('upload')}<span>Galerie</span><input type="file" accept="image/*,video/*" style="display:none" onchange="wfUpload(this)"></label></div><div class="pv">${v?`<img src="${esc(v)}" alt="" onerror="this.remove()">`:''}</div>`;
   else if(f.t==='sel'){const o=typeof f.o==='function'?f.o():f.o;inp=`<select name="${f.k}">${o.map(([a,b])=>`<option value="${esc(a)}" ${String(a)===String(v)?'selected':''}>${esc(b)}</option>`).join('')}</select>`;}
   else if(f.t==='ref')inp=`<select name="${f.k}" data-ref="1">${refOpts(f,row.department||f.dd,row.id,v)}</select>`;
   else if(f.t==='bool')return `<div class="${cls}"${dep}><label class="sw"><input type="checkbox" name="${f.k}" ${v?'checked':''}><i></i><span>${f.l}</span></label></div>`;
