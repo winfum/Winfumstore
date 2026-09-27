@@ -15,6 +15,17 @@
 [data-theme="dark"] body{background:var(--bg)}
 [data-theme="dark"] input,[data-theme="dark"] textarea,[data-theme="dark"] select{background:#221f1c;color:#f2ede4;border-color:rgba(255,255,255,.14)}
 [data-theme="dark"] img{filter:brightness(.92)}
+/* --- corrections & habillage thème sombre --- */
+[data-theme="dark"] .sbox,[data-theme="dark"] .card,[data-theme="dark"] .c-item,[data-theme="dark"] .qty button,[data-theme="dark"] #pm,[data-theme="dark"] .round,[data-theme="dark"] .esc,[data-theme="dark"] .ssug span,[data-theme="dark"] .chip{background:#221f1c;border-color:rgba(255,255,255,.1)}
+[data-theme="dark"] .qty{background:#2a2723}
+[data-theme="dark"] .spec{background:linear-gradient(180deg,#221f1c,#1a1815)}
+[data-theme="dark"] .ing div:nth-child(odd){background:#262220}
+[data-theme="dark"] .sp,[data-theme="dark"] .price,[data-theme="dark"] .c-line,[data-theme="dark"] .sub span:last-child,[data-theme="dark"] .pm-price b{color:var(--ink)}
+[data-theme="dark"] .spec b{color:#e17c8c}
+[data-theme="dark"] .round svg{color:#e17c8c}
+[data-theme="dark"] .round.active svg{fill:#e17c8c;color:#e17c8c}
+[data-theme="dark"] .pm-x,[data-theme="dark"] .x:hover{background:rgba(255,255,255,.08)}
+[data-theme="dark"] .card:hover{box-shadow:0 18px 40px rgba(0,0,0,.35)}
 .theme-toggle{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;flex:none;transition:.2s}
 .theme-toggle:hover{border-color:var(--gold)}
 .theme-toggle svg{width:15px;height:15px}
@@ -63,6 +74,7 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;width:34px;height:34px;align-items:center;justify-content:center}
 .burger span{width:18px;height:1px;background:var(--ink)}
 @media(max-width:900px){nav.links{display:none}.burger{display:flex}}
+@media(max-width:480px){.bar{padding:10px 14px;margin:10px;gap:6px}.hdr-right{gap:2px}.icon-btn,.theme-toggle,.burger{width:30px;height:30px}}
 
 /* overlays: recherche + menu */
 .ov{position:fixed;inset:0;background:rgba(20,18,15,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:.35s}
