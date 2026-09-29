@@ -301,6 +301,7 @@ const icons={
  dash:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
  products:'<path d="M9 3h6l1 4H8l1-4z"/><path d="M8 7h8l1 5a5 5 0 01-10 0l1-5z"/><path d="M12 16v5M9 21h6"/>',
  categories:'<path d="M4 6h16M4 12h10M4 18h6"/>',
+ heroes:'<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 15l3.5-3.5L13 15l2-2 3 3"/>',
  announces:'<path d="M3 11v2a1 1 0 001 1h3l6 4V6L7 10H4a1 1 0 00-1 1z"/><path d="M16 9a4 4 0 010 6"/>',
  promos:'<path d="M3 12V4h8l10 10-8 8L3 12z"/><circle cx="7.5" cy="8.5" r="1.2"/>',
  moments:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-5-5-8 8"/>',
@@ -357,7 +358,7 @@ async function enter(user){
 }
 
 /* ---------- navigation ---------- */
-const NAV=[['dash','Tableau de bord'],['sep','Boutique'],['products','Produits'],['categories','Catégories'],['orders','Commandes'],['customers','Clients'],['sep','Site'],['announces','Annonces à la une'],['promos','Bannières promo'],['moments','Moments partagés'],['content','Contenu du site'],['sep','Équipe'],['managers','Comptes managers','super']];
+const NAV=[['dash','Tableau de bord'],['sep','Boutique'],['products','Produits'],['categories','Catégories'],['orders','Commandes'],['customers','Clients'],['sep','Site'],['heroes','Grandes affiches'],['announces','Annonces à la une'],['promos','Bannières promo'],['moments','Moments partagés'],['content','Contenu du site'],['sep','Équipe'],['managers','Comptes managers','super']];
 function buildNav(){
   $('nav').innerHTML=NAV.filter(n=>n[2]!=='super'||me.role==='super_admin').map(n=>n[0]==='sep'?`<div class="nsep">${n[1]}</div>`:`<a href="#/${n[0]}" data-r="${n[0]}">${svg(n[0])}${n[1]}</a>`).join('');
 }
@@ -408,6 +409,12 @@ const E={
   search:r=>[r.name,r.slug].join(' '),
   cols:[{l:'Nom',f:r=>{const p=(cache.categories||[]).find(x=>x.id===r.parent_id);return `<div class="nm"><b>${p?esc(p.name)+' › ':''}${esc(r.name)}</b><span>${esc(r.slug)}</span></div>`}},{l:'Dépt',f:r=>`<span class="pill ${r.department==='vin'?'wine':'gold'}">${esc(r.department)}</span>`},{l:'Type',f:r=>r.parent_id?'Sous-catégorie':'Catégorie'},{l:'Ordre',f:r=>r.sort_order},{l:'Statut',f:r=>pill(r.is_active)}],
   fields:[{k:'department',l:'Département',t:'sel',o:deptOpts,req:1,def:'parfum'},{k:'parent_id',l:'Catégorie parente (pour une sous-catégorie)',t:'ref',src:'categories',root:1,none:'— Aucune (catégorie principale) —'},{k:'name',l:'Nom',t:'text',req:1},{k:'slug',l:'Slug',t:'text',ph:'généré si vide'},{k:'sort_order',l:"Ordre d'affichage",t:'num',def:0},{k:'is_active',l:'Active',t:'bool',def:true}]},
+ heroes:{table:'banners',label:'affiche',plural:'Grandes affiches',by:'created_by',order:[['sort_order',true],['created_at',false]],act:1,flt:q=>q.eq('placement','home_hero'),fixed:{placement:'home_hero',department:'general'},
+  search:r=>[r.title,r.cta_label,r.link_url].join(' '),
+  before:v=>{v.media_type='image';if(!v.title)v.title='Affiche';},
+  cols:[{l:'',f:r=>thumb(r.image_url)},{l:'Titre du bouton',f:r=>esc(r.cta_label||'— (sans bouton)')},{l:'Lien du bouton',f:r=>esc(r.link_url||'—')},{l:'Ordre',f:r=>r.sort_order},{l:'Statut',f:r=>pill(r.is_active)}],
+  fields:[{k:'image_url',l:"Image de l'affiche (rectangle couché 21:9, ex. 2100 × 900 px)",t:'url',req:1,full:1,help:"Format large conseillé : 21:9 (2100 × 900 px). L'image est recadrée au centre si le format diffère."},{k:'cta_label',l:'Titre du bouton',t:'text',ph:'Voir la boutique Vins'},{k:'link_url',l:'Lien du bouton',t:'text',ph:'funforus.html'},{k:'title',l:'Nom interne (facultatif)',t:'text',ph:'Pour vous repérer dans la liste'},{k:'sort_order',l:"Ordre d'affichage",t:'num',def:0},{k:'is_active',l:'Visible sur le site',t:'bool',def:true,full:1}],
+  note:"Les affiches défilent toutes les 7 secondes sur l'accueil, dans l'ordre choisi. Sans bouton, laissez « Titre du bouton » vide."},
  announces:{table:'banners',label:'annonce',plural:'Annonces à la une',by:'created_by',order:[['sort_order',true]],act:1,flt:q=>q.eq('placement','home_announce'),fixed:{placement:'home_announce',department:'general'},
   search:r=>[r.title,r.tag,r.body].join(' '),
   cols:[{l:'',f:r=>thumb(r.image_url,r.media_type==='video')},{l:'Annonce',f:r=>`<div class="nm"><b>${esc(r.title)}</b><span>${esc(r.tag||'')}</span></div>`},{l:'Média',f:r=>`<span class="pill">${r.media_type==='video'?'Vidéo':'Affiche'}</span>`},{l:'Bouton',f:r=>esc(r.cta_label||'—')},{l:'Ordre',f:r=>r.sort_order},{l:'Statut',f:r=>pill(r.is_active)}],
@@ -564,7 +571,7 @@ A.tierdel=async d=>{const {error}=await sb.from('product_price_tiers').delete().
 
 /* ---------- vues ---------- */
 const V={};
-['products','categories','announces','promos','moments'].forEach(n=>V[n]=()=>listView(n));
+['products','categories','heroes','announces','promos','moments'].forEach(n=>V[n]=()=>listView(n));
 
 V.dash=async()=>{
   const cnt=async(t,f)=>{let q=sb.from(t).select('id',{count:'exact',head:true});if(f)q=f(q);const {count}=await q;return count||0;};
@@ -580,7 +587,7 @@ V.dash=async()=>{
     <div class="stat glass"><div class="k">Annonces à la une</div><div class="v">${ann}</div><div class="s">actives sur l'accueil</div></div>
     <div class="stat glass ${newOrd?'hot':''}"><div class="k">Nouvelles commandes</div><div class="v">${newOrd}</div><div class="s">à traiter</div></div></div>
   <div class="two"><div>
-    <div class="panel glass"><h3 class="serif">Actions rapides</h3><div class="qa"><a class="btn" href="#/products">Produits</a><a class="btn ghost" href="#/announces">Annonces</a><a class="btn ghost" href="#/moments">Moments</a><a class="btn ghost" href="#/content">Contenu du site</a></div></div>
+    <div class="panel glass"><h3 class="serif">Actions rapides</h3><div class="qa"><a class="btn" href="#/products">Produits</a><a class="btn ghost" href="#/heroes">Affiches</a><a class="btn ghost" href="#/announces">Annonces</a><a class="btn ghost" href="#/moments">Moments</a><a class="btn ghost" href="#/content">Contenu du site</a></div></div>
     <div class="panel glass"><h3 class="serif">Commandes récentes</h3>${(ordersR.data||[]).length?ordersR.data.map(o=>`<div class="li"><div class="g"><b>${esc(o.customer_name||'Client')}</b><span>${fdate(o.created_at)} · ${fnum(o.total)} G</span></div>${statusPill(o.status)}</div>`).join(''):'<p class="hint">Aucune commande enregistrée. (Les commandes envoyées par WhatsApp n\'apparaissent pas ici.)</p>'}</div></div>
   <div><div class="panel glass"><h3 class="serif">Stock à surveiller</h3>${low.length?low.map(p=>`<div class="li"><div class="g"><b>${esc(p.name)}</b><span>${esc(p.department)}</span></div><span class="pill ${p.stock<=0?'bad':'warn'}">${p.stock} ${esc(p.unit_label||'')}</span></div>`).join(''):'<p class="hint">Tout est en stock. 👌</p>'}</div></div></div>`;
 };
