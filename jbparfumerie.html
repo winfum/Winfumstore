@@ -281,28 +281,69 @@ footer .l{display:flex;flex-direction:column;gap:6px}footer .l a{opacity:.75}
 .pm-stars{display:flex;gap:2px}
 .bdg{display:flex;gap:8px;flex-wrap:wrap;padding:14px 24px 0}
 .bdg span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:20px;border:1px solid var(--line);color:var(--muted)}
+
+/* ============ NÉOMORPHISME (commun à toutes les pages) ============ */
+:root{--nm-hi:rgba(255,255,255,.95);--nm-lo:rgba(112,92,60,.24)}
+:root[data-theme="dark"]{--nm-hi:rgba(255,255,255,.05);--nm-lo:rgba(0,0,0,.6)}
+
+.bar.glass{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none;border:none;box-shadow:6px 6px 14px var(--nm-lo),-5px -5px 12px var(--nm-hi)}
+.icon-btn,.theme-toggle,.burger{border:none;background:var(--bg);color:var(--ink);box-shadow:3px 3px 7px var(--nm-lo),-3px -3px 7px var(--nm-hi);transition:box-shadow .2s,color .2s}
+.icon-btn:hover,.theme-toggle:hover{background:var(--bg);color:var(--wine)}
+.icon-btn:active,.theme-toggle:active,.burger:active{box-shadow:inset 2px 2px 5px var(--nm-lo),inset -2px -2px 5px var(--nm-hi)}
+.cat-menu{background:var(--bg)!important;border:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:8px 8px 18px var(--nm-lo),-6px -6px 14px var(--nm-hi)!important}
+.glass:not(.bar){background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none;border:none;box-shadow:7px 7px 16px var(--nm-lo),-6px -6px 14px var(--nm-hi)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.field input,.field textarea,.inp input,.inp select,.plain,.fld input,.fld select,.fld textarea,[data-theme="dark"] .field input,[data-theme="dark"] .field textarea,[data-theme="dark"] .inp input,[data-theme="dark"] .inp select,[data-theme="dark"] .plain,[data-theme="dark"] .fld input,[data-theme="dark"] .fld select,[data-theme="dark"] .fld textarea{background:var(--bg)!important;border:none!important;box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi)!important}
+.field input:focus,.field textarea:focus,.inp input:focus,.plain:focus,[data-theme="dark"] .field input:focus,[data-theme="dark"] .field textarea:focus,[data-theme="dark"] .inp input:focus,[data-theme="dark"] .plain:focus{box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi),0 0 0 2px rgba(169,120,47,.35)!important}
+.submit,.pm-add,.add,.checkout,[data-theme="dark"] .submit,[data-theme="dark"] .pm-add,[data-theme="dark"] .add,[data-theme="dark"] .checkout{box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+.tabs,.seg,.opt-dd,.meter,[data-theme="dark"] .tabs,[data-theme="dark"] .seg,[data-theme="dark"] .opt-dd,[data-theme="dark"] .meter{background:var(--bg);border:none;box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi)}
+.gchips span,[data-theme="dark"] .gchips span{background:var(--bg);border:none;box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+
+.aurora{opacity:.3}
+
+/* boutique : en-tête façon accueil + corps néomorphe */
+
+.bar{justify-content:flex-start;gap:14px;padding:9px 12px 9px 10px}
+.hsearch{flex:1 1 auto;min-width:0;max-width:300px;height:40px;display:flex;align-items:center;gap:10px;padding:0 16px;border:none;border-radius:22px;background:var(--bg);color:var(--muted);font:inherit;font-size:13.5px;text-align:left;cursor:pointer;box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi);transition:color .2s}
+.hsearch:hover{color:var(--ink)}
+.hsearch svg{width:16px;height:16px;flex:none;color:var(--wine)}
+.hsearch span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand{flex:none;font-size:17px;letter-spacing:.14em}
+.hdr-right{margin-left:auto;gap:9px}
+.icon-btn,.theme-toggle,.burger{width:38px;height:38px;border-radius:50%;padding:0}
+.burger{display:flex}
+@media(max-width:480px){
+  .bar{gap:8px;padding:8px}
+  .brand{font-size:13px;letter-spacing:.08em;gap:6px}.mono{width:24px;height:24px}
+  .hsearch{height:36px;padding:0 11px;gap:7px;font-size:12.5px}
+  .hdr-right{gap:6px}.icon-btn,.theme-toggle,.burger{width:33px;height:33px}
+}
+@media(max-width:389px){.hdr-right>a.icon-btn{display:none}}
+.card,.spec,.ing,.rel-c .ph,[data-theme="dark"] .card,[data-theme="dark"] .spec,[data-theme="dark"] .ing,[data-theme="dark"] .rel-c .ph{box-shadow:7px 7px 16px var(--nm-lo),-6px -6px 14px var(--nm-hi);border:none;background:var(--bg)}
+.chip,[data-theme="dark"] .chip{background:var(--bg);border:none;box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+.chip.active,[data-theme="dark"] .chip.active{background:var(--bg);color:var(--wine);box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi)}
+.cat,.promo,.mo,.ann-card,[data-theme="dark"] .cat,[data-theme="dark"] .promo,[data-theme="dark"] .mo,[data-theme="dark"] .ann-card{box-shadow:7px 7px 16px var(--nm-lo),-6px -6px 14px var(--nm-hi)}
+.sbox,#pm,#cart-drawer,#mobile-menu,[data-theme="dark"] .sbox,[data-theme="dark"] #pm,[data-theme="dark"] #cart-drawer,[data-theme="dark"] #mobile-menu{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none;border:none}
+.sfield,.ssug span,.esc,.round,.qty,.qty button,[data-theme="dark"] .sfield,[data-theme="dark"] .ssug span,[data-theme="dark"] .esc,[data-theme="dark"] .round,[data-theme="dark"] .qty,[data-theme="dark"] .qty button{background:var(--bg);border:none;box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+.sfield,[data-theme="dark"] .sfield{box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi)}
+.c-item,[data-theme="dark"] .c-item{background:var(--bg);border:none;box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+.round:active,.qty button:active,[data-theme="dark"] .round:active,[data-theme="dark"] .qty button:active{box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi)}
+.ing div:nth-child(odd),[data-theme="dark"] .ing div:nth-child(odd){background:transparent}
+footer{border-top:none}
+@media(min-width:760px){#pm:not(.open){transform:translate(-50%,calc(100% + 6vh))}}
 </style>
 </head>
 <body>
 
 <header>
   <div class="bar glass">
+    <button class="hsearch" onclick="openSearch()" aria-label="Rechercher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span>Rechercher…</span></button>
     <a class="brand" href="index.html"><span class="mono"><img class="logo-img" alt="Winfum"></span>WINFUM</a>
-    <nav class="links">
-      <a href="#homme">Homme</a><a href="#femme">Femme</a><a href="#mixte">Mixte</a>
-      <details class="cat-dd"><summary>Catégorie<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="cat-menu">
-          <a href="jbparfumerie.html"><span>JB Parfumerie</span><span class="pro">PRO</span></a>
-          <a href="funforus.html"><span>Fun For Us · Vins</span><span class="pro">PRO</span></a>
-        </div>
-      </details>
-      <a href="espace.html">Mon espace</a><a href="apropos.html">À propos</a><a href="contact-support.html">Contact</a>
-    </nav>
     <div class="hdr-right">
-      <button class="icon-btn" onclick="openSearch()" aria-label="Rechercher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
       <button class="icon-btn" onclick="openCart()" aria-label="Panier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.6a2 2 0 002-1.6L23 6H6"/></svg><span class="badge" id="cart-count">0</span></button>
+      <a class="icon-btn" href="espace.html" aria-label="Mon espace"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></a>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Changer de thème"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/></svg></button>
-      <div class="burger" onclick="toggleMenu(true)"><span></span><span></span></div>
+      <button class="burger" onclick="toggleMenu(true)" aria-label="Menu"><span></span><span></span></button>
     </div>
   </div>
 </header>
