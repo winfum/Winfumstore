@@ -283,6 +283,85 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 
 .aurora{opacity:.3}
 .page{padding-left:22px;padding-right:22px}
+
+/* ============ AUTH : panneau demi-cercle animé (thème Winfum + néomorphisme) ============ */
+#auth{display:block;min-height:0;max-width:1120px;margin:0 auto}
+.aw{--aw-grad:linear-gradient(-45deg,#a9782f 0%,#7a1128 22%,#3a0a17 41%,#7a1128 60%,#a9782f 80%);position:relative;width:100%;min-height:max(620px,min(78vh,760px));border-radius:36px;overflow:hidden;isolation:isolate;background:var(--bg);box-shadow:12px 12px 30px var(--nm-lo),-10px -10px 26px var(--nm-hi);animation:rise .8s cubic-bezier(.16,1,.3,1) backwards;scroll-margin-top:96px}
+.aw::before{content:"";position:absolute;height:2600px;width:2600px;top:-10px;right:48%;transform:translateY(-50%);border-radius:50%;background:var(--aw-grad);box-shadow:20px 0 46px rgba(0,0,0,.28),inset -16px 0 34px rgba(0,0,0,.34),inset 8px 10px 26px rgba(255,255,255,.10);transition:1.8s ease-in-out;z-index:6}
+.aw.sign-up-mode::before{transform:translate(100%,-50%);right:52%}
+.aw .mask{z-index:30;border-radius:inherit}
+
+/* formulaires */
+.aw-forms{position:absolute;top:50%;left:75%;width:50%;transform:translate(-50%,-50%);transition:1s .7s ease-in-out;display:grid;grid-template-columns:1fr;z-index:5;max-height:calc(100% - 20px);overflow-y:auto;scrollbar-width:none}
+.aw-forms::-webkit-scrollbar{display:none}
+.aw.sign-up-mode .aw-forms{left:25%}
+.aw-forms .form{grid-area:1/1;padding:8px clamp(22px,4.5vw,64px);gap:14px;opacity:0;visibility:hidden;transition:opacity .2s .7s,visibility 0s .9s}
+.aw-forms .form.on{opacity:1;visibility:visible;transition:opacity .2s .7s,visibility 0s .7s}
+.aw-forms .form h2{font-size:clamp(28px,3vw,38px);text-align:center;margin-bottom:2px}
+.aw-forms .btn.full{border:none;background:linear-gradient(120deg,#7a1128,#a9782f);box-shadow:7px 7px 15px var(--nm-lo),-5px -5px 12px var(--nm-hi);padding:15px 24px}
+.aw-forms .btn.full:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.aw-forms .btn.full:active{transform:none;box-shadow:inset 3px 3px 8px rgba(0,0,0,.35)}
+
+/* panneaux sur le demi-cercle */
+.aw-panels{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;z-index:7;pointer-events:none}
+.panel{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:2.5rem 3% 2.5rem 4%}
+.left-panel{pointer-events:auto}
+.panel .pc{max-width:390px;transition:transform .9s ease-out .6s}
+.right-panel .pc{transform:translateX(900px)}
+.aw.sign-up-mode .left-panel{pointer-events:none}
+.aw.sign-up-mode .right-panel{pointer-events:auto}
+.aw.sign-up-mode .left-panel .pc{transform:translateX(-900px)}
+.aw.sign-up-mode .right-panel .pc{transform:translateX(0)}
+.aw .panel .tag{color:#f0d9a0}
+.aw-t{font-size:clamp(34px,4.1vw,52px);line-height:1.02;font-style:italic;font-weight:600;margin:12px 0 14px}
+.aw-t em{color:#f0d9a0;display:block}
+.aw-forms .hint{font-size:12px;line-height:1.5;color:var(--muted)}
+.aw-forms .hint a{color:var(--wine)!important}
+.aw-forms .opt-hint{display:none}
+.aw-forms .opt-dd summary{padding:13px 16px}
+.aw-forms .meter{box-shadow:inset 1px 1px 3px var(--nm-lo),inset -1px -1px 3px var(--nm-hi)}
+.panel p{font-size:14px;line-height:1.7;color:rgba(255,255,255,.84)}
+.aw .perks{display:flex;margin:22px auto 0;text-align:left;gap:12px}
+.aw .perks i,.aw-icons i{width:40px;height:40px;border-radius:14px;background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.04));border:none;box-shadow:5px 5px 11px rgba(0,0,0,.34),-3px -3px 8px rgba(255,255,255,.09),inset 0 0 0 1px rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;flex:none}
+.aw .perks svg,.aw-icons svg{width:18px;height:18px;color:#f0d9a0}
+.aw .perks li{font-size:13px}.aw .perks b{color:#fff;font-size:13.5px}.aw .perks span{display:block;color:rgba(255,255,255,.72);font-size:12px}
+.aw-icons{display:flex;justify-content:center;gap:18px;margin-top:22px}
+.aw-icons span{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.85)}
+.aw-cta{margin-top:24px;display:inline-flex;align-items:center;gap:10px;padding:14px 30px;border-radius:40px;border:none;cursor:pointer;color:#fff;font:inherit;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;background:linear-gradient(145deg,rgba(255,255,255,.17),rgba(255,255,255,.05));box-shadow:7px 7px 15px rgba(0,0,0,.4),-4px -4px 11px rgba(255,255,255,.12),inset 0 0 0 1px rgba(255,255,255,.14);transition:transform .25s,box-shadow .25s}
+.aw-cta svg{width:15px;height:15px}
+.aw-cta:hover{transform:translateY(-2px)}
+.aw-cta:active{transform:none;box-shadow:inset 4px 4px 10px rgba(0,0,0,.45),inset -3px -3px 8px rgba(255,255,255,.1)}
+
+/* tablette / mobile : le demi-cercle se forme au-dessus (connexion) ou en dessous (inscription) */
+@media(max-width:860px){
+  .aw{display:flex;flex-direction:column;min-height:0;border-radius:30px}
+  .aw::before{display:none}
+  .aw-forms{position:static;transform:none;width:100%;max-height:none;overflow:visible;order:2;display:flex;flex-direction:column;transition:none}
+  .aw-panels{display:contents}
+  .panel{position:relative;pointer-events:auto;display:grid;grid-template-rows:0fr;padding:0;background:var(--aw-grad);background-size:160% 160%;background-position:70% 40%;visibility:hidden;transition:grid-template-rows .9s ease-in-out,visibility 0s .9s;box-shadow:0 14px 30px rgba(0,0,0,.22),inset 0 -10px 24px rgba(0,0,0,.28)}
+  .left-panel{order:1;border-radius:0 0 50% 50%/0 0 46px 46px;grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .9s ease-in-out,visibility 0s 0s}
+  .right-panel{order:3;border-radius:50% 50% 0 0/46px 46px 0 0;box-shadow:0 -14px 30px rgba(0,0,0,.22),inset 0 10px 24px rgba(0,0,0,.28)}
+  .aw.sign-up-mode .left-panel{grid-template-rows:0fr;visibility:hidden;transition:grid-template-rows .9s ease-in-out,visibility 0s .9s}
+  .aw.sign-up-mode .right-panel{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .9s ease-in-out,visibility 0s 0s}
+  .panel .pc{min-height:0;overflow:hidden;max-width:none;transform:none!important;transition:none}
+  .pc-in{padding:28px 9% 60px}
+  .right-panel .pc-in{padding:60px 9% 30px}
+  .aw-t{font-size:clamp(28px,8vw,40px);margin:8px 0 8px}
+  .panel p{font-size:13px;line-height:1.6}
+  .aw .perks{flex-direction:row;margin-top:16px;justify-content:center;align-items:flex-start;gap:14px}
+  .aw .perks li{flex-direction:column;gap:7px;text-align:center}
+  .aw .perks span{display:none}.aw .perks b{font-size:11px;font-weight:500;letter-spacing:.04em;max-width:84px}
+  .aw-cta{margin-top:18px;padding:12px 24px}
+  .aw-forms .form{grid-area:auto;padding:0 clamp(18px,6vw,44px);max-height:0;overflow:hidden;transition:max-height .7s ease,opacity .3s,visibility 0s .7s}
+  .aw-forms .form.on{padding-top:22px;padding-bottom:26px;max-height:1200px;transition:max-height .9s ease .35s,opacity .4s .6s,visibility 0s .35s}
+}
+@media(max-width:480px){
+  .aw{border-radius:24px}
+  .pc-in{padding:24px 7% 54px}.right-panel .pc-in{padding:54px 7% 26px}
+  .aw-forms .form h2{font-size:26px}
+}
+@media(prefers-reduced-motion:reduce){.aw::before,.aw-forms,.aw-forms .form,.panel,.panel .pc{transition-duration:.01s!important;transition-delay:0s!important}}
+[data-theme="dark"] .aw-forms .sw a,[data-theme="dark"] .aw-forms .hint a{color:#e8c77a!important}
 </style>
 </head>
 <body>
@@ -308,23 +387,10 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 
   <!-- ===== CONNEXION / INSCRIPTION ===== -->
   <div id="auth" hidden>
-    <div class="hero">
-      <span class="tag">Mon espace</span>
-      <h1 class="serif">Votre univers <em>Winfum</em></h1>
-      <p>Retrouvez vos favoris, votre panier et les annonces de la maison, au même endroit.</p>
-      <ul class="perks">
-        <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 10-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z"/></svg></i><div><b>Vos coups de cœur</b><span>Gardez vos parfums et vins préférés sous la main.</span></div></li>
-        <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2l-2 4v14a1 1 0 001 1h14a1 1 0 001-1V6l-2-4z"/><path d="M4 6h16"/><path d="M16 10a4 4 0 01-8 0"/></svg></i><div><b>Un panier unifié</b><span>Parfums et vins réunis, commande en un message WhatsApp.</span></div></li>
-        <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 001 1h3l6 4V6L7 10H4a1 1 0 00-1 1z"/><path d="M16 9a4 4 0 010 6"/></svg></i><div><b>Annonces exclusives</b><span>Nouveautés, vendanges, offres gros volume.</span></div></li>
-      </ul>
-    </div>
-
-    <div class="acard glass">
+    <div class="aw" id="aw">
       <div class="mask" id="mask"><div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></div><span class="tag" id="mask-t">Bienvenue</span></div>
-      <div class="alogo"><span class="mono"><img class="logo-img" alt="Winfum"></span></div>
-      <div class="tabs" id="tabs"><div class="tthumb"></div><button class="on" data-m="login">Connexion</button><button data-m="signup">Créer un compte</button></div>
-
-      <form class="form" id="f-login" autocomplete="on">
+      <div class="aw-forms">
+        <form class="form on" id="f-login" autocomplete="on">
         <h2 class="serif">Content de vous revoir</h2>
         <div class="fld"><label>Pseudo</label><div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><input type="text" id="li-id" autocomplete="username" required placeholder="ex : marie509"></div></div>
         <div class="fld"><label>Mot de passe</label><div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><input type="password" id="li-pw" autocomplete="current-password" required><button type="button" class="eye" data-eye="li-pw" aria-label="Afficher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
@@ -332,8 +398,7 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
         <button class="btn full" id="li-btn"><span class="spin"></span><span>Se connecter</span></button>
         <div class="sw">Pas encore de compte ? <a data-go="signup">Créer un compte</a></div>
       </form>
-
-      <form class="form" id="f-signup" autocomplete="on" hidden>
+        <form class="form" id="f-signup" autocomplete="on">
         <h2 class="serif">Rejoignez la maison</h2>
         <div class="fld"><label>Pseudo (unique)</label><div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><input type="text" id="su-pseudo" autocomplete="username" required minlength="3" maxlength="20" placeholder="ex : marie509"></div></div>
         <div class="fld"><label>Mot de passe (6 caractères min.)</label><div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><input type="password" id="su-pw" autocomplete="new-password" required minlength="6"><button type="button" class="eye" data-eye="su-pw" aria-label="Afficher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="meter"><i id="meter"></i></div><div class="mtxt" id="mtxt">&nbsp;</div></div>
@@ -352,6 +417,27 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
         <button class="btn full" id="su-btn"><span class="spin"></span><span>Créer mon compte</span></button>
         <div class="sw">Déjà inscrit ? <a data-go="login">Se connecter</a></div>
       </form>
+      </div>
+      <div class="aw-panels">
+        <section class="panel left-panel"><div class="pc"><div class="pc-in">
+          <span class="tag">Mon espace</span>
+          <h1 class="serif aw-t">Votre univers <em>Winfum</em></h1>
+          <p>Retrouvez vos favoris, votre panier et les annonces de la maison, au même endroit.</p>
+          <ul class="perks">
+            <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 10-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z"/></svg></i><div><b>Vos coups de cœur</b><span>Parfums et vins préférés sous la main.</span></div></li>
+            <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2l-2 4v14a1 1 0 001 1h14a1 1 0 001-1V6l-2-4z"/><path d="M4 6h16"/><path d="M16 10a4 4 0 01-8 0"/></svg></i><div><b>Un panier unifié</b><span>Commande en un message WhatsApp.</span></div></li>
+            <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 001 1h3l6 4V6L7 10H4a1 1 0 00-1 1z"/><path d="M16 9a4 4 0 010 6"/></svg></i><div><b>Annonces exclusives</b><span>Nouveautés, vendanges, offres gros volume.</span></div></li>
+          </ul>
+          <button type="button" class="aw-cta" data-go="signup">Créer un compte <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div></div></section>
+        <section class="panel right-panel"><div class="pc"><div class="pc-in">
+          <span class="tag">Déjà des nôtres ?</span>
+          <h2 class="serif aw-t">Bon retour <em>parmi nous</em></h2>
+          <p>Connectez-vous pour retrouver vos favoris, votre panier et les annonces de la maison.</p>
+          <div class="aw-icons"><span><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 10-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z"/></svg></i>Favoris</span><span><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2l-2 4v14a1 1 0 001 1h14a1 1 0 001-1V6l-2-4z"/><path d="M4 6h16"/><path d="M16 10a4 4 0 01-8 0"/></svg></i>Panier</span><span><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 001 1h3l6 4V6L7 10H4a1 1 0 00-1 1z"/><path d="M16 9a4 4 0 010 6"/></svg></i>Annonces</span></div>
+          <button type="button" class="aw-cta" data-go="login"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> Se connecter</button>
+        </div></div></section>
+      </div>
     </div>
   </div>
 
@@ -559,11 +645,11 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeViewer();$('ed
 
 /* ---------- AUTH ---------- */
 function setMode(m){
-  $('tabs').classList.toggle('s',m==='signup');
-  $('tabs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
-  $('f-login').hidden=m!=='login';$('f-signup').hidden=m!=='signup';
+  const aw=$('aw'),su=m==='signup';
+  aw.classList.toggle('sign-up-mode',su);
+  [['f-login',!su],['f-signup',su]].forEach(([id,on])=>{const f=$(id);f.classList.toggle('on',on);f.setAttribute('aria-hidden',on?'false':'true');});
+  if(matchMedia('(max-width:860px)').matches)aw.scrollIntoView({behavior:'smooth',block:'start'});
 }
-$('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setMode(b.dataset.m);});
 $('su-pw').addEventListener('input',e=>{
   const v=e.target.value;let s=0;if(v.length>=6)s++;if(v.length>=9)s++;if(/[A-Z]/.test(v)&&/[a-z]/.test(v))s++;if(/\d/.test(v)&&/[^A-Za-z0-9]/.test(v))s++;
   const L=[['0','#b7791f',''],['25%','#a4262c','Faible'],['50%','#b7791f','Moyen'],['75%','#7a9a2f','Bon'],['100%','#2f7a4b','Excellent']][v?Math.max(1,s):0];
