@@ -85,6 +85,27 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 .fa{max-height:0;overflow:hidden;transition:max-height .35s ease;color:var(--muted);font-size:13.5px;line-height:1.7;padding:0 4px}
 .fitem.open .fa{max-height:200px;padding-bottom:16px}
 footer{padding:50px 24px 36px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:center}
+
+/* ============ NÉOMORPHISME (commun à toutes les pages) ============ */
+:root{--nm-hi:rgba(255,255,255,.95);--nm-lo:rgba(112,92,60,.24)}
+:root[data-theme="dark"]{--nm-hi:rgba(255,255,255,.05);--nm-lo:rgba(0,0,0,.6)}
+
+.bar.glass{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none;border:none;box-shadow:6px 6px 14px var(--nm-lo),-5px -5px 12px var(--nm-hi)}
+.icon-btn,.theme-toggle,.burger{border:none;background:var(--bg);color:var(--ink);box-shadow:3px 3px 7px var(--nm-lo),-3px -3px 7px var(--nm-hi);transition:box-shadow .2s,color .2s}
+.icon-btn:hover,.theme-toggle:hover{background:var(--bg);color:var(--wine)}
+.icon-btn:active,.theme-toggle:active,.burger:active{box-shadow:inset 2px 2px 5px var(--nm-lo),inset -2px -2px 5px var(--nm-hi)}
+.cat-menu{background:var(--bg)!important;border:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:8px 8px 18px var(--nm-lo),-6px -6px 14px var(--nm-hi)!important}
+.glass:not(.bar){background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none;border:none;box-shadow:7px 7px 16px var(--nm-lo),-6px -6px 14px var(--nm-hi)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.field input,.field textarea,.inp input,.inp select,.plain,.fld input,.fld select,.fld textarea,[data-theme="dark"] .field input,[data-theme="dark"] .field textarea,[data-theme="dark"] .inp input,[data-theme="dark"] .inp select,[data-theme="dark"] .plain,[data-theme="dark"] .fld input,[data-theme="dark"] .fld select,[data-theme="dark"] .fld textarea{background:var(--bg)!important;border:none!important;box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi)!important}
+.field input:focus,.field textarea:focus,.inp input:focus,.plain:focus,[data-theme="dark"] .field input:focus,[data-theme="dark"] .field textarea:focus,[data-theme="dark"] .inp input:focus,[data-theme="dark"] .plain:focus{box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi),0 0 0 2px rgba(169,120,47,.35)!important}
+.submit,.pm-add,.add,.checkout,[data-theme="dark"] .submit,[data-theme="dark"] .pm-add,[data-theme="dark"] .add,[data-theme="dark"] .checkout{box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+.tabs,.seg,.opt-dd,.meter,[data-theme="dark"] .tabs,[data-theme="dark"] .seg,[data-theme="dark"] .opt-dd,[data-theme="dark"] .meter{background:var(--bg);border:none;box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi)}
+.gchips span,[data-theme="dark"] .gchips span{background:var(--bg);border:none;box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+
+.aurora{opacity:.3}
+.chan-num{font-size:14px;color:var(--muted);display:block;margin-top:2px}
+.chan.wa:hover .chan-num{color:var(--wine)}
 </style>
 </head>
 <body>
@@ -104,7 +125,7 @@ footer{padding:50px 24px 36px;border-top:1px solid var(--line);font-size:12px;co
 
 <div class="wrap">
   <div class="channels reveal">
-    <a class="chan wa glass" href="https://wa.me/50948821521" target="_blank"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 01-13.4 7.8L3 21l1.3-4.4A9 9 0 1121 12z"/></svg></div><h3 class="serif">WhatsApp</h3><a href="https://wa.me/50948821521" target="_blank">48 82 15 21</a></a>
+    <a class="chan wa glass" href="https://wa.me/50948821521" target="_blank" rel="noopener"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 01-13.4 7.8L3 21l1.3-4.4A9 9 0 1121 12z"/></svg></div><h3 class="serif">WhatsApp</h3><span class="chan-num">48 82 15 21</span></a>
     <div class="chan tel glass"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.1-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.5 2.1L8 9.7a16 16 0 006 6l1.2-1.2a2 2 0 012.1-.5c.9.3 1.8.5 2.7.6a2 2 0 011.7 2z"/></svg></div><h3 class="serif">Téléphone</h3><a href="tel:35697028">35 69 70 28</a><a href="tel:48821521">48 82 15 21</a></div>
     <div class="chan mail glass"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4V4z"/><path d="M4 6l8 7 8-7"/></svg></div><h3 class="serif">Réseaux</h3><a href="#">Instagram</a><a href="#">Facebook</a></div>
   </div>
