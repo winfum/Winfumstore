@@ -418,6 +418,16 @@ a.pm-badge{text-decoration:none}
 .wa::after{content:'';position:absolute;top:8px;right:8px;width:11px;height:11px;border-radius:50%;background:#25d366;border:2px solid var(--bg)}
 .wa:hover{transform:translateY(-2px)}
 .wa:active{transform:none;box-shadow:inset 4px 4px 9px var(--nm-lo),inset -4px -4px 9px var(--nm-hi)}
+
+.bar.glass{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none;border:none;box-shadow:6px 6px 14px var(--nm-lo),-5px -5px 12px var(--nm-hi)}
+.cat-menu{background:var(--bg)!important;border:none!important;box-shadow:8px 8px 18px var(--nm-lo),-6px -6px 14px var(--nm-hi)!important}
+.sbox,#pm,#cart-drawer,#mobile-menu,[data-theme="dark"] .sbox,[data-theme="dark"] #pm,[data-theme="dark"] #cart-drawer,[data-theme="dark"] #mobile-menu{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none;border:none}
+.sfield,.ssug span,.esc,.round,.qty,.qty button,.c-item,[data-theme="dark"] .sfield,[data-theme="dark"] .ssug span,[data-theme="dark"] .esc,[data-theme="dark"] .round,[data-theme="dark"] .qty,[data-theme="dark"] .qty button,[data-theme="dark"] .c-item{background:var(--bg);border:none;box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+.sfield,[data-theme="dark"] .sfield{box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi)}
+.chip,[data-theme="dark"] .chip{background:var(--bg);border:none;box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+.add,.checkout,.pm-add,[data-theme="dark"] .add,[data-theme="dark"] .checkout,[data-theme="dark"] .pm-add{box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+.spec,.ing,[data-theme="dark"] .spec,[data-theme="dark"] .ing{background:var(--bg);border:none;box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+.ing div:nth-child(odd),[data-theme="dark"] .ing div:nth-child(odd){background:transparent}
 </style>
 </head>
 <body>
@@ -617,8 +627,6 @@ setTimeout(()=>$('preloader').classList.add('hide'),(lastDelay+1.3)*1000);
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-/* en-tête : ombre au défilement */
-window.addEventListener('scroll',()=>{document.querySelector('header .bar').style.boxShadow=scrollY>40?'0 10px 30px rgba(28,26,23,.08)':'none';},{passive:true});
 
 /* grandes affiches (rectangle couché) — 1 slide toutes les 7 secondes */
 const HERO_DELAY=7000;
