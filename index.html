@@ -428,6 +428,11 @@ a.pm-badge{text-decoration:none}
 .add,.checkout,.pm-add,[data-theme="dark"] .add,[data-theme="dark"] .checkout,[data-theme="dark"] .pm-add{box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
 .spec,.ing,[data-theme="dark"] .spec,[data-theme="dark"] .ing{background:var(--bg);border:none;box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
 .ing div:nth-child(odd),[data-theme="dark"] .ing div:nth-child(odd){background:transparent}
+
+mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2px}
+.sx{font-size:11.5px;line-height:1.45;color:var(--muted);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.g-dflt-parfum{background:linear-gradient(155deg,#a9782f,#e6d9bd);color:rgba(28,26,23,.55)}
+.g-dflt-vin{background:linear-gradient(155deg,#4a0a17,#a9782f)}
 </style>
 </head>
 <body>
@@ -465,7 +470,7 @@ a.pm-badge{text-decoration:none}
   <div class="sbox">
     <div class="sfield">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <input id="search-input" placeholder="Un parfum, un vin, une région…" autocomplete="off">
+      <input id="search-input" placeholder="Nom, description, catégorie, prix…" autocomplete="off">
       <button class="esc" onclick="closeSearch()">Fermer</button>
     </div>
     <div class="ssug"><span onclick="quickSearch('parfum')"><i style="background:#a9782f"></i>Parfums</span><span onclick="quickSearch('vin')"><i style="background:#7a1128"></i>Vins</span><span onclick="quickSearch('homme')"><i style="background:#4a463e"></i>Homme</span><span onclick="quickSearch('femme')"><i style="background:#d98fa0"></i>Femme</span></div>
@@ -592,7 +597,7 @@ let announcements=[
 ];
 
 /* PRODUITS — prix en G. Modifiez aussi les mêmes produits dans jbparfumerie.html / funforus.html */
-const products=[
+let products=[
  {id:'p1',type:'parfum',cat:'homme',coll:'JB Parfumerie',page:'jbparfumerie.html',name:'Ambre Noir',retail:65,pack:'Pack de 6 pour 350 G',rating:4.6,ph:'AN',desc:"Un sillage boisé et ambré, profond et racé, pour l'homme qui affirme sa présence sans un mot.",media:[{t:'image',u:''},{t:'image',u:''},{t:'video',u:''}]},
  {id:'p3',type:'parfum',cat:'femme',coll:'JB Parfumerie',page:'jbparfumerie.html',name:'Fleur de Lune',retail:70,pack:'Pack de 6 pour 380 G',rating:4.8,ph:'FL',desc:"Un bouquet floral lumineux, entre jasmin et musc blanc, pour une élégance douce et féminine.",media:[{t:'image',u:''},{t:'image',u:''},{t:'video',u:''}]},
  {id:'p5',type:'parfum',cat:'mixte',coll:'JB Parfumerie',page:'jbparfumerie.html',name:'Petit Prince',retail:35,pack:'Pack de 6 pour 190 G',rating:4.3,ph:'PP',desc:"Une fragrance douce et fraîche, pensée pour toute la famille, homme comme femme.",media:[{t:'image',u:''},{t:'image',u:''}]},
@@ -610,6 +615,7 @@ const products=[
   media:[{t:'image',u:''},{t:'image',u:''},{t:'video',u:''}]},
 ];
 /* ============================================================ */
+const DEMO_PRODUCTS=products.slice();
 
 const $=id=>document.getElementById(id);
 const CATL={homme:'Homme',femme:'Femme',mixte:'Mixte',rouge:'Rouge',blanc:'Blanc',rose:'Rosé'};
@@ -721,10 +727,12 @@ function toggleFav(id,el){
 function renderGrids(){
   ['parfum','vin'].forEach(type=>{
     const g=$('grid-'+type);g.innerHTML='';
-    products.filter(p=>p.type===type).forEach(p=>{
+    const L=products.filter(p=>p.type===type);
+    if(!L.length)g.innerHTML='<div class="sempty" style="grid-column:1/-1">Nos produits arrivent bientôt.</div>';
+    L.forEach(p=>{
       const el=document.createElement('div');el.className='card reveal';
-      el.innerHTML=`<div class="ph g-${p.cat}">${mediaEl(cover(p),false,p.name)}${p.abv?`<span class="abv">${p.abv} vol.</span>`:''}<div class="fav ${favs.includes(p.id)?'active':''}">${HEART}</div></div>
-        <div class="info"><div class="k">${CATL[p.cat]}</div><h3 class="serif">${p.name}</h3>${p.region?`<div class="rg">${p.region}</div>`:`<div class="stars">${starsHTML(p.rating)}</div>`}
+      el.innerHTML=`<div class="ph g-${gk(p)}">${mediaEl(cover(p),false,p.name)}${p.abv?`<span class="abv">${p.abv} vol.</span>`:''}<div class="fav ${favs.includes(p.id)?'active':''}">${HEART}</div></div>
+        <div class="info"><div class="k">${catName(p)}</div><h3 class="serif">${p.name}</h3>${p.region?`<div class="rg">${p.region}</div>`:`<div class="stars">${starsHTML(p.rating)}</div>`}
         <div class="price">${p.retail}<span>G</span></div><div class="pack">${p.pack}</div><button class="add">Ajouter au panier</button></div>`;
       el.querySelector('.fav').onclick=e=>{e.stopPropagation();toggleFav(p.id,e.currentTarget)};
       el.querySelector('.add').onclick=e=>{e.stopPropagation();addToCart(p.id)};
@@ -758,19 +766,145 @@ async function loadBanners(){
     if(hero.length){heroSlides=hero;heroIdx=0;renderHero();}
   }catch(e){console.warn('Bannières :',e.message||e);}
 }
+
+/* ============================================================ */
+/* Produits ajoutés depuis l'admin / manager (table products) */
+const SHOW_DEMO_WHEN_EMPTY=true; // true : les produits d'exemple restent tant qu'un département n'a AUCUN produit réel. false : on ne les affiche jamais.
+function slugCat(name){return (name||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')||'autre';}
+function mapRow(r,catsById){
+  const dept=r.department==='vin'?'vin':'parfum',c=catsById[r.category_id],label=c?c.name:'Autre',slug=slugCat(label);
+  CATL[slug]=label;
+  const media=[...(r.images||[]).filter(Boolean).map(u=>({t:'image',u})),...(r.videos||[]).filter(Boolean).map(u=>({t:'video',u}))];
+  const p={id:r.id,type:dept,cat:slug,catLabel:label,coll:dept==='vin'?'Fun For Us':'JB Parfumerie',page:dept==='vin'?'funforus.html':'jbparfumerie.html',name:r.name||'',retail:r.price_retail,pack:r.pack_label||'',rating:r.rating||0,ph:(r.name||'').slice(0,2).toUpperCase(),desc:r.description||'',sku:r.sku||'',unit:r.unit_label||'',media:media.length?media:[{t:'image',u:''}]};
+  if(dept==='vin'){
+    p.region=r.region||'';p.abv=r.abv!=null?r.abv+'%':'';p.vol=r.volume_cl?r.volume_cl+' cl':'';
+    const ing=[];if(r.grape)ing.push(['Cépage',r.grape]);if(r.aging)ing.push(['Élevage',r.aging]);ing.push(['Origine du raisin',r.region||'Haïti']);if(r.residual_sugar)ing.push(['Sucre résiduel',r.residual_sugar]);
+    p.ing=ing;
+  }
+  return p;
+}
+async function loadProducts(){
+  try{
+    const sb=await getSb();
+    const [catsRes,prodRes]=await Promise.all([
+      sb.from('categories').select('*').eq('is_active',true),
+      sb.from('products').select('*').eq('is_active',true).in('department',['parfum','vin']).order('created_at',{ascending:false})
+    ]);
+    if(prodRes.error)throw prodRes.error;
+    const catsById={};(catsRes.data||[]).forEach(c=>catsById[c.id]=c);
+    const real={parfum:[],vin:[]};
+    (prodRes.data||[]).forEach(r=>{const p=mapRow(r,catsById);real[p.type].push(p);});
+    const next=[];
+    ['parfum','vin'].forEach(d=>{if(real[d].length)next.push(...real[d]);else if(SHOW_DEMO_WHEN_EMPTY)next.push(...DEMO_PRODUCTS.filter(p=>p.type===d));});
+    products=next;
+    renderGrids();renderCart();
+    WS.suggest(products,[['parfum','Parfums','#a9782f'],['vin','Vins','#7a1128']],null,catName);
+    if($('search-overlay').classList.contains('open'))renderSearch($('search-input').value);
+    const m=location.hash.match(/^#p-(.+)/);
+    if(m){const p=products.find(x=>String(x.id)===m[1]);if(p&&!$('pm').classList.contains('open'))openProduct(p.id,true);}
+  }catch(e){console.warn('Produits :',e.message||e);}
+}
 document.addEventListener('click',e=>{document.querySelectorAll('.cat-dd[open]').forEach(d=>{if(!d.contains(e.target))d.removeAttribute('open')})});
 function openSearch(){$('search-overlay').classList.add('open');setTimeout(()=>$('search-input').focus(),250);renderSearch('');}
 function closeSearch(){$('search-overlay').classList.remove('open');$('search-input').value='';}
 $('search-input').addEventListener('input',e=>renderSearch(e.target.value));
 function quickSearch(q){$('search-input').value=q;renderSearch(q);}
+/* ===== Recherche avancée : sans accents, plusieurs mots, fautes légères, descriptions, prix (ex. « vin < 200 ») ===== */
+const WS=(()=>{
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const norm=s=>String(s==null?'':s).toLowerCase().replace(/œ/g,'oe').replace(/æ/g,'ae').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+  const stem=w=>w.length>3&&/[sx]$/.test(w)?w.slice(0,-1):w;
+  function lev(a,b,max){
+    if(Math.abs(a.length-b.length)>max)return max+1;
+    let prev=Array.from({length:b.length+1},(_,i)=>i);
+    for(let i=1;i<=a.length;i++){
+      const cur=[i];let min=i;
+      for(let j=1;j<=b.length;j++){const v=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));cur[j]=v;if(v<min)min=v;}
+      if(min>max)return max+1;prev=cur;
+    }
+    return prev[b.length];
+  }
+  function wm(t,w){
+    if(w===t)return 1;
+    if(w.startsWith(t))return .9;
+    if(t.length>=3&&w.includes(t))return .6;
+    if(t.length>=4){
+      const max=t.length>=8?2:1;
+      const d=Math.min(lev(t,w,max),lev(t,w.slice(0,t.length),max));
+      if(d<=max)return .45;
+    }
+    return 0;
+  }
+  function parse(q){
+    let raw=String(q||'').toLowerCase();const price={min:null,max:null};
+    raw=raw.replace(/(\d+)\s*(?:-|à|a)\s*(\d+)\s*g?\b/g,(m,a,b)=>{price.min=Math.min(+a,+b);price.max=Math.max(+a,+b);return ' ';});
+    raw=raw.replace(/(?:<=?|moins de|maximum|max|jusqu'?à|jusqu'?a|sous)\s*(\d+)\s*g?\b/g,(m,n)=>{price.max=+n;return ' ';});
+    raw=raw.replace(/(?:>=?|plus de|minimum|min|à partir de|a partir de|dès|des)\s*(\d+)\s*g?\b/g,(m,n)=>{price.min=+n;return ' ';});
+    const tokens=[...new Set(norm(raw).split(' ').filter(Boolean).map(stem))];
+    return {tokens,price};
+  }
+  function search(list,q,fieldsFn){
+    const {tokens,price}=parse(q);
+    const hasPrice=price.min!=null||price.max!=null;
+    if(!tokens.length&&!hasPrice)return {list:list.slice(),tokens:[],mode:'all'};
+    const inPrice=p=>(price.min==null||p.retail>=price.min)&&(price.max==null||p.retail<=price.max);
+    const res=list.map((p,i)=>{
+      if(!inPrice(p))return null;
+      const fields=fieldsFn(p).map(([txt,w])=>({w,words:norm(txt).split(' ').filter(Boolean)}));
+      let sum=0,hit=0;
+      tokens.forEach(t=>{
+        let best=0;
+        fields.forEach(f=>{let m=0;for(const w of f.words){const s=wm(t,w);if(s>m)m=s;if(m===1)break;}if(m)best=Math.max(best,m*f.w);});
+        if(best>0){hit++;sum+=best;}
+      });
+      return {p,i,sum,hit};
+    }).filter(Boolean);
+    let out=res.filter(r=>r.hit===tokens.length),mode='and';
+    if(!out.length&&tokens.length>1){out=res.filter(r=>r.hit>0);mode='or';}
+    out.sort((a,b)=>b.sum-a.sum||(hasPrice&&!tokens.length?a.p.retail-b.p.retail:a.i-b.i));
+    return {list:out.map(r=>r.p),tokens,mode};
+  }
+  const isWord=s=>/[\p{L}\p{N}]/u.test(s);
+  function hl(text,tokens){
+    const src=String(text==null?'':text);if(!tokens.length)return esc(src);
+    return src.split(/([^\p{L}\p{N}]+)/u).map(part=>{
+      if(!part)return '';if(!isWord(part))return esc(part);
+      const w=norm(part);return w&&tokens.some(t=>wm(t,w)>=.6)?'<mark>'+esc(part)+'</mark>':esc(part);
+    }).join('');
+  }
+  function snippet(text,tokens){
+    const src=String(text||'').replace(/\s+/g,' ').trim();if(!src||!tokens.length)return '';
+    const parts=src.split(' ');
+    const idx=parts.findIndex(p=>norm(p).split(' ').some(w=>w&&tokens.some(t=>wm(t,w)>=.6)));
+    if(idx<0)return '';
+    const s=Math.max(0,idx-5),e=Math.min(parts.length,idx+12);
+    return (s>0?'… ':'')+hl(parts.slice(s,e).join(' '),tokens)+(e<parts.length?' …':'');
+  }
+  function fields(p,dept){
+    const d=dept||p.type;
+    return [[p.name,10],[p.catLabel||p.cat,6],[d==='vin'?'vin vins wine bouteille cuvee':'parfum parfums fragrance senteur eau de parfum cologne flacon',5],[p.coll||'',4],[p.region||'',5],[(p.ing||[]).flat().join(' '),4],[p.pack||'',2],[p.desc||'',2],[(p.sku||'')+' '+(p.unit||''),2],[p.retail+' g '+(p.abv||'')+' '+(p.vol||''),2]];
+  }
+  const COL={homme:'#4a463e',femme:'#d98fa0',mixte:'#c9ab6d',rouge:'#7a1128',blanc:'#c9a24a',rose:'#d98fa0'};
+  function suggest(prods,lead,dept,labelOf){
+    const box=document.querySelector('.ssug');if(!box)return;
+    const items=(lead||[]).slice(),seen=new Set();
+    prods.forEach(p=>{const k=labelOf(p);if(k&&!seen.has(k)&&items.length<8){seen.add(k);items.push([k,k,COL[p.cat]||(((dept||p.type)==='vin')?'#7a1128':'#a9782f')]);}});
+    if(!items.length)return;
+    box.innerHTML=items.map(([q,l,c])=>'<span data-q="'+esc(q)+'"><i style="background:'+c+'"></i>'+esc(l)+'</span>').join('');
+    box.querySelectorAll('span').forEach(s=>s.onclick=()=>quickSearch(s.dataset.q));
+  }
+  return {search,hl,snippet,fields,suggest,esc,norm};
+})();
+const gk=p=>['homme','femme','mixte','rouge','blanc','rose'].includes(p.cat)?p.cat:(p.type==='vin'?'dflt-vin':'dflt-parfum');
+const catName=p=>p.catLabel||CATL[p.cat]||p.cat;
 function renderSearch(q){
-  const t=q.trim().toLowerCase(),box=$('search-results');
-  const list=t?products.filter(p=>(p.name+' '+p.type+' '+p.cat+' '+(p.region||'')+' '+p.coll).toLowerCase().includes(t)):products;
-  $('slabel').textContent=t?(list.length+(list.length>1?' résultats':' résultat')):'Toute la boutique';
-  box.innerHTML=list.length?'':'<div class="sempty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Aucun résultat.<br>Essayez « parfum », « vin » ou un nom.</div>';
+  const box=$('search-results'),t=q.trim(),r=WS.search(products,q,p=>WS.fields(p)),list=r.list;
+  $('slabel').textContent=t?(list.length?(list.length+(list.length>1?' résultats':' résultat')+(r.mode==='or'?' proches':'')):'Aucun résultat'):'Toute la boutique';
+  box.innerHTML=list.length?'':'<div class="sempty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Aucun résultat pour « '+WS.esc(t)+' ».<br>Essayez un nom, une catégorie, un mot de la description ou un prix (ex. « vin &lt; 200 »).</div>';
   list.forEach(p=>{
     const m=cover(p),el=document.createElement('div');el.className='srow';
-    el.innerHTML=`<div class="st g-${p.cat}">${m&&m.u?`<img class="cover" src="${m.u}" alt="">`:p.ph}</div><div class="si"><h4 class="serif">${p.name}</h4><div class="sm">${p.type==='vin'?'Vin':'Parfum'} · ${CATL[p.cat]} · ${p.coll}</div></div><div class="sp">${p.retail} G</div>`;
+    const sn=WS.snippet(p.desc,r.tokens)||WS.snippet((p.ing||[]).flat().join(' · '),r.tokens);
+    el.innerHTML=`<div class="st g-${gk(p)}">${m&&m.u?`<img class="cover" src="${m.u}" alt="">`:p.ph}</div><div class="si"><h4 class="serif">${WS.hl(p.name,r.tokens)}</h4><div class="sm">${p.type==='vin'?'Vin':'Parfum'} · ${WS.esc(catName(p))} · ${WS.esc(p.coll)}</div>${sn?`<div class="sx">${sn}</div>`:''}</div><div class="sp">${p.retail} G</div>`;
     el.onclick=()=>{closeSearch();openProduct(p.id)};box.appendChild(el);
   });
 }
@@ -781,7 +915,7 @@ function openProduct(id,replace){
   const p=products.find(x=>x.id===id);if(!p)return;curP=p;
   $('pm').dataset.type=p.type;
   const c=$('pm-coll');c.textContent=p.coll;c.href=p.page;
-  $('pm-title').textContent=p.name;$('pm-region').textContent=p.region||('Parfum '+CATL[p.cat].toLowerCase());
+  $('pm-title').textContent=p.name;$('pm-region').textContent=p.region||('Parfum '+catName(p).toLowerCase());
   $('pm-price').innerHTML=p.retail+'<span>G</span>';$('pm-pack').textContent=p.pack;$('pm-desc').textContent=p.desc;
   if(p.type==='vin'){
     $('pm-abv').textContent=p.abv;$('pm-vol').textContent=p.vol;$('pm-rating').textContent=p.rating+' / 5';
@@ -791,7 +925,7 @@ function openProduct(id,replace){
   $('pm-add').onclick=()=>addToCart(p.id);
   const sc=$('pm-scroll'),dots=$('pm-dots');sc.innerHTML='';dots.innerHTML='';sc.scrollLeft=0;
   p.media.forEach((m,i)=>{
-    const s=document.createElement('div');s.className='pm-slide g-'+p.cat;
+    const s=document.createElement('div');s.className='pm-slide g-'+gk(p);
     s.innerHTML=mediaEl(m,false,m.t==='video'?'Vidéo · '+p.name:p.name)+(m.t==='video'?`<div class="pl">${PLAY}</div>`:'');
     s.onclick=()=>openViewer(p.media.map(x=>({...x,label:p.name})),i,'media');
     sc.appendChild(s);dots.appendChild(document.createElement('i')).className=i?'':'on';
@@ -800,7 +934,7 @@ function openProduct(id,replace){
   const rel=$('pm-rel');rel.innerHTML='';
   products.filter(x=>x.type===p.type&&x.id!==p.id).forEach(r=>{
     const e=document.createElement('div');e.className='rel-c';
-    e.innerHTML=`<div class="ph g-${r.cat}">${mediaEl(cover(r),false,r.ph)}</div><div class="nm">${r.name}</div><div class="pr">${r.retail} G</div>`;
+    e.innerHTML=`<div class="ph g-${gk(r)}">${mediaEl(cover(r),false,r.ph)}</div><div class="nm">${r.name}</div><div class="pr">${r.retail} G</div>`;
     e.onclick=()=>openProduct(r.id);rel.appendChild(e);
   });
   $('pm-overlay').classList.add('open');$('pm').classList.add('open');$('pm').scrollTop=0;
@@ -860,7 +994,7 @@ function renderCart(){
   cart.forEach(c=>{
     const p=products.find(x=>x.id===c.id),m=cover(p);total+=p.retail*c.qty;count+=c.qty;
     const row=document.createElement('div');row.className='c-item';
-    row.innerHTML=`<div class="c-thumb g-${p.cat}">${m&&m.u?mediaEl(m,false,''):p.ph}</div>
+    row.innerHTML=`<div class="c-thumb g-${gk(p)}">${m&&m.u?mediaEl(m,false,''):p.ph}</div>
       <div class="c-body"><div class="c-top"><div><div class="nm">${p.name}</div><div class="un">${p.retail} G · l'unité</div></div>
       <button class="c-rm" title="Retirer" onclick="removeItem('${p.id}')">${TRASH}</button></div>
       <div class="c-bot"><div class="qty"><button onclick="changeQty('${p.id}',-1)">−</button><span>${c.qty}</span><button onclick="changeQty('${p.id}',1)">+</button></div>
@@ -879,10 +1013,10 @@ function checkout(){
   window.open('https://wa.me/50948821521?text='+encodeURIComponent(msg),'_blank');
 }
 
-renderAnn();renderHero();renderGrids();renderCart();loadBanners();
+renderAnn();renderHero();renderGrids();renderCart();WS.suggest(products,[['parfum','Parfums','#a9782f'],['vin','Vins','#7a1128']],null,catName);loadBanners();loadProducts();
 window.addEventListener('load',()=>{
   let m=location.hash.match(/^#p-(.+)/);
-  if(m&&products.find(p=>p.id===m[1]))return openProduct(m[1],true);
+  {const pp=m&&products.find(p=>String(p.id)===m[1]);if(pp)return openProduct(pp.id,true);}
   m=location.hash.match(/^#a-(.+)/);
   if(m){const i=announcements.findIndex(a=>a.id===m[1]);if(i>=0){scrollTo(0,0);openViewer(announcements.map(x=>({...x,label:x.title})),i,'ann');}}
 });
