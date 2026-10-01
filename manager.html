@@ -189,6 +189,81 @@ td.act{white-space:nowrap;text-align:right}td.act .ib{margin-left:6px}
 .spin{width:22px;height:22px;border:2px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite;margin:50px auto}
 @keyframes sp{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ================= NÉOMORPHISME — ADMIN / MANAGER ================= */
+:root{--nm-hi:rgba(255,255,255,.95);--nm-lo:rgba(112,92,60,.24);--nm-out:7px 7px 16px var(--nm-lo),-6px -6px 14px var(--nm-hi);--nm-sm:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi);--nm-xs:3px 3px 7px var(--nm-lo),-3px -3px 7px var(--nm-hi);--nm-in:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi);--nm-in-sm:inset 2px 2px 5px var(--nm-lo),inset -2px -2px 5px var(--nm-hi)}
+:root[data-theme="dark"]{--nm-hi:rgba(255,255,255,.05);--nm-lo:rgba(0,0,0,.6)}
+html body,[data-theme="dark"] body{background:var(--bg)!important}
+.glass,.lcard,.stat,.panel,.ccard,#side,.tbl,.locc{background:var(--bg)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border:none!important;box-shadow:var(--nm-out)!important}
+.lcard{box-shadow:10px 10px 26px var(--nm-lo),-8px -8px 20px var(--nm-hi)!important}
+#side{box-shadow:9px 9px 22px var(--nm-lo),-7px -7px 18px var(--nm-hi)!important}
+.tbl th{background:transparent}
+tbody tr:hover{background:rgba(169,120,47,.06)}
+/* champs en creux */
+input[type=text],input[type=number],input[type=password],input[type=url],input[type=search],select,textarea,.urlfield,[data-theme="dark"] input[type=text],[data-theme="dark"] input[type=number],[data-theme="dark"] input[type=password],[data-theme="dark"] input[type=url],[data-theme="dark"] input[type=search],[data-theme="dark"] select,[data-theme="dark"] textarea,[data-theme="dark"] .urlfield{background:var(--bg)!important;border:none!important;box-shadow:var(--nm-in)!important;color:var(--ink)}
+input:focus,select:focus,textarea:focus,.urlfield:focus-within{box-shadow:var(--nm-in),0 0 0 2px rgba(169,120,47,.45)!important}
+.urlfield input[type=text],.urlfield input[type=text]:focus{box-shadow:none!important;background:transparent!important}
+.urlfield .upl{border:none!important;background:var(--bg)!important;box-shadow:var(--nm-sm);margin:5px;border-radius:30px}
+.urlfield .upl:active,.urlsfield .upl:active{box-shadow:var(--nm-in-sm)}
+.urlsfield .upl{border:none!important;background:var(--bg)!important;box-shadow:var(--nm-sm)}
+/* boutons en relief */
+.btn,.btn.ghost,.btn.danger{background:var(--bg)!important;color:var(--ink)!important;border:none!important;box-shadow:var(--nm-sm)!important;font-weight:600}
+.btn:hover,.btn.ghost:hover{color:var(--wine)!important}
+.btn:not(.ghost):not(.danger){background:linear-gradient(145deg,#b98a3d,#8f6322)!important;color:#fff!important}
+.btn:not(.ghost):not(.danger):hover{color:#fff!important;filter:brightness(1.08)}
+.btn.danger{color:var(--bad)!important}.btn.danger:hover{background:var(--bad)!important;color:#fff!important}
+.btn:active{box-shadow:var(--nm-in-sm)!important}
+.ib,[data-theme="dark"] .ib,.theme-toggle,.burger,.x{background:var(--bg)!important;border:none!important;box-shadow:var(--nm-xs)!important;transition:box-shadow .2s,color .2s}
+.ib:active,.theme-toggle:active,.burger:active,.x:active{box-shadow:var(--nm-in-sm)!important}
+.x:hover{background:var(--bg)!important;color:var(--wine)}
+.chip,[data-theme="dark"] .chip{background:var(--bg)!important;border:none!important;box-shadow:var(--nm-xs)}
+.chip.on,[data-theme="dark"] .chip.on{box-shadow:var(--nm-in-sm)!important;color:var(--wine)!important;font-weight:600}
+/* menu latéral */
+#nav a:hover{background:transparent!important;box-shadow:var(--nm-xs)}
+#nav a.on,[data-theme="dark"] #nav a.on{background:var(--bg)!important;color:var(--wine)!important;box-shadow:var(--nm-in)!important}
+#nav a.on svg{color:var(--wine)}
+.uchip{border-top:none;box-shadow:none}
+/* pastilles / vignettes en creux */
+.pill,.pill.ok,.pill.warn,.pill.bad,.pill.wine,.pill.gold,[data-theme="dark"] .pill{background:var(--bg)!important;box-shadow:var(--nm-in-sm)}
+.th,.cprev,[data-theme="dark"] .th,[data-theme="dark"] .cprev{box-shadow:var(--nm-in)}
+.pv img{box-shadow:var(--nm-sm);border:none!important}
+.tl .li,[data-theme="dark"] .tl .li{background:var(--bg)!important;box-shadow:var(--nm-in-sm)}
+.sw i{box-shadow:var(--nm-in-sm)}.sw i::after{box-shadow:var(--nm-xs)}
+#modal,[data-theme="dark"] #modal{background:var(--bg)!important;box-shadow:12px 12px 30px var(--nm-lo),-8px -8px 22px var(--nm-hi),0 40px 100px rgba(20,10,12,.25)!important}
+.mf{border-top:none}
+.stat{transition:box-shadow .2s}
+#toast{box-shadow:6px 6px 14px var(--nm-lo)}
+.savebar .btn{box-shadow:var(--nm-out)!important}
+.setup{box-shadow:var(--nm-out)}
+
+/* ================= REPÈRES « OÙ ÇA APPARAÎT » ================= */
+.locc{border-radius:22px;margin-bottom:18px;padding:0}
+.locc>summary{cursor:pointer;list-style:none;padding:14px 20px;font-weight:600;font-size:13px;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.locc>summary::-webkit-details-marker{display:none}
+.locc>summary::after{content:'▾';color:var(--gold);transition:.2s}.locc[open]>summary::after{transform:rotate(180deg)}
+.locc .lbody{padding:0 20px 18px;display:grid;gap:18px}
+.lrow{display:grid;grid-template-columns:190px 1fr;gap:20px;align-items:center}
+@media(max-width:620px){.lrow{grid-template-columns:1fr}.wire{max-width:260px}}
+.lt .lp{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.lt .lz{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;font-weight:600;margin:3px 0 6px;line-height:1.15}
+.lt .btn{margin-top:10px}
+.wire{display:flex;flex-direction:column;gap:5px;padding:10px;border-radius:14px;box-shadow:var(--nm-in);background:var(--bg);font-size:9px}
+.wire .wb{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:2px}
+.wz{border-radius:7px;background:var(--bg);box-shadow:var(--nm-in-sm);color:var(--muted);padding:3px 7px;display:flex;align-items:center;min-height:14px;line-height:1.2}
+.wz.s1{min-height:22px}.wz.s2{min-height:34px}
+.wz.top,.wz.foot{min-height:10px;font-size:8px;justify-content:center;opacity:.7}
+.wz.hl{background:linear-gradient(135deg,rgba(201,162,74,.95),rgba(169,120,47,.95));color:#fff;font-weight:700;box-shadow:0 0 0 2px rgba(169,120,47,.35),var(--nm-sm);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 5px rgba(169,120,47,.2),var(--nm-sm)}}
+a.where{display:inline-flex;align-items:center;gap:5px;font-size:11px;line-height:1.3;padding:6px 11px;border-radius:30px;background:var(--bg);box-shadow:var(--nm-xs);color:var(--wine);font-weight:500;white-space:normal}
+a.where:hover{box-shadow:var(--nm-in-sm)}
+.at{display:block;font-size:11px;color:var(--gold);line-height:1.4;margin-top:-2px}
+.mloc{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;box-shadow:var(--nm-in);margin-bottom:16px;font-size:12.5px;line-height:1.5}
+.mloc b{color:var(--wine)}
+.maprow td:first-child{white-space:nowrap}
+.mapg td{background:transparent;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;padding-top:22px;color:var(--wine)}
+.guide{display:grid;gap:10px;margin:6px 0 0;padding:0;list-style:none}
+.guide li{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;border-radius:14px;box-shadow:var(--nm-in-sm);font-size:13px;line-height:1.5}
+.guide li i{flex:none;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--wine));color:#fff;font-style:normal;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
 </style>
 </head>
 <body>
@@ -358,7 +433,7 @@ async function enter(user){
 }
 
 /* ---------- navigation ---------- */
-const NAV=[['dash','Tableau de bord'],['sep','Boutique'],['products','Produits'],['categories','Catégories'],['orders','Commandes'],['customers','Clients'],['sep','Site'],['heroes','Grandes affiches'],['announces','Annonces à la une'],['promos','Bannières promo'],['moments','Moments partagés'],['content','Contenu du site'],['sep','Équipe'],['managers','Comptes managers','super']];
+const NAV=[['dash','Tableau de bord'],['map','Où modifier quoi'],['sep','Boutique'],['products','Produits'],['categories','Catégories'],['orders','Commandes'],['customers','Clients'],['sep','Site'],['heroes','Grandes affiches'],['announces','Annonces à la une'],['promos','Bannières promo'],['moments','Moments partagés'],['content','Contenu du site'],['about','À propos de nous'],['sep','Équipe'],['managers','Comptes managers','super']];
 function buildNav(){
   $('nav').innerHTML=NAV.filter(n=>n[2]!=='super'||me.role==='super_admin').map(n=>n[0]==='sep'?`<div class="nsep">${n[1]}</div>`:`<a href="#/${n[0]}" data-r="${n[0]}">${svg(n[0])}${n[1]}</a>`).join('');
 }
@@ -443,7 +518,7 @@ async function load(name){
 /* ---------- vue liste générique ---------- */
 function listView(name){
   const c=E[name];
-  $('view').innerHTML=head(c.plural,c.note||`${c.plural} — ajoutez, modifiez ou masquez.`,(name==='categories'?`<button class="btn ghost" data-a="seedcats">Catégories par défaut</button>`:'')+`<button class="btn" data-a="new" data-e="${name}">+ Ajouter</button>`)+
+  $('view').innerHTML=head(c.plural,c.note||`${c.plural} — ajoutez, modifiez ou masquez.`,(name==='categories'?`<button class="btn ghost" data-a="seedcats">Catégories par défaut</button>`:'')+`<button class="btn" data-a="new" data-e="${name}">+ Ajouter</button>`)+locCard(name)+
   `<div class="tools"><input type="search" id="q" placeholder="Rechercher…" value="${esc(st.q[name]||'')}">${c.dept&&allowed().length>1?`<div class="chips" id="dchips">${['all','parfum','vin'].map(d=>`<span class="chip ${(st.dept[name]||'all')===d?'on':''}" data-a="dept" data-e="${name}" data-d="${d}">${d==='all'?'Tout':cap(d)}</span>`).join('')}</div>`:''}</div><div id="list"><div class="spin"></div></div>`;
   $('q').addEventListener('input',e=>{st.q[name]=e.target.value;renderList(name);});
   load(name).then(()=>renderList(name));
@@ -492,7 +567,7 @@ function refOpts(f,dept,selfId,val){
 }
 function fieldHTML(f,row){
   let v=row[f.k];if(v==null)v=f.def!==undefined?f.def:'';
-  const dep=f.dep?` data-dep="${f.dep}"`:'',cls=`fld${f.full?' full':''}`,lab=`<label>${f.l}${f.req?' <b>*</b>':''}</label>`,hint=f.help?`<div class="hint">${f.help}</div>`:'';
+  const dep=f.dep?` data-dep="${f.dep}"`:'',cls=`fld${f.full?' full':''}`,lab=`<label>${f.l}${f.req?' <b>*</b>':''}</label>${f.at?`<span class="at">📍 ${esc(f.at)}</span>`:''}`,hint=f.help?`<div class="hint">${f.help}</div>`:'';
   let inp='';
   if(f.t==='text')inp=`<input type="text" name="${f.k}" value="${esc(v)}" placeholder="${esc(f.ph||'')}">`;
   else if(f.t==='num')inp=`<input type="number" name="${f.k}" step="${f.step||'any'}" value="${esc(v)}">`;
@@ -501,7 +576,7 @@ function fieldHTML(f,row){
   else if(f.t==='url')inp=`<div class="urlfield"><input type="text" name="${f.k}" value="${esc(v)}" placeholder="Collez un lien, ou choisissez un fichier →" data-prev="1"><label class="upl">${svg('upload')}<span>Galerie</span><input type="file" accept="image/*,video/*" style="display:none" onchange="wfUpload(this)"></label></div><div class="pv">${v?`<img src="${esc(v)}" alt="" onerror="this.remove()">`:''}</div>`;
   else if(f.t==='sel'){const o=typeof f.o==='function'?f.o():f.o;inp=`<select name="${f.k}">${o.map(([a,b])=>`<option value="${esc(a)}" ${String(a)===String(v)?'selected':''}>${esc(b)}</option>`).join('')}</select>`;}
   else if(f.t==='ref')inp=`<select name="${f.k}" data-ref="1">${refOpts(f,row.department||f.dd,row.id,v)}</select>`;
-  else if(f.t==='bool')return `<div class="${cls}"${dep}><label class="sw"><input type="checkbox" name="${f.k}" ${v?'checked':''}><i></i><span>${f.l}</span></label></div>`;
+  else if(f.t==='bool')return `<div class="${cls}"${dep}><label class="sw"><input type="checkbox" name="${f.k}" ${v?'checked':''}><i></i><span>${f.l}</span></label>${f.at?`<span class="at" style="margin-left:52px">📍 ${esc(f.at)}</span>`:''}</div>`;
   return `<div class="${cls}"${dep}>${lab}${inp}${hint}</div>`;
 }
 function applyDeps(form){form.querySelectorAll('[data-dep]').forEach(el=>{const [k,val]=el.dataset.dep.split('=');el.hidden=!(form.elements[k]&&form.elements[k].value===val);});}
@@ -530,7 +605,7 @@ A.edit=d=>openForm(d.e,d.id);
 function openForm(name,id){
   const c=E[name];const row=id?cache[name].find(r=>r.id===id):{};
   if(!id&&c.dept&&!row.department)row.department=allowed()[0];
-  modal(`<div class="mh"><h3 class="serif">${id?'Modifier':'Nouveau'} ${c.label}</h3><button class="x" data-a="close">✕</button></div><div class="mb"><form id="f" class="fg" onsubmit="return false">${c.fields.map(f=>fieldHTML(f,row)).join('')}</form>${name==='products'&&id?'<div class="tiers" id="tiers"></div>':''}${name==='products'&&!id?'<p class="hint" style="margin-top:16px">Enregistrez d\'abord le produit : vous pourrez ensuite ajouter ses paliers de prix gros.</p>':''}</div><div class="mf"><button class="btn ghost" data-a="close">Fermer</button><button class="btn" data-a="save" data-e="${name}" data-id="${id||''}">Enregistrer</button></div>`);
+  modal(`<div class="mh"><h3 class="serif">${id?'Modifier':'Nouveau'} ${c.label}</h3><button class="x" data-a="close">✕</button></div><div class="mb">${MLOC(name)}<form id="f" class="fg" onsubmit="return false">${c.fields.map(f=>fieldHTML(f,row)).join('')}</form>${name==='products'&&id?'<div class="tiers" id="tiers"></div>':''}${name==='products'&&!id?'<p class="hint" style="margin-top:16px">Enregistrez d\'abord le produit : vous pourrez ensuite ajouter ses paliers de prix gros.</p>':''}</div><div class="mf"><button class="btn ghost" data-a="close">Fermer</button><button class="btn" data-a="save" data-e="${name}" data-id="${id||''}">Enregistrer</button></div>`);
   const form=$('f');applyDeps(form);
   form.addEventListener('change',e=>{if(e.target.name==='department'){applyDeps(form);refreshRefs(name,form,row);}});
   form.addEventListener('input',e=>{if(e.target.dataset.prev){const u=e.target.value.trim();e.target.parentElement.querySelector('.pv').innerHTML=/^https?:/.test(u)?`<img src="${esc(u)}" alt="" onerror="this.remove()">`:'';}});
@@ -587,7 +662,7 @@ V.dash=async()=>{
     <div class="stat glass"><div class="k">Annonces à la une</div><div class="v">${ann}</div><div class="s">actives sur l'accueil</div></div>
     <div class="stat glass ${newOrd?'hot':''}"><div class="k">Nouvelles commandes</div><div class="v">${newOrd}</div><div class="s">à traiter</div></div></div>
   <div class="two"><div>
-    <div class="panel glass"><h3 class="serif">Actions rapides</h3><div class="qa"><a class="btn" href="#/products">Produits</a><a class="btn ghost" href="#/heroes">Affiches</a><a class="btn ghost" href="#/announces">Annonces</a><a class="btn ghost" href="#/moments">Moments</a><a class="btn ghost" href="#/content">Contenu du site</a></div></div>
+    <div class="panel glass"><h3 class="serif">Actions rapides</h3><div class="qa"><a class="btn" href="#/products">Produits</a><a class="btn ghost" href="#/heroes">Affiches</a><a class="btn ghost" href="#/announces">Annonces</a><a class="btn ghost" href="#/moments">Moments</a><a class="btn ghost" href="#/content">Contenu du site</a><a class="btn ghost" href="#/about">À propos</a><a class="btn ghost" href="#/map">Où modifier quoi</a></div></div>
     <div class="panel glass"><h3 class="serif">Commandes récentes</h3>${(ordersR.data||[]).length?ordersR.data.map(o=>`<div class="li"><div class="g"><b>${esc(o.customer_name||'Client')}</b><span>${fdate(o.created_at)} · ${fnum(o.total)} G</span></div>${statusPill(o.status)}</div>`).join(''):'<p class="hint">Aucune commande enregistrée. (Les commandes envoyées par WhatsApp n\'apparaissent pas ici.)</p>'}</div></div>
   <div><div class="panel glass"><h3 class="serif">Stock à surveiller</h3>${low.length?low.map(p=>`<div class="li"><div class="g"><b>${esc(p.name)}</b><span>${esc(p.department)}</span></div><span class="pill ${p.stock<=0?'bad':'warn'}">${p.stock} ${esc(p.unit_label||'')}</span></div>`).join(''):'<p class="hint">Tout est en stock. 👌</p>'}</div></div></div>`;
 };
@@ -604,6 +679,7 @@ V.orders=async()=>{
 };
 
 /* contenu du site */
+const LOCK={logo_url:"Toutes les pages › logo en haut à gauche + page de connexion",parfum_poster_url:"Accueil › visuel « Nos parfums » · JB Parfumerie › image d'ouverture",vin_poster_url:"Accueil › visuel « Nos vins » · Fun For Us › image d'ouverture",theme_homme_url:"JB Parfumerie › carte « Homme » (Choisissez votre univers)",theme_femme_url:"JB Parfumerie › carte « Femme »",theme_mixte_url:"JB Parfumerie › carte « Mixte »",theme_rouge_url:"Fun For Us › carte « Rouge »",theme_blanc_url:"Fun For Us › carte « Blanc »",theme_rose_url:"Fun For Us › carte « Rosé »",parfum_hero_video_url:"JB Parfumerie › vidéo en haut de page (remplace l'affiche)",vin_hero_video_url:"Fun For Us › vidéo en haut de page (remplace l'affiche)"};
 const KEYS=[
  ['Identité & affiches',[['logo_url','Logo Winfum'],['parfum_poster_url','Affiche Parfums (accueil + JB Parfumerie)'],['vin_poster_url','Affiche Vins (accueil + Fun For Us)']]],
  ['Cartes catégories — JB Parfumerie',[['theme_homme_url','Carte Homme'],['theme_femme_url','Carte Femme'],['theme_mixte_url','Carte Mixte']]],
@@ -614,7 +690,7 @@ V.content=async()=>{
   if(error)toast(err(error),1);
   const m={};(data||[]).forEach(r=>m[r.key]=r.value||'');cache.content=m;
   $('view').innerHTML=head('Contenu du site','Liens des images du site. Laissez vide pour utiliser le visuel par défaut.')+
-  KEYS.map(([g,ks])=>`<div class="cgroup"><h3 class="serif">${g}</h3><div class="cgrid">${ks.map(([k,l])=>`<div class="ccard glass"><div class="cprev" id="pv-${k}">${m[k]&&!/video|\.mp4/.test(k+m[k])?`<img src="${esc(m[k])}" alt="" onerror="this.remove()">`:'Aperçu'}</div><div class="fld"><label>${l}</label><input type="text" data-key="${k}" value="${esc(m[k]||'')}" placeholder="https://…"></div></div>`).join('')}</div></div>`).join('')+
+  KEYS.map(([g,ks])=>`<div class="cgroup"><h3 class="serif">${g}</h3><div class="cgrid">${ks.map(([k,l])=>`<div class="ccard glass"><div class="cprev" id="pv-${k}">${m[k]&&!/video|\.mp4/.test(k+m[k])?`<img src="${esc(m[k])}" alt="" onerror="this.remove()">`:'Aperçu'}</div><div class="fld"><label>${l}</label><span class="at">📍 ${esc(LOCK[k]||'')}</span><input type="text" data-key="${k}" value="${esc(m[k]||'')}" placeholder="https://…"></div></div>`).join('')}</div></div>`).join('')+
   `<div class="savebar"><button class="btn" data-a="savecontent">Enregistrer le contenu</button></div>`;
   $('view').querySelectorAll('[data-key]').forEach(i=>i.addEventListener('input',()=>{const k=i.dataset.key,u=i.value.trim(),p=$('pv-'+k);p.innerHTML=/^https?:/.test(u)&&!/video|\.mp4/.test(k)?`<img src="${esc(u)}" alt="" onerror="this.remove()">`:'Aperçu';}));
 };
@@ -674,6 +750,67 @@ V.customers=async()=>{
   $('list').innerHTML=`<div class="tbl"><table><thead><tr><th>Client</th><th>Profil</th><th>Inscrit le</th><th>Favoris</th><th>Panier</th><th>Statut</th><th></th></tr></thead><tbody>${c.data.map(u=>`<tr><td><div class="nm"><b>@${esc(u.pseudo)}</b><span>${esc(u.full_name||'')}</span></div></td><td>${[u.gender&&cap(u.gender),u.birth_year&&(new Date().getFullYear()-u.birth_year)+' ans'].filter(Boolean).join(' · ')||'—'}</td><td>${fdate(u.created_at)}</td><td>${nf[u.id]||0}</td><td>${nc[u.id]||0} art.</td><td><span class="pill ${SP[u.status][0]}">${SP[u.status][1]}</span></td><td class="act">${u.status!=='approved'?`<button class="ib" title="Approuver" data-a="cst" data-id="${u.id}" data-s="approved">${svg('check')}</button>`:''}${u.status!=='blocked'?`<button class="ib d" title="Bloquer" data-a="cst" data-id="${u.id}" data-s="blocked">${svg('ban')}</button>`:`<button class="ib" title="Remettre en attente" data-a="cst" data-id="${u.id}" data-s="pending">${svg('eyeoff')}</button>`}</td></tr>`).join('')}</tbody></table></div>`;
 };
 A.cst=async d=>{const {error}=await sb.rpc('set_customer_status',{cid:d.id,s:d.s});if(error)return toast(err(error),1);toast({approved:'Compte approuvé',blocked:'Compte bloqué',pending:'Remis en attente'}[d.s]);V.customers();};
+
+
+/* ================= REPÈRES D'EMPLACEMENT (où ça apparaît sur le site) ================= */
+const WIRES={
+ home:{n:'Accueil',u:'index.html',z:[['ann','« À la une » · annonces',1],['hero','Grandes affiches (défilent)',2],['intro','Titre « Winfum »',0],['gp','Nos parfums · produits',1],['gv','Nos vins · produits',1],['gros','Bloc vente en gros',0]]},
+ parfum:{n:'JB Parfumerie',u:'jbparfumerie.html',z:[['hero','Affiche / vidéo du haut',2],['cats','Cartes Homme · Femme · Mixte',1],['grid','Produits (grille)',2],['promo','Bannière promo (bas)',1]]},
+ vin:{n:'Fun For Us · Vins',u:'funforus.html',z:[['hero','Affiche / vidéo du haut',2],['cats','Cartes Rouge · Blanc · Rosé',1],['grid','Produits (grille)',2],['moments','Moments partagés',1],['promo','Bannière promo (bas)',1]]},
+ about:{n:'À propos de nous',u:'apropos.html',z:[['hero','① En-tête',0],['story','② Atelier · image + texte',2],['values','③ Valeurs · cartes',1],['tl','④ Parcours · années',1],['cta','⑤ Bloc final',0]]}};
+const wire=(p,hl)=>{const w=WIRES[p];return `<div class="wire"><div class="wb">${esc(w.n)}</div><div class="wz top">Barre du haut</div>${w.z.map(([k,l,s])=>`<div class="wz s${s}${hl.includes(k)?' hl':''}">${hl.includes(k)?'📍 ':''}${esc(l)}</div>`).join('')}<div class="wz foot">Pied de page</div></div>`;};
+const LOCS={
+ heroes:[{p:'home',hl:['hero'],zone:'Grande affiche, juste sous « À la une »',what:"Image large (21:9) qui défile toute seule toutes les 7 secondes, avec un bouton facultatif posé dessus.",a:'#hero-s'}],
+ announces:[{p:'home',hl:['ann'],zone:'« À la une » — tout en haut de l\'accueil',what:"Cartes d'annonces (image ou vidéo + étiquette, titre, texte, bouton) que le visiteur fait défiler.",a:'#annonces'}],
+ promos:[{p:'parfum',hl:['promo'],zone:'Bas de la page JB Parfumerie',what:"Bannière qui renvoie vers la boutique Vins (emplacement « JB Parfumerie → Vins »).",a:''},{p:'vin',hl:['promo'],zone:'Bas de la page Fun For Us',what:"Bannière qui renvoie vers la boutique Parfums (emplacement « Fun For Us → Parfums »).",a:''}],
+ moments:[{p:'vin',hl:['moments'],zone:'Section « Moments partagés » de Fun For Us',what:"Galerie de photos et vidéos affichée sous les produits. La mise en page (normale / haute / large) change la taille de chaque vignette.",a:'#moments'}],
+ products:[{p:'home',hl:['gp','gv'],zone:'Accueil › « Nos parfums » et « Nos vins »',what:"Sélection de produits sur la page d'accueil (un produit parfum va dans « Nos parfums », un produit vin dans « Nos vins »).",a:'#parfums'},{p:'parfum',hl:['grid'],zone:'JB Parfumerie › « Nos fragrances »',what:"Tous les produits du département Parfum, filtrables par catégorie.",a:'#parfums'},{p:'vin',hl:['grid'],zone:'Fun For Us › grille des produits',what:"Tous les produits du département Vin, filtrables par catégorie.",a:'#grid'}],
+ categories:[{p:'parfum',hl:['cats','grid'],zone:'JB Parfumerie › cartes « Choisissez votre univers » + filtres',what:"Les catégories du département Parfum servent de filtre au-dessus des produits.",a:'#homme'},{p:'vin',hl:['cats','grid'],zone:'Fun For Us › cartes de catégories + filtres',what:"Les catégories du département Vin servent de filtre au-dessus des produits.",a:''}],
+ about:[{p:'about',hl:['hero','story','values','tl','cta'],zone:'Toute la page « À propos de nous »',what:"Tout se modifie directement sur la page, en mode édition.",a:'?edit=1'}]};
+function locCard(name){const L=LOCS[name];if(!L)return '';return `<details class="locc glass" open><summary>📍 Où ça apparaît sur le site</summary><div class="lbody">${L.map(x=>`<div class="lrow">${wire(x.p,x.hl)}<div class="lt"><div class="lp">Page · ${esc(WIRES[x.p].n)}</div><div class="lz">${esc(x.zone)}</div><p class="hint">${esc(x.what)}</p><a class="btn ghost sm" href="${WIRES[x.p].u}${x.a||''}" target="_blank">Voir cette zone sur le site ↗</a></div></div>`).join('')}</div></details>`;}
+const chip=(p,z,a)=>`<a class="where" href="${WIRES[p].u}${a||''}" target="_blank" title="Ouvrir cette zone sur le site">📍 ${esc(WIRES[p].n)} › ${esc(z)}</a>`;
+const WHERE={
+ heroes:()=>chip('home','Grande affiche','#hero-s'),
+ announces:()=>chip('home','À la une','#annonces'),
+ promos:r=>r.placement==='promo_parfum_to_vin'?chip('parfum','Bannière du bas'):chip('vin','Bannière du bas'),
+ moments:()=>chip('vin','Moments partagés','#moments'),
+ products:r=>r.department==='vin'?chip('vin','Grille produits','#grid'):chip('parfum','Grille produits','#parfums'),
+ categories:r=>r.department==='vin'?chip('vin','Cartes + filtres'):chip('parfum','Cartes + filtres','#homme')};
+Object.keys(WHERE).forEach(n=>{const cols=E[n].cols;cols.splice(cols.length-1,0,{l:'Où ça apparaît',f:WHERE[n]});});
+const FAT={
+ products:{department:'Choisit la boutique : Parfum → JB Parfumerie · Vin → Fun For Us',category_id:'Carte + filtre de la boutique (Homme / Femme / Mixte ou Rouge / Blanc / Rosé)',name:'Titre sur la carte produit et sur la fiche',slug:"Adresse interne de la fiche (non affichée)",sku:'Référence interne',price_retail:'Prix affiché sur la carte et la fiche',stock:'Disponibilité sur la fiche · alerte « Stock bas » ici',unit_label:'Unité affichée avec le prix (ex. flacon 50ml)',rating:'Note affichée sur la fiche',pack_label:'Ligne « pack » (vente en gros) sur la fiche',description:'Texte de la fiche produit (ouverte au clic sur la carte)',images:'Carrousel de la fiche · la 1re image = photo de la carte',videos:'Vidéo dans la fiche produit',abv:'Caractéristiques de la fiche vin',volume_cl:'Caractéristiques de la fiche vin',region:'Caractéristiques de la fiche vin',grape:'Caractéristiques de la fiche vin',aging:'Caractéristiques de la fiche vin',residual_sugar:'Caractéristiques de la fiche vin',is_active:'Décoché = le produit disparaît du site (sans être supprimé)'},
+ categories:{department:'Boutique concernée : JB Parfumerie ou Fun For Us',parent_id:'Fait de cette catégorie une sous-catégorie',name:'Nom du filtre / de la carte catégorie',sort_order:'Position dans la liste des filtres',is_active:'Décoché = catégorie masquée du site'},
+ heroes:{image_url:'Accueil › Grande affiche (image plein cadre)',cta_label:'Accueil › texte du bouton posé sur l\'affiche',link_url:'Accueil › page ouverte par le bouton',title:'Usage interne uniquement (non affiché)',sort_order:'Accueil › ordre de défilement des affiches',is_active:'Décoché = affiche retirée du défilement'},
+ announces:{media_type:'Accueil › À la une : image ou vidéo',sort_order:'Accueil › À la une : position dans le défilement',image_url:'Accueil › À la une : visuel de la carte',tag:'Accueil › À la une : petite étiquette sur la carte',title:'Accueil › À la une : titre de la carte',body:'Accueil › À la une : texte sous le titre',cta_label:'Accueil › À la une : texte du bouton',link_url:'Accueil › À la une : page ouverte par le bouton',is_active:'Décoché = annonce retirée de « À la une »'},
+ promos:{placement:'Choisit la page qui affiche la bannière (bas de JB Parfumerie ou bas de Fun For Us)',image_url:'Bannière du bas de page › image de fond',tag:'Bannière du bas de page › petite étiquette',title:'Bannière du bas de page › titre',body:'Bannière du bas de page › texte',cta_label:'Bannière du bas de page › texte du bouton',link_url:'Bannière du bas de page › page ouverte par le bouton',is_active:'Décoché = bannière retirée'},
+ moments:{media_type:'Fun For Us › Moments partagés : photo ou vidéo',layout:'Fun For Us › Moments : taille de la vignette dans la galerie',media_url:'Fun For Us › Moments : le visuel affiché',title:'Fun For Us › Moments : légende',sort_order:'Fun For Us › Moments : position dans la galerie',is_active:'Décoché = moment retiré de la galerie'}};
+Object.entries(FAT).forEach(([e,m])=>E[e].fields.forEach(f=>{if(m[f.k])f.at=m[f.k];}));
+const MLOC=n=>{const L=LOCS[n];if(!L)return '';if(n==='products')return `<div class="mloc"><span>📍</span><div>Ce produit apparaît sur <b>l'Accueil</b> et sur la page de sa boutique (<b>JB Parfumerie</b> ou <b>Fun For Us</b>). Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></div>`;const x=L[0];return `<div class="mloc"><span>📍</span><div>Page <b>${esc(WIRES[x.p].n)}</b> › <b>${esc(x.zone)}</b>.${L.length>1?' (aussi : '+L.slice(1).map(y=>esc(WIRES[y.p].n)+' › '+esc(y.zone)).join(' ; ')+')':''} Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></div>`;};
+
+/* ---------- Où modifier quoi (plan du site) ---------- */
+icons.map='<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>';
+icons.about='<circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01"/>';
+const MAPROWS=[
+ ['Accueil (index)',[['« À la une » — annonces','Annonces à la une','announces'],['Grande affiche qui défile','Grandes affiches','heroes'],['Nos parfums / Nos vins (produits)','Produits','products'],['Affiches Parfums / Vins (visuels des cartes)','Contenu du site › Identité & affiches','content']]],
+ ['JB Parfumerie',[['Vidéo du haut (facultatif)','Contenu du site › Vidéos du haut de page','content'],['Cartes Homme / Femme / Mixte (images)','Contenu du site › Cartes catégories — JB Parfumerie','content'],['Catégories / filtres','Catégories','categories'],['Produits','Produits','products'],['Bannière du bas → boutique Vins','Bannières promo','promos']]],
+ ['Fun For Us · Vins',[['Vidéo du haut (facultatif)','Contenu du site › Vidéos du haut de page','content'],['Cartes Rouge / Blanc / Rosé (images)','Contenu du site › Cartes catégories — Fun For Us','content'],['Catégories / filtres','Catégories','categories'],['Produits','Produits','products'],['Moments partagés (galerie)','Moments partagés','moments'],['Bannière du bas → boutique Parfums','Bannières promo','promos']]],
+ ['À propos de nous',[['Image de l\'atelier, titres, textes, valeurs, années du parcours','Directement sur la page (mode édition)','about']]],
+ ['Toutes les pages',[['Logo Winfum','Contenu du site › Identité & affiches','content']]],
+ ['Mon espace & équipe',[['Comptes clients (approuver / bloquer)','Clients','customers'],['Commandes','Commandes','orders']]]];
+V.map=()=>{
+ $('view').innerHTML=head('Où modifier quoi','Pour chaque endroit du site : où il se trouve, et dans quel menu le modifier.')+
+ `<div class="tbl"><table><thead><tr><th>Ce que vous voyez sur le site</th><th>Où le modifier ici</th><th></th></tr></thead><tbody>${MAPROWS.map(([pg,rows])=>`<tr class="mapg"><td colspan="3">${esc(pg)}</td></tr>`+rows.map(([z,m,r])=>`<tr class="maprow"><td><b>${esc(z)}</b></td><td>${esc(m)}</td><td class="act">${r==='about'?`<a class="btn sm" href="apropos.html?edit=1" target="_blank">Ouvrir la page</a>`:`<a class="btn ghost sm" href="#/${r}">Aller →</a>`}</td></tr>`).join('')).join('')}</tbody></table></div>`;
+};
+V.about=()=>{
+ $('view').innerHTML=head('À propos de nous','Cette page se modifie directement sur le site, en mode édition.',`<a class="btn" href="apropos.html?edit=1" target="_blank">Ouvrir la page et modifier ↗</a>`)+locCard('about')+
+ `<div class="panel glass"><h3 class="serif">Ce que vous pouvez modifier</h3><ul class="guide">
+ <li><i>①</i><div><b>En-tête</b> — l'étiquette, le grand titre et le texte d'introduction.</div></li>
+ <li><i>②</i><div><b>Atelier</b> — ajoutez ou changez l'<b>image</b> du cadre (depuis la galerie du téléphone ou un lien), le titre et les deux paragraphes.</div></li>
+ <li><i>③</i><div><b>Valeurs</b> — modifiez le titre et la description de chaque carte, changez l'icône (clic dessus), déplacez, ajoutez (6 max) ou supprimez.</div></li>
+ <li><i>④</i><div><b>Parcours</b> — ajoutez, modifiez, déplacez ou supprimez les <b>années</b> et leur description ; le bouton « Trier par année » les range dans l'ordre.</div></li>
+ <li><i>⑤</i><div><b>Bloc final</b> — le titre et le texte des deux boutons.</div></li></ul>
+ <p class="hint" style="margin-top:14px">Sur la page : un bouton « ✎ Modifier cette page » apparaît quand vous êtes connecté. Chaque zone modifiable est entourée de pointillés dorés et porte une étiquette qui dit exactement ce que c'est. Cliquez sur « Enregistrer » pour publier.</p></div>`;
+};
 
 /* ---------- démarrage ---------- */
 (async function boot(){
