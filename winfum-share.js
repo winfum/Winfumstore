@@ -1,17 +1,20 @@
 /* WINFUM — partage d'un produit : l'IMAGE du produit + un LIEN UNIQUE qui ramène directement au produit.
    • Sur téléphone : la feuille de partage s'ouvre avec la photo et le lien (WhatsApp, Messenger, SMS…).
-   • Le lien (…/jbparfumerie#p-ID ou …/funforus#v-ID) fait défiler la page jusqu'au produit, le met en
-     évidence, puis ouvre sa fiche.
+   • Le lien (…/p/ID) affiche un aperçu avec la photo dans WhatsApp & co (fonction api/p.js), puis fait défiler
+     la page jusqu'au produit, le met en évidence et ouvre sa fiche.
    • Si l'image ne peut pas être jointe (ou sur ordinateur) : on partage / copie le lien seul. */
 (function () {
   'use strict';
   var imgCache = {};
 
-  var ext = function () { return /\.html$/i.test(location.pathname) ? '.html' : ''; };
+  /* lien unique du produit : …/p/<id>. Les applications (WhatsApp, Messenger…) y lisent la photo, le nom et le prix
+     pour afficher l'aperçu ; une personne qui l'ouvre arrive directement sur le produit (défilement + fiche). */
   function link(p) {
-    var vin = p.type === 'vin';
-    var dir = location.href.split('#')[0].split('?')[0].replace(/[^\/]*$/, '');
-    return dir + (vin ? 'funforus' : 'jbparfumerie') + ext() + '#' + (vin ? 'v' : 'p') + '-' + encodeURIComponent(p.id);
+    if (!/^https?:$/.test(location.protocol)) { /* ouverture en local : lien direct vers la page */
+      var vin = p.type === 'vin', dir = location.href.split('#')[0].split('?')[0].replace(/[^\/]*$/, '');
+      return dir + (vin ? 'funforus' : 'jbparfumerie') + '.html#' + (vin ? 'v' : 'p') + '-' + encodeURIComponent(p.id);
+    }
+    return location.origin + '/p/' + encodeURIComponent(p.id);
   }
   function imageOf(p) {
     var m = (p.media || []).filter(function (x) { return x && x.t === 'image' && x.u; })[0];
