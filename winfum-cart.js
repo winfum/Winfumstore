@@ -10,7 +10,7 @@
   var SB_URL = 'https://cxobpfaffgevxblnbwft.supabase.co';
   var SB_KEY = 'sb_publishable_bA-89TIqjkUhoA5NIlf7uQ_UUbb8oSB';
   var WA = 'https://wa.me/50948821521';
-  var KEYS = ['winfum_cart', 'winfum_cart_parfum', 'winfum_cart_vin'];
+  var KEYS = ['winfum_cart'];
   /* produits d'exemple de l'accueil (quand la base est vide) */
   var DEMO = {
     p1: { name: 'Ambre Noir', retail: 65 }, p3: { name: 'Fleur de Lune', retail: 70 }, p5: { name: 'Petit Prince', retail: 35 },
@@ -145,7 +145,7 @@
   async function loadInfo() {
     var m = merged(), need = Object.keys(m).filter(function (id) { return !info[id]; });
     need.forEach(function (id) { if (DEMO[id]) info[id] = { name: DEMO[id].name, retail: DEMO[id].retail, img: '' }; });
-    need = need.filter(function (id) { return !info[id]; });
+    need = need.filter(function (id) { return !info[id] && /^[0-9a-f-]{32,36}$/i.test(id); }); /* seuls les vrais identifiants de la base */
     if (!need.length) return;
     try {
       var sb = await window.WinfumGetSb();
@@ -201,6 +201,7 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCart(); });
   window.addEventListener('storage', function (e) { if (!e.key || KEYS.indexOf(e.key) > -1) { loadInfo().then(render); } });
 
+  window.addEventListener('winfum:sync', function (e) { loadInfo().then(render); if (e.detail) e.detail.handled = true; });
   render();
   loadInfo().then(render);
 })();
