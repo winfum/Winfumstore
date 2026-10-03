@@ -6,6 +6,8 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="winfum-store.js"></script>
+<script src="winfum-share.js"></script>
 <title>Fun For Us — une collection Winfum</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap">
@@ -385,7 +387,7 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
   <a href="#blanc" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#c9a24a"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Blanc</span></a>
   <a href="#rose" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#d98fa0"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Rosé</span></a>
   <div class="m-sub">Nos catégories</div>
-  <a href="jbparfumerie.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#a9782f"><path d="M9 3h6l1 4H8l1-4z"/><path d="M8 7h8l1 5a5 5 0 01-10 0l1-5z"/><path d="M12 16v5M9 21h6"/></svg><span>JB Parfumerie</span><span class="pro" style="margin-left:auto">PRO</span></a>
+  <a href="jbparfumerie.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#a9782f"><rect x="9.5" y="2" width="5" height="3.2" rx="1"/><path d="M12 5.2V8"/><path d="M8.5 8h7a3.5 3.5 0 013.5 3.5v6a3.5 3.5 0 01-3.5 3.5h-7A3.5 3.5 0 015 17.5v-6A3.5 3.5 0 018.5 8z"/><path d="M9.2 14.2h5.6"/></svg><span>JB Parfumerie</span><span class="pro" style="margin-left:auto">PRO</span></a>
   <a href="funforus.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#7a1128"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Fun For Us · Vins</span><span class="pro" style="margin-left:auto">PRO</span></a>
   <div class="m-div"></div>
   <a href="espace.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Mon espace</span></a>
@@ -575,11 +577,11 @@ async function loadShop(){
     CATL={};cats.forEach(c=>{CATL[slugCat(c.name)]=c.name;});
     products=(prodRes.data||[]).map(r=>mapWine(r,catsById));
     buildChips(cats);
-    renderGrid();
+    renderGrid();window.__shopReady=true;renderCart();handleDeepLink();
     WS.suggest(products,[],'vin',p=>p.catLabel);
     if($('search-overlay').classList.contains('open'))renderSearch($('search-input').value);
   }catch(e){
-    console.warn('Chargement produits :',e.message);
+    console.warn('Chargement produits :',e.message);window.__shopReady=true;renderCart();
     $('grid').innerHTML='<div class="sempty" style="grid-column:1/-1;padding:60px 0">Impossible de charger les produits pour le moment.</div>';
   }
 }
@@ -629,12 +631,12 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 /* favoris */
 function toast(m){const t=$('toast');$('toast-txt').textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2000);}
 
-let favs=[];try{favs=JSON.parse(localStorage.getItem('winfum_favs_vin')||'[]')}catch(e){}
+let favs=[];try{favs=JSON.parse(localStorage.getItem('winfum_favs')||'[]')}catch(e){}
 function toggleFav(id,el){
   if(el.dataset.busy)return;el.dataset.busy='1';setTimeout(()=>{delete el.dataset.busy;},400);
   const on=!favs.includes(id);
   favs=on?[...favs,id]:favs.filter(x=>x!==id);
-  try{localStorage.setItem('winfum_favs_vin',JSON.stringify(favs))}catch(e){}
+  try{localStorage.setItem('winfum_favs',JSON.stringify(favs))}catch(e){}
   el.classList.toggle('active',on);
   toast(on?'Ajouté à vos favoris ♥':'Retiré des favoris');
 }
@@ -645,7 +647,7 @@ let filter='all';
 function renderGrid(){
   const g=$('grid');g.innerHTML='';
   (filter==='all'?products:products.filter(p=>p.cat===filter)).forEach(p=>{
-    const el=document.createElement('div');el.className='card reveal';
+    const el=document.createElement('div');el.className='card reveal';el.dataset.pid=p.id;
     el.innerHTML=`<div class="ph g-${gk(p)}">${mediaEl(p.media[0].t==='image'?p.media[0]:null,false,p.name)}
       <span class="abv">${p.abv} vol.</span><div class="fav ${favs.includes(p.id)?'active':''}">${HEART}</div></div>
       <div class="info"><div class="k">${p.catLabel}</div><h3 class="serif">${p.name}</h3><div class="rg">${p.region}</div>
@@ -790,8 +792,9 @@ function renderSearch(q){
 }
 
 /* fiche produit */
+let curP=null;
 function openProduct(id,replace){
-  const p=products.find(x=>x.id===id);if(!p)return;
+  const p=products.find(x=>x.id===id);if(!p)return;curP=p;WinfumShare.prepare(Object.assign({type:'vin'},p));
   $('pm-title').textContent=p.name;$('pm-region').textContent=p.region;
   $('pm-price').innerHTML=p.retail+'<span>G</span>';$('pm-pack').textContent=p.pack;
   $('pm-abv').textContent=p.abv;$('pm-vol').textContent=p.vol;$('pm-rating').textContent=p.rating+' / 5';
@@ -845,15 +848,11 @@ document.addEventListener('keydown',e=>{
 let tx=null;
 $('viewer').addEventListener('touchstart',e=>tx=e.touches[0].clientX);
 $('viewer').addEventListener('touchend',e=>{if(tx===null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50)navViewer(d>0?-1:1);tx=null;});
-function shareProduct(){
-  const d={title:'Fun For Us — Winfum',text:'Découvrez ce vin sur Winfum',url:location.href};
-  if(navigator.share)navigator.share(d).catch(()=>{});
-  else{navigator.clipboard&&navigator.clipboard.writeText(d.url);alert('Lien copié dans le presse-papiers.');}
-}
+function shareProduct(){if(curP)WinfumShare.product(Object.assign({type:'vin'},curP));}
 
 /* panier */
-let cart=[];try{cart=JSON.parse(localStorage.getItem('winfum_cart_vin')||'[]')}catch(e){}
-function save(){try{localStorage.setItem('winfum_cart_vin',JSON.stringify(cart))}catch(e){}renderCart();}
+let cart=[];try{cart=JSON.parse(localStorage.getItem('winfum_cart')||'[]')}catch(e){}
+function save(){try{localStorage.setItem('winfum_cart',JSON.stringify(cart))}catch(e){}renderCart();}
 let addLock=false;
 function addToCart(id){
   if(addLock)return;addLock=true;setTimeout(()=>addLock=false,500);
@@ -867,10 +866,10 @@ function removeItem(id){cart=cart.filter(c=>c.id!==id);save();}
 const TRASH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0l-1 14a1 1 0 01-1 1H7a1 1 0 01-1-1L5 6"/></svg>';
 function renderCart(){
   const box=$('cart-items');
-  cart=cart.filter(c=>products.find(p=>p.id===c.id));
-  box.innerHTML=cart.length?'':'<div class="empty">Votre panier est vide.<br>Ajoutez un vin pour commencer.</div>';
+  const vis=cart.filter(c=>products.find(p=>p.id===c.id));
+  box.innerHTML=vis.length?'':(cart.length&&!window.__shopReady)?'<div class="empty">Chargement de votre panier…</div>':'<div class="empty">Votre panier est vide.<br>Ajoutez un vin pour commencer.</div>';
   let total=0,count=0;
-  cart.forEach(c=>{
+  vis.forEach(c=>{
     const p=products.find(x=>x.id===c.id);total+=p.retail*c.qty;count+=c.qty;
     const row=document.createElement('div');row.className='c-item';
     row.innerHTML=`<div class="c-thumb g-${gk(p)}">${mediaEl(p.media[0].t==='image'?p.media[0]:null,false,'')}${p.media[0].u?'':p.ph}</div>
@@ -900,11 +899,25 @@ function checkout(){
   window.open('https://wa.me/50948821521?text='+encodeURIComponent(msg),'_blank');
 }
 
+/* lien partagé : défile jusqu'au produit, le met en évidence, puis ouvre sa fiche */
+let deepDone=false;
+function handleDeepLink(){
+  if(deepDone)return;const m=location.hash.match(/^#[pv]-(.+)/);if(!m)return;
+  let id=m[1];try{id=decodeURIComponent(id)}catch(e){}
+  const p=products.find(x=>String(x.id)===id);if(!p)return;
+  deepDone=true;if(filter!=='all')setFilter('all');WinfumShare.reveal(p.id,openProduct);
+}
 loadShop();renderMoments();renderCart();
-window.addEventListener('load',()=>{
-  const m=location.hash.match(/^#v-(.+)/);
-  if(m&&products.find(p=>p.id===m[1]))openProduct(m[1],true);
-});
+/* ===== panier & favoris : mêmes données sur toutes les pages, mises à jour automatiques ===== */
+function reloadFromStore(){
+  try{cart=JSON.parse(localStorage.getItem('winfum_cart')||'[]')}catch(e){cart=[]}
+  try{favs=JSON.parse(localStorage.getItem('winfum_favs')||'[]')}catch(e){favs=[]}
+  if(!Array.isArray(cart))cart=[];if(!Array.isArray(favs))favs=[];
+  renderCart();renderGrid();
+}
+window.addEventListener('winfum:sync',e=>{reloadFromStore();if(e.detail)e.detail.handled=true;});
+window.addEventListener('storage',e=>{if(e.key==='winfum_cart'||e.key==='winfum_favs')reloadFromStore();});
+window.addEventListener('pageshow',e=>{if(e.persisted)reloadFromStore();});
 </script>
 <div id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5L20 6"/></svg><span id="toast-txt"></span></div>
 <script src="winfum-account.js"></script>
