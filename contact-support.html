@@ -126,6 +126,38 @@ footer{padding:50px 24px 36px;border-top:1px solid var(--line);font-size:12px;co
 #mobile-menu>a .ic{width:20px;height:20px;flex:none;color:var(--gold)}
 #mobile-menu>a::after{content:'›';margin-left:auto;color:var(--muted);font-size:20px;line-height:1}
 #mobile-menu>a:hover{background:rgba(122,17,40,.08)}
+
+/* ===== horaires modifiables (admin / manager) ===== */
+.hh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.hh h3{margin:0}
+.pencil{flex:none;width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--wine);box-shadow:3px 3px 7px var(--nm-lo),-3px -3px 7px var(--nm-hi);transition:box-shadow .2s}
+.pencil[hidden]{display:none}
+.pencil svg{width:16px;height:16px}
+.pencil:active{box-shadow:inset 2px 2px 5px var(--nm-lo),inset -2px -2px 5px var(--nm-hi)}
+[data-theme="dark"] .pencil{color:#e17c8c}
+#hed-ov{z-index:600}
+#hed{position:fixed;left:50%;top:50%;z-index:601;width:min(460px,calc(100vw - 24px));max-height:88vh;overflow-y:auto;background:var(--bg);color:var(--ink);border-radius:26px;padding:26px 22px 22px;box-shadow:12px 12px 30px rgba(0,0,0,.3),-6px -6px 18px var(--nm-hi);opacity:0;visibility:hidden;transform:translate(-50%,-46%) scale(.96);transition:.35s cubic-bezier(.16,1,.3,1)}
+#hed.open{opacity:1;visibility:visible;transform:translate(-50%,-50%)}
+#hed h3{font-size:28px;font-style:italic;line-height:1.05}
+.hed-sub{font-size:13px;line-height:1.6;color:var(--muted);margin:8px 0 16px}
+.hed-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr) 34px;gap:8px;margin-bottom:10px;align-items:center}
+.hed-row input{width:100%;min-width:0;border:none;outline:none;border-radius:12px;padding:12px;font:14px 'Inter',sans-serif;color:var(--ink);background:var(--bg);box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi)}
+.hed-row input:focus{box-shadow:inset 3px 3px 7px var(--nm-lo),inset -3px -3px 7px var(--nm-hi),0 0 0 2px rgba(169,120,47,.4)}
+.hed-del{width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;color:var(--muted);background:var(--bg);box-shadow:3px 3px 7px var(--nm-lo),-3px -3px 7px var(--nm-hi)}
+.hed-del:hover{color:#a4262c}
+.hed-add{border:none;cursor:pointer;font:600 11px 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:11px 18px;border-radius:30px;color:var(--wine);background:var(--bg);box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+.hed-act{display:flex;gap:10px;margin-top:20px}
+.hed-act .submit{flex:1}
+.hed-cancel{border:none;cursor:pointer;padding:13px 22px;border-radius:30px;font:500 11px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);background:var(--bg);box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
+.submit:disabled{opacity:.55;cursor:default}
+/* comment commander (FAQ) */
+.fitem.open .fa{max-height:640px}
+.fa p{margin:0 0 10px}
+.fa b{color:var(--ink);font-weight:600}
+.fa .steps{list-style:none;margin:0 0 12px;padding:0;counter-reset:st}
+.fa .steps li{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.fa .steps li::before{counter-increment:st;content:counter(st);flex:none;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:600 12px 'Inter',sans-serif;color:#fff;background:linear-gradient(135deg,#a9782f,#c9a24a)}
+.fa-wa{display:inline-block;font-weight:600;color:#1a9d4d}
 </style>
 </head>
 <body>
@@ -175,25 +207,108 @@ footer{padding:50px 24px 36px;border-top:1px solid var(--line);font-size:12px;co
       </form>
     </div>
     <div class="hoursbox glass reveal">
-      <h3 class="serif">Disponibilités</h3>
-      <div class="hr"><span>Lundi – Vendredi</span><span>8h – 18h</span></div>
-      <div class="hr"><span>Samedi</span><span>9h – 15h</span></div>
-      <div class="hr"><span>Dimanche</span><span>Fermé</span></div>
+      <div class="hh"><h3 class="serif">Disponibilités</h3><button class="pencil" id="hpen" type="button" hidden aria-label="Modifier les horaires d'ouverture" title="Modifier les horaires"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button></div>
+      <div id="hrows">
+        <div class="hr"><span>Lundi – Vendredi</span><span>8h – 18h</span></div>
+        <div class="hr"><span>Samedi</span><span>9h – 15h</span></div>
+        <div class="hr"><span>Dimanche</span><span>Fermé</span></div>
+      </div>
       <div class="addr">Winfum — Haïti<br>Vente au détail &amp; en gros pour particuliers, boutiques, hôtels et restaurants.</div>
     </div>
   </div>
 
   <div class="faq reveal">
     <span class="tag">Questions fréquentes</span>
+    <div class="fitem open" onclick="this.classList.toggle('open')"><div class="fq">Comment commander ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="fa">
+      <p><b>Pour l'instant, les commandes se font uniquement via WhatsApp.</b> Le site vous permet de choisir vos produits et de préparer votre panier ; il n'y a pas de paiement en ligne.</p>
+      <ol class="steps">
+        <li><span>Ouvrez un produit sur JB Parfumerie ou Fun For Us et touchez <b>« Ajouter au panier »</b>. Vous pouvez en ajouter autant que vous voulez.</span></li>
+        <li><span>Ouvrez votre panier : un bouton <b>« Commander sur WhatsApp »</b> apparaît dès qu'il contient un produit.</span></li>
+        <li><span>Touchez ce bouton : votre liste de produits (avec les quantités et le total) est <b>automatiquement transférée vers nous sur WhatsApp</b>. Il ne vous reste qu'à envoyer le message.</span></li>
+        <li><span>Donnez-nous vos coordonnées, puis nous <b>validons la transaction ensemble</b> dans la conversation.</span></li>
+      </ol>
+      <a class="fa-wa" href="https://wa.me/50948821521" target="_blank" rel="noopener" onclick="event.stopPropagation()">Une question ? Écrivez-nous sur WhatsApp →</a>
+    </div></div>
     <div class="fitem" onclick="this.classList.toggle('open')"><div class="fq">Proposez-vous la vente en gros ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="fa">Oui, dès 6 unités par produit, avec des tarifs dégressifs. Contactez-nous pour un devis adapté à votre volume.</div></div>
-    <div class="fitem" onclick="this.classList.toggle('open')"><div class="fq">Comment passer une commande ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="fa">Ajoutez vos produits au panier sur nos boutiques Parfums ou Vins, puis validez : votre commande est envoyée directement sur WhatsApp.</div></div>
     <div class="fitem" onclick="this.classList.toggle('open')"><div class="fq">Livrez-vous partout en Haïti ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="fa">La livraison est organisée au cas par cas selon votre localisation. Écrivez-nous pour connaître les délais et frais applicables.</div></div>
     <div class="fitem" onclick="this.classList.toggle('open')"><div class="fq">Puis-je retourner un produit ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="fa">Contactez notre support avec votre numéro de commande dans les 48h suivant réception ; nous étudions chaque cas individuellement.</div></div>
   </div>
 </div>
 
+<div class="ov" id="hed-ov"></div>
+<div id="hed" role="dialog" aria-modal="true" aria-labelledby="hed-t">
+  <span class="tag">Administration</span>
+  <h3 class="serif" id="hed-t">Horaires d'ouverture</h3>
+  <p class="hed-sub">Modifiez les jours et les heures affichés sur cette page. Ils seront visibles par tous les visiteurs dès l'enregistrement.</p>
+  <div id="hed-rows"></div>
+  <button class="hed-add" id="hed-add" type="button">+ Ajouter une ligne</button>
+  <div class="hed-act"><button class="submit" id="hed-save" type="button">Enregistrer</button><button class="hed-cancel" id="hed-cancel" type="button">Annuler</button></div>
+</div>
+
 <footer>© 2026 Winfum — Contact &amp; Support</footer>
 
+<script src="winfum-cart.js"></script>
+<script>
+/* ============ HORAIRES D'OUVERTURE (Supabase · table site_content · clé « contact_hours ») ============ */
+(function(){
+  const KEY='contact_hours',CACHE='winfum_hours_cache';
+  const DEF=[{d:'Lundi – Vendredi',h:'8h – 18h'},{d:'Samedi',h:'9h – 15h'},{d:'Dimanche',h:'Fermé'}];
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const clean=a=>(Array.isArray(a)?a:[]).map(r=>({d:String(r&&r.d||'').trim().slice(0,60),h:String(r&&r.h||'').trim().slice(0,40)})).filter(r=>r.d||r.h);
+  const errMsg=e=>{const m=(e&&e.message)||String(e);return /row-level security|permission denied/i.test(m)?"Droits insuffisants : exécutez le fichier winfum_apropos_setup.sql dans Supabase (SQL Editor).":m;};
+  let rows=DEF.map(r=>({...r})),draft=[],me=null;
+
+  function paint(){$('hrows').innerHTML=rows.map(r=>`<div class="hr"><span>${esc(r.d)}</span><span>${esc(r.h)}</span></div>`).join('');}
+  try{const c=clean(JSON.parse(localStorage.getItem(CACHE)||'null'));if(c.length)rows=c;}catch(e){}
+  paint();
+
+  /* lecture publique */
+  (async()=>{
+    try{
+      const sb=await WinfumGetSb();
+      const {data,error}=await sb.from('site_content').select('value').eq('key',KEY).maybeSingle();
+      if(error)throw error;
+      if(data&&data.value){let v=data.value;if(typeof v==='string')v=JSON.parse(v);const r=clean(v&&v.rows);if(r.length){rows=r;paint();try{localStorage.setItem(CACHE,JSON.stringify(r));}catch(e){}}}
+    }catch(e){console.warn('Horaires :',e.message||e);}
+    /* le crayon n'apparaît que pour un admin / manager actif */
+    try{
+      const sb=await WinfumGetSb();const {data:{session}}=await sb.auth.getSession();if(!session)return;
+      const {data:p}=await sb.from('profiles').select('id,role,is_active').eq('id',session.user.id).maybeSingle();
+      if(!p||!p.is_active||!['super_admin','manager'].includes(p.role))return;
+      me=p;$('hpen').hidden=false;
+    }catch(e){}
+  })();
+
+  /* fenêtre d'édition */
+  function readInputs(){draft=[...document.querySelectorAll('#hed-rows .hed-row')].map(r=>({d:r.children[0].value,h:r.children[1].value}));}
+  function paintDraft(focusLast){
+    $('hed-rows').innerHTML=draft.map((r,i)=>`<div class="hed-row"><input value="${esc(r.d)}" maxlength="60" placeholder="Jour(s) · ex. Lundi – Vendredi" aria-label="Jours"><input value="${esc(r.h)}" maxlength="40" placeholder="Heures · ex. 8h – 18h" aria-label="Heures"><button class="hed-del" type="button" data-i="${i}" aria-label="Supprimer cette ligne" title="Supprimer">✕</button></div>`).join('');
+    if(focusLast){const l=$('hed-rows').querySelector('.hed-row:last-child input');if(l)l.focus();}
+  }
+  const ui=o=>{$('hed-ov').classList.toggle('open',o);$('hed').classList.toggle('open',o);};
+  function openEd(){if(!me||$('hed').classList.contains('open'))return;draft=rows.map(r=>({...r}));paintDraft();ui(true);WinfumSheet.open('hed',()=>ui(false));}
+  function closeEd(){if(!$('hed').classList.contains('open'))return;ui(false);WinfumSheet.closed('hed');}
+  $('hpen').onclick=openEd;
+  $('hed-ov').onclick=closeEd;$('hed-cancel').onclick=closeEd;
+  $('hed-add').onclick=()=>{readInputs();if(draft.length>=10)return WinfumToast('10 lignes maximum',1);draft.push({d:'',h:''});paintDraft(true);};
+  $('hed-rows').addEventListener('click',e=>{const b=e.target.closest('.hed-del');if(!b)return;readInputs();draft.splice(+b.dataset.i,1);paintDraft();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeEd();});
+  $('hed-save').onclick=async()=>{
+    readInputs();const r=clean(draft);
+    if(!r.length)return WinfumToast('Ajoutez au moins une ligne.',1);
+    const b=$('hed-save');b.disabled=true;b.textContent='Envoi…';
+    try{
+      const sb=await WinfumGetSb();
+      const {error}=await sb.from('site_content').upsert({key:KEY,value:JSON.stringify({rows:r}),updated_by:me.id,updated_at:new Date().toISOString()},{onConflict:'key'});
+      if(error)throw error;
+      rows=r;paint();try{localStorage.setItem(CACHE,JSON.stringify(r));}catch(e){}
+      closeEd();WinfumToast('Horaires enregistrés ✓ — visibles par tous les visiteurs');
+    }catch(e){WinfumToast(errMsg(e),1);}
+    b.disabled=false;b.textContent='Enregistrer';
+  };
+})();
+</script>
 <script>
 const LOGO_URL="https://i.postimg.cc/cH4Hyzb7/Logo-winfum.png";
 document.querySelectorAll('.logo-img').forEach(i=>i.src=LOGO_URL);
@@ -212,5 +327,6 @@ function sendForm(e){
 function toggleMenu(o){document.getElementById('mobile-menu').classList.toggle('open',o);document.getElementById('menu-overlay').classList.toggle('open',o);}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')toggleMenu(false);});
 </script>
+<script src="winfum-account.js"></script>
 </body>
 </html>
