@@ -6,6 +6,7 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="winfum-store.js"></script>
 <title>Mon espace — Winfum</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap">
@@ -210,7 +211,7 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
 .fcard{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;position:relative;animation:rise .45s cubic-bezier(.16,1,.3,1) backwards;transition:.3s}
 .fcard:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(28,26,23,.1)}
-.fph{height:128px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Cormorant Garamond',serif;font-size:26px;letter-spacing:.1em;position:relative}
+.fph{background:linear-gradient(155deg,#a9782f,#7a1128);height:128px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Cormorant Garamond',serif;font-size:26px;letter-spacing:.1em;position:relative}
 .g-homme{background:linear-gradient(155deg,#2b2925,#4a463e)}.g-femme{background:linear-gradient(155deg,#e8b9c4,#f3d9db);color:rgba(28,26,23,.45)}.g-mixte{background:linear-gradient(155deg,#c9ab6d,#e6d9bd);color:rgba(28,26,23,.45)}
 .g-rouge{background:linear-gradient(155deg,#4a0a17,#7a1128)}.g-blanc{background:linear-gradient(155deg,#c9b06a,#efe4c4);color:rgba(28,26,23,.45)}.g-rose{background:linear-gradient(155deg,#d98fa0,#f3d3db);color:rgba(28,26,23,.45)}
 .frm{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s}
@@ -588,6 +589,13 @@ document.querySelectorAll('.logo-img').forEach(i=>i.src=LOGO_URL);
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 window.WINFUM_SB=sb;window.WINFUM_MANUAL=true;
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2400);}
+async function loadCatalog(){
+  try{
+    const [cr,pr]=await Promise.all([sb.from('categories').select('id,name'),sb.from('products').select('id,name,department,category_id,price_retail').eq('is_active',true)]);
+    const cats={};(cr.data||[]).forEach(c=>cats[c.id]=c.name);
+    (pr.data||[]).forEach(r=>{const label=cats[r.category_id]||'Autre',slug=slugify(label)||'autre';CATL[slug]=label;CATALOG[r.id]={name:r.name||'',cat:slug,retail:Number(r.price_retail)||0,dept:r.department};});
+  }catch(e){console.warn('Catalogue :',e.message||e);}
+}
 const slugify=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const cleanPseudo=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9._-]/g,'');
 const nameEmail=n=>slugify(n).replace(/-/g,'.')+DOM;
@@ -596,13 +604,13 @@ const loading=(id,on)=>{const b=$(id);b.disabled=on;b.classList.toggle('loading'
 function setErr(id,m){const e=$(id);e.textContent=m||'';e.classList.remove('on');if(m){void e.offsetWidth;e.classList.add('on');}}
 
 /* ---------- favoris & panier (localStorage partagé avec les pages) ---------- */
-const CART_KEYS=['winfum_cart','winfum_cart_parfum','winfum_cart_vin'],FAV_KEYS=['winfum_favs','winfum_favs_home','winfum_favs_vin'];
+const CART_KEYS=['winfum_cart'],FAV_KEYS=['winfum_favs'];
 const rd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}};
-const homeKey=id=>id[0]==='v'?'winfum_cart_vin':'winfum_cart_parfum';
-const pageOf=id=>id[0]==='v'?`funforus.html#v-${id}`:`jbparfumerie.html#p-${id}`;
+const isVin=id=>{const p=CATALOG[id];return p&&p.dept?p.dept==='vin':id[0]==='v';};
+const pageOf=id=>isVin(id)?`funforus.html#v-${id}`:`jbparfumerie.html#p-${id}`;
 const favs=()=>[...new Set(FAV_KEYS.flatMap(k=>rd(k,[])))].filter(id=>CATALOG[id]);
 function cart(){const m={};CART_KEYS.forEach(k=>rd(k,[]).forEach(it=>{if(CATALOG[it.id])m[it.id]=Math.max(m[it.id]||0,it.qty||1);}));return Object.entries(m).map(([id,qty])=>({id,qty}));}
-function setQty(id,q){CART_KEYS.forEach(k=>{const l=rd(k,[]).filter(x=>x.id!==id);if(k===homeKey(id)&&q>0)l.push({id,qty:q});localStorage.setItem(k,JSON.stringify(l));});}
+function setQty(id,q){const l=rd('winfum_cart',[]).filter(x=>x.id!==id);if(q>0)l.push({id,qty:q});localStorage.setItem('winfum_cart',JSON.stringify(l));}
 function rmFav(id){FAV_KEYS.forEach(k=>localStorage.setItem(k,JSON.stringify(rd(k,[]).filter(x=>x!==id))));}
 const qtyOf=id=>(cart().find(c=>c.id===id)||{qty:0}).qty;
 
@@ -642,7 +650,7 @@ function renderCart(){
       <div class="qty"><button data-q="${it.id}" data-d="-1">−</button><span>${it.qty}</span><button data-q="${it.id}" data-d="1">+</button></div>
       <div class="cline">${(p.retail*it.qty).toLocaleString('fr-FR')} G</div><button class="crm" data-rc="${it.id}" aria-label="Retirer">${I.trash}</button>`;
     l.appendChild(r);});
-  box.insertAdjacentHTML('beforeend',`<div class="cfoot glass"><div class="tot"><small>Total</small><b>${tot.toLocaleString('fr-FR')}<span>G</span></b></div><div class="acts"><button class="btn ghost sm" data-a="clear">Vider</button><button class="btn wa" data-a="order">${I.wa}Commander via WhatsApp</button></div></div>`);
+  box.insertAdjacentHTML('beforeend',`<div class="cfoot glass"><div class="tot"><small>Total</small><b>${tot.toLocaleString('fr-FR')}<span>G</span></b></div><div class="acts"><button class="btn ghost sm" data-a="clear">Vider</button><button class="btn wa" data-a="order">${I.wa}Commander sur WhatsApp</button></div></div>`);
 }
 function renderAnn(){
   const box=$('pane-ann');
@@ -657,6 +665,8 @@ function renderAnn(){
   });
 }
 const renderAll=()=>{renderStats();renderFav();renderCart();};
+window.addEventListener('winfum:sync',e=>{renderAll();if(e.detail)e.detail.handled=true;});
+window.addEventListener('storage',e=>{if(e.key==='winfum_cart'||e.key==='winfum_favs')renderAll();});
 
 /* actions déléguées */
 document.addEventListener('click',e=>{
@@ -750,6 +760,7 @@ let cust=null;
 async function loadDashboard(){
   const {data:{session}}=await sb.auth.getSession();const user=session&&session.user;
   if(!user){$('dash').hidden=true;$('auth').hidden=false;return;}
+  if(!loadDashboard.cat){loadDashboard.cat=1;await loadCatalog();}
   const [c,p]=await Promise.all([sb.from('customers').select('*').eq('id',user.id).maybeSingle(),sb.from('profiles').select('full_name,role,is_active').eq('id',user.id).maybeSingle()]);
   cust=c.data||null;const prof=p.data&&p.data.is_active&&['super_admin','manager'].includes(p.data.role)?p.data:null;
   const name=prof?prof.full_name:(cust&&(cust.full_name||cust.pseudo))||user.email.split('@')[0];
