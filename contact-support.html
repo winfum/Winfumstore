@@ -6,6 +6,7 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="winfum-store.js"></script>
 <title>Contact & Support — Winfum</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap">
@@ -158,6 +159,8 @@ footer{padding:50px 24px 36px;border-top:1px solid var(--line);font-size:12px;co
 .fa .steps li{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
 .fa .steps li::before{counter-increment:st;content:counter(st);flex:none;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:600 12px 'Inter',sans-serif;color:#fff;background:linear-gradient(135deg,#a9782f,#c9a24a)}
 .fa-wa{display:inline-block;font-weight:600;color:#1a9d4d}
+
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -175,7 +178,7 @@ footer{padding:50px 24px 36px;border-top:1px solid var(--line);font-size:12px;co
 <div id="mobile-menu">
   <div class="menu-top"><span class="brand" style="font-size:18px;gap:8px"><span class="mono" style="width:26px;height:26px"><img class="logo-img" alt="Winfum"></span>WINFUM</span><span class="x" onclick="toggleMenu(false)">✕</span></div>
   <div class="m-sub">Nos catégories</div>
-  <a href="jbparfumerie.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#a9782f"><path d="M9 3h6l1 4H8l1-4z"/><path d="M8 7h8l1 5a5 5 0 01-10 0l1-5z"/><path d="M12 16v5M9 21h6"/></svg><span>JB Parfumerie</span><span class="pro" style="margin-left:auto">PRO</span></a>
+  <a href="jbparfumerie.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#a9782f"><rect x="9.5" y="2" width="5" height="3.2" rx="1"/><path d="M12 5.2V8"/><path d="M8.5 8h7a3.5 3.5 0 013.5 3.5v6a3.5 3.5 0 01-3.5 3.5h-7A3.5 3.5 0 015 17.5v-6A3.5 3.5 0 018.5 8z"/><path d="M9.2 14.2h5.6"/></svg><span>JB Parfumerie</span><span class="pro" style="margin-left:auto">PRO</span></a>
   <a href="funforus.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#7a1128"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Fun For Us · Vins</span><span class="pro" style="margin-left:auto">PRO</span></a>
   <div class="m-div"></div>
   <a href="espace.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Mon espace</span></a>
