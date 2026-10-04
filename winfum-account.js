@@ -9,7 +9,7 @@
   'use strict';
   var URL_ = 'https://cxobpfaffgevxblnbwft.supabase.co';
   var KEY = 'sb_publishable_bA-89TIqjkUhoA5NIlf7uQ_UUbb8oSB';
-  var CART = 'winfum_cart', FAV = 'winfum_favs', DIRTY = 'winfum_dirty', SYNCED = 'winfum_synced_uid';
+  var CART = 'winfum_cart', FAV = 'winfum_favs', DIRTY = 'winfum_dirty', SYNCED = 'winfum_synced_uid', TOMB = 'winfum_tomb';
   var WATCH = [CART, FAV];
   var LEGACY = ['winfum_cart_parfum', 'winfum_cart_vin', 'winfum_favs_home', 'winfum_favs_vin'];
 
@@ -69,17 +69,30 @@
       if (delC.length) jobs.push(sb.from('customer_cart').delete().eq('customer_id', uid).in('item_id', delC));
       var res = await Promise.all(jobs);
       res.forEach(function (r) { if (r && r.error) throw r.error; });
-      if (myRev === rev) rawDel.call(ls, DIRTY); /* tout est enregistré : plus rien en attente */
+      if (myRev === rev) { rawDel.call(ls, DIRTY); rawDel.call(ls, TOMB); } /* tout est enregistré : plus rien en attente */
     } catch (e) { console.warn('Winfum sync :', (e && e.message) || e); /* reste « en attente » et sera renvoyé */ }
     pushing = false;
     if (again) { again = false; push(); }
   }
-  var schedule = function () { clearTimeout(timer); timer = setTimeout(push, 400); };
+  var schedule = function () { clearTimeout(timer); timer = setTimeout(push, 250); };
+
+  /* « pierres tombales » : on retient ce qui a été SUPPRIMÉ sur cet appareil tant que le compte n'est pas à jour,
+     pour qu'un produit retiré ne réapparaisse jamais lors de la fusion. */
+  var tomb = function () { try { var t = JSON.parse(ls.getItem(TOMB) || '{}'); return { c: t.c || [], f: t.f || [] }; } catch (e) { return { c: [], f: [] }; } };
+  var idsOf = function (k, v) { return parse(v).map(function (i) { return idOf(i); }).filter(Boolean); };
+  function track(k, oldV, newV) {
+    var o = idsOf(k, oldV), n = idsOf(k, newV), t = tomb(), key = k === CART ? 'c' : 'f';
+    o.forEach(function (id) { if (n.indexOf(id) < 0 && t[key].indexOf(id) < 0) t[key].push(id); });
+    n.forEach(function (id) { var i = t[key].indexOf(id); if (i > -1) t[key].splice(i, 1); });
+    rawSet.call(ls, TOMB, JSON.stringify(t));
+  }
 
   /* chaque changement de panier / favoris, quelle que soit la page : marqué « à enregistrer » */
   Storage.prototype.setItem = function (k, v) {
+    var before = (this === ls && WATCH.indexOf(k) > -1) ? ls.getItem(k) : null;
     rawSet.call(this, k, v);
     if (this === ls && WATCH.indexOf(k) > -1) {
+      track(k, before, v);
       rev++; rawSet.call(ls, DIRTY, '1');
       if (uid && ok) schedule();
     }
@@ -115,8 +128,10 @@
     /* 1re connexion sur cet appareil, ou changements pas encore enregistrés → on FUSIONNE (rien ne se perd).
        Sinon le compte fait foi et l'appareil se met à jour. */
     var t = (first || dirty) ? union(L, db) : db;
+    if (dirty && !first) { var tb = tomb(); tb.c.forEach(function (id) { delete t.c[id]; }); tb.f.forEach(function (id) { t.f.delete(id); }); }
+    if (first) rawDel.call(ls, TOMB);
     writeLocal(t); rawSet.call(ls, SYNCED, u); ok = true;
-    if (sig(t) !== sig(db)) await push(); else rawDel.call(ls, DIRTY);
+    if (sig(t) !== sig(db)) await push(); else { rawDel.call(ls, DIRTY); rawDel.call(ls, TOMB); }
 
     var changed = sig(L) !== sig(t);
     if (changed) {
@@ -135,13 +150,15 @@
     return running;
   }
   function clearLocal() {
-    WATCH.concat(LEGACY, [SYNCED, DIRTY]).forEach(function (k) { rawDel.call(ls, k); });
+    WATCH.concat(LEGACY, [SYNCED, DIRTY, TOMB]).forEach(function (k) { rawDel.call(ls, k); });
     uid = null; ok = false; running = null;
   }
 
   /* retour sur l'onglet / retour du réseau : on se remet à jour */
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && ok && Date.now() - lastSync > 30000) init(lastOpts); });
   window.addEventListener('online', function () { if (ok) push(); });
+  /* en quittant la page : on tente d'envoyer tout de suite les derniers changements */
+  window.addEventListener('pagehide', function () { if (ok && uid && ls.getItem(DIRTY) === '1') push(); });
 
   window.WinfumAccount = { init: init, clearLocal: clearLocal, canon: canon };
   if (!window.WINFUM_MANUAL) {
