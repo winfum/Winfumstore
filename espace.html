@@ -347,18 +347,18 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 
 /* tablette / mobile : un cercle balaie la carte de haut en bas.
    Fluidité : seules les propriétés « transform » et « opacity » s'animent (calculées par la carte graphique, sans recalcul de
-   mise en page), une seule hauteur s'anime, l'ombre du cercle est fixe, et toute la séquence dure ~0,65 s sans délais en chaîne. */
+   mise en page), une seule hauteur s'anime, l'ombre du cercle est fixe, et toute la séquence dure ~0,85 s sans délais en chaîne. */
 @media(max-width:860px){
   #auth{max-width:600px}
-  .aw{--dt:250px;--db:210px;--ah:640px;--ft:0px;--ease:cubic-bezier(.65,0,.35,1);--aw-grad:radial-gradient(ellipse 60% 22% at 50% 100%,rgba(217,178,106,.30),transparent 70%),radial-gradient(ellipse 60% 22% at 50% 0%,rgba(217,178,106,.30),transparent 70%),linear-gradient(180deg,#8a1d3e 0%,#4a0f27 50%,#8a1d3e 100%);display:block;min-height:480px;height:var(--ah);border-radius:30px;transition:height .55s var(--ease);-webkit-tap-highlight-color:transparent}
-  .aw::before{width:1000px;height:1000px;left:50%;right:auto;top:0;transform:translate3d(-50%,calc(var(--dt) - 1000px),0);box-shadow:0 0 34px rgba(0,0,0,.34),inset 0 0 36px rgba(0,0,0,.30),inset 0 10px 24px rgba(255,255,255,.08);transition:transform .65s var(--ease);will-change:transform;backface-visibility:hidden}
+  .aw{--dt:250px;--db:210px;--ah:640px;--ft:0px;--ease:cubic-bezier(.65,0,.35,1);--aw-grad:radial-gradient(ellipse 60% 22% at 50% 100%,rgba(217,178,106,.30),transparent 70%),radial-gradient(ellipse 60% 22% at 50% 0%,rgba(217,178,106,.30),transparent 70%),linear-gradient(180deg,#8a1d3e 0%,#4a0f27 50%,#8a1d3e 100%);display:block;min-height:480px;height:var(--ah);border-radius:30px;transition:height .75s var(--ease);-webkit-tap-highlight-color:transparent}
+  .aw::before{width:1000px;height:1000px;left:50%;right:auto;top:0;transform:translate3d(-50%,calc(var(--dt) - 1000px),0);box-shadow:0 0 34px rgba(0,0,0,.34),inset 0 0 36px rgba(0,0,0,.30),inset 0 10px 24px rgba(255,255,255,.08);transition:transform .85s var(--ease);will-change:transform;backface-visibility:hidden}
   .aw.sign-up-mode::before{right:auto;top:0;transform:translate3d(-50%,calc(var(--ah) - var(--db)),0)}
 
   .aw-panels{display:block}
   .panel{position:absolute;left:0;right:0;padding:0 8%}
   .left-panel{top:0;height:var(--dt);padding-top:14px;padding-bottom:24px}
   .right-panel{bottom:0;height:var(--db);padding-top:28px;padding-bottom:14px}
-  .panel .pc{max-width:440px;transition:transform .6s var(--ease) .04s,opacity .35s ease;will-change:transform,opacity;backface-visibility:hidden}
+  .panel .pc{max-width:440px;transition:transform .8s var(--ease) .04s,opacity .55s ease;will-change:transform,opacity;backface-visibility:hidden}
   .right-panel .pc{transform:translate3d(0,320px,0);opacity:0}
   .aw.sign-up-mode .left-panel .pc{transform:translate3d(0,-320px,0);opacity:0}
   .aw.sign-up-mode .right-panel .pc{transform:none;opacity:1}
@@ -374,11 +374,11 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
   .aw-cta{margin-top:14px;padding:13px 26px;font-size:10.5px;min-height:46px}
 
   /* formulaires : positionnés par « transform » ; seul le fondu change d'un formulaire à l'autre */
-  .aw-forms{position:absolute;top:0;left:0;right:0;width:100%;max-height:none;overflow:visible;transform:translate3d(0,var(--ft),0);transition:transform .6s var(--ease);will-change:transform}
+  .aw-forms{position:absolute;top:0;left:0;right:0;width:100%;max-height:none;overflow:visible;transform:translate3d(0,var(--ft),0);transition:transform .8s var(--ease);will-change:transform}
   .aw.sign-up-mode .aw-forms{left:0}
   .aw-fin{display:block;position:relative;height:auto;transition:none}
-  .aw-forms .form{position:absolute;top:0;left:0;right:0;padding:0 clamp(22px,7vw,46px);gap:14px;opacity:0;visibility:hidden;transform:translate3d(0,10px,0);transition:opacity .18s ease,transform .18s ease,visibility 0s .18s}
-  .aw-forms .form.on{opacity:1;visibility:visible;transform:none;transition:opacity .3s ease .22s,transform .4s var(--ease) .22s,visibility 0s .22s}
+  .aw-forms .form{position:absolute;top:0;left:0;right:0;padding:0 clamp(22px,7vw,46px);gap:14px;opacity:0;visibility:hidden;transform:translate3d(0,10px,0);transition:opacity .28s ease,transform .28s ease,visibility 0s .28s}
+  .aw-forms .form.on{opacity:1;visibility:visible;transform:none;transition:opacity .4s ease .32s,transform .5s var(--ease) .32s,visibility 0s .32s}
   .aw-forms .form h2{font-size:29px;margin-bottom:2px}
 
   /* champs plus grands, faciles à toucher ; 16 px minimum = pas de zoom automatique sur iPhone */
