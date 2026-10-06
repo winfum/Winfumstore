@@ -359,7 +359,19 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
 .how-wa{color:#1a9d4d;font-weight:600}
 .how-ok{width:100%;margin-top:6px;padding:14px;border:none;border-radius:30px;background:var(--deep);color:#fff;font:500 12px 'Inter',sans-serif;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;box-shadow:4px 4px 9px var(--nm-lo),-3px -3px 8px var(--nm-hi)}
 .how-ok:hover{background:var(--wine)}
+
+/* ===== couvertures produits : la photo ENTIÈRE est visible (haut + bas), quel que soit son format ===== */
+.ph{height:auto;aspect-ratio:1/1}
+.ph .cover:not(video),.rel-c .ph .cover,.c-thumb .cover,.st .cover{object-fit:contain}
+.ph:has(img.cover),.rel-c .ph:has(img.cover),.c-thumb:has(img.cover),.st:has(img.cover){background:#fff}
+.ph img.cover{padding:2%;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.card:hover .ph img.cover{transform:scale(1.04)}
+.rel-c .ph{height:auto;aspect-ratio:1/1}
+[data-theme="dark"] .ph:has(img.cover),[data-theme="dark"] .rel-c .ph:has(img.cover),[data-theme="dark"] .c-thumb:has(img.cover),[data-theme="dark"] .st:has(img.cover){background:#fff}
+@media(max-width:560px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.info{padding:12px 12px 14px}.info h3{font-size:18px}.price{font-size:19px;margin-top:8px}.add{padding:11px 6px;font-size:10px;letter-spacing:.1em}}
 </style>
+<link rel="stylesheet" href="winfum-fiche.css">
+<script src="winfum-fiche.js"></script>
 </head>
 <body>
 
@@ -483,23 +495,7 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
 </div>
 
 <div class="ov" id="pm-overlay" onclick="closeProduct()"></div>
-<div id="pm">
-  <span class="x pm-x" onclick="closeProduct()">✕</span>
-  <div class="pm-top"><span class="pm-badge">JB Parfumerie</span><h2 class="serif" id="pm-title"></h2><div class="rg" id="pm-region"></div></div>
-  <div class="pm-media"><div class="pm-scroll" id="pm-scroll"></div><div class="pm-dots" id="pm-dots"></div></div>
-  <div class="pm-price"><b id="pm-price"></b><span class="tag">Prix détail</span></div>
-  <div class="pm-pack" id="pm-pack"></div>
-  <div class="pm-how"><button class="how-link" type="button" onclick="openHow()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01"/></svg>Comment commander ?</button></div>
-  <div class="pm-stars-row"><div class="pm-stars" id="pm-stars"></div><span id="pm-rating-txt"></span></div>
-  <div class="bdg"><span>✓ Authentique</span><span>Livraison rapide</span><span>Vente gros &amp; détail</span></div>
-  <p class="pm-desc" id="pm-desc"></p>
-  <div class="pm-act">
-    <button class="pm-add" id="pm-add">Ajouter au panier</button>
-    <div class="round" id="pm-fav" title="Favori"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 10-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z"/></svg></div>
-    <div class="round" onclick="shareProduct()" title="Partager"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 3.9M15.4 6.6L8.6 10.5"/></svg></div>
-  </div>
-  <div class="rel"><h4>Vous aimerez aussi</h4><div class="rel-s" id="pm-rel"></div></div>
-</div>
+<div id="pm"></div>
 
 <div class="ov" id="viewer">
   <div class="v-close" onclick="closeViewer()">✕</div>
@@ -541,7 +537,13 @@ function slugCat(name){return (name||'').toLowerCase().normalize('NFD').replace(
 function mapProduct(r,catsById){
   const c=catsById[r.category_id];const label=c?c.name:'Autre';
   const media=[...(r.images||[]).filter(Boolean).map(u=>({t:'image',u})),...(r.videos||[]).filter(Boolean).map(u=>({t:'video',u}))];
-  return {id:r.id,name:r.name,cat:slugCat(label),catLabel:label,retail:r.price_retail,pack:r.pack_label||'',rating:r.rating||0,ph:(r.name||'').slice(0,2).toUpperCase(),desc:r.description||'',media:media.length?media:[{t:'image',u:''}]};
+  return {id:r.id,name:r.name,cat:slugCat(label),catLabel:label,retail:r.price_retail,pack:r.pack_label||'',rating:r.rating||0,ratingCount:0,details:r.details||{},ph:(r.name||'').slice(0,2).toUpperCase(),desc:r.description||'',media:media.length?media:[{t:'image',u:''}]};
+}
+/* notes des clients : moyenne + nombre d'avis par produit (table product_reviews ; ignorée si elle n'existe pas encore) */
+async function loadRatings(sb){
+  try{const r=await sb.from('product_reviews').select('product_id,rating').eq('is_active',true).limit(5000);if(r.error)throw r.error;
+    const m={};(r.data||[]).forEach(x=>{(m[x.product_id]=m[x.product_id]||[]).push(x.rating);});
+    products.forEach(p=>{const a=m[String(p.id)];if(a&&a.length){p.rating=Math.round(a.reduce((s,v)=>s+v,0)/a.length*10)/10;p.ratingCount=a.length;}});}catch(e){}
 }
 async function loadShop(){
   try{
@@ -554,6 +556,7 @@ async function loadShop(){
     const cats=catsRes.data||[];const catsById={};cats.forEach(c=>catsById[c.id]=c);
     CATL={};cats.forEach(c=>{CATL[slugCat(c.name)]=c.name;});
     products=(prodRes.data||[]).map(r=>mapProduct(r,catsById));
+    await loadRatings(sb);
     buildChips(cats);
     renderGrid();window.__shopReady=true;renderCart();handleDeepLink();
     WS.suggest(products,[],'parfum',p=>p.catLabel);
@@ -617,8 +620,8 @@ function renderGrid(){
   const g=$('grid');g.innerHTML='';
   (filter==='all'?products:products.filter(p=>p.cat===filter)).forEach(p=>{
     const el=document.createElement('div');el.className='card reveal';el.dataset.pid=p.id;
-    el.innerHTML=`<div class="ph g-${gk(p)}">${mediaEl(cover(p),false,p.name)}<div class="fav ${favs.includes(p.id)?'active':''}">${HEART}</div></div>
-      <div class="info"><div class="k">${CATL[p.cat]}</div><h3 class="serif">${p.name}</h3><div class="stars">${starsHTML(p.rating)}</div>
+    el.innerHTML=`<div class="ph g-${gk(p)}">${mediaEl(cover(p),false,p.name)}${p.details&&p.details.badge?`<span class="cbadge">${WinfumFiche.esc(p.details.badge)}</span>`:''}<div class="fav ${favs.includes(p.id)?'active':''}">${HEART}</div></div>
+      <div class="info"><div class="k">${CATL[p.cat]}</div><h3 class="serif ${WinfumFiche.tfClass(p)}">${p.name}</h3>${p.rating?`<div class="stars">${WinfumFiche.stars(p.rating)}${p.ratingCount?`<small>(${p.ratingCount})</small>`:''}</div>`:''}
       <div class="price">${p.retail}<span>G</span></div><div class="pack">${p.pack}</div>
       <button class="add">Ajouter au panier</button></div>`;
     el.querySelector('.fav').onclick=e=>{e.stopPropagation();toggleFav(p.id,e.currentTarget)};
@@ -742,26 +745,12 @@ function renderSearch(q){
 
 let curP=null;
 function openProduct(id,replace){
-  const p=products.find(x=>x.id===id);if(!p)return;curP=p;WinfumShare.prepare(Object.assign({type:'parfum'},p));
-  $('pm-title').textContent=p.name;$('pm-region').textContent='Parfum '+CATL[p.cat].toLowerCase();
-  $('pm-price').innerHTML=p.retail+'<span>G</span>';$('pm-pack').textContent=p.pack;$('pm-desc').textContent=p.desc;
-  $('pm-stars').innerHTML=starsHTML(p.rating,14);$('pm-rating-txt').textContent=p.rating+' / 5';
-  const fav=$('pm-fav');fav.classList.toggle('active',favs.includes(p.id));fav.onclick=()=>toggleFav(p.id,fav);
-  $('pm-add').onclick=()=>addToCart(p.id);
-  const sc=$('pm-scroll'),dots=$('pm-dots');sc.innerHTML='';dots.innerHTML='';sc.scrollLeft=0;
-  p.media.forEach((m,i)=>{
-    const s=document.createElement('div');s.className='pm-slide g-'+gk(p);
-    s.innerHTML=mediaEl(m,false,m.t==='video'?'Vidéo · '+p.name:p.name)+(m.t==='video'?`<div class="pl">${PLAY}</div>`:'');
-    s.onclick=()=>openViewer(p.media.map(x=>({...x,label:p.name})),i);
-    sc.appendChild(s);dots.appendChild(document.createElement('i')).className=i?'':'on';
-  });
-  sc.onscroll=()=>{const i=Math.round(sc.scrollLeft/sc.clientWidth);[...dots.children].forEach((d,j)=>d.classList.toggle('on',i===j))};
-  const rel=$('pm-rel');rel.innerHTML='';
-  products.filter(x=>x.cat===p.cat&&x.id!==p.id).forEach(r=>{
-    const c=document.createElement('div');c.className='rel-c';
-    c.innerHTML=`<div class="ph g-${gk(r)}">${mediaEl(cover(r),false,r.ph)}</div><div class="nm">${r.name}</div><div class="pr">${r.retail} G</div>`;
-    c.onclick=()=>openProduct(r.id);rel.appendChild(c);
-  });
+  const p=products.find(x=>x.id===id);if(!p)return;curP=p;
+  const P=Object.assign({},p,{type:'parfum',brand:'JB Parfumerie',brandHref:'jbparfumerie.html'});WinfumShare.prepare(P);
+  WinfumFiche.render($('pm'),P,{isFav:favs.includes(p.id),onFav:el=>toggleFav(p.id,el),onAdd:()=>addToCart(p.id),
+    onViewer:i=>openViewer(p.media.map(x=>({...x,label:p.name})),i),
+    related:products.filter(x=>x.cat===p.cat&&x.id!==p.id).map(r=>({id:r.id,name:r.name,retail:r.retail,tf:WinfumFiche.tfClass(r),thumb:`<div class="ph g-${gk(r)}">${mediaEl(cover(r),false,r.ph)}</div>`})),
+    onOpen:openProduct,current:()=>curP&&curP.id,onRated:(avg,n)=>{p.rating=avg;p.ratingCount=n;}});
   $('pm-overlay').classList.add('open');$('pm').classList.add('open');$('pm').scrollTop=0;
   if(!replace)history.pushState({pm:1,pid:id},'',location.pathname+'#p-'+id);
 }
