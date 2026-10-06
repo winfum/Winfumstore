@@ -264,7 +264,47 @@ a.where:hover{box-shadow:var(--nm-in-sm)}
 .guide{display:grid;gap:10px;margin:6px 0 0;padding:0;list-style:none}
 .guide li{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;border-radius:14px;box-shadow:var(--nm-in-sm);font-size:13px;line-height:1.5}
 .guide li i{flex:none;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--wine));color:#fff;font-style:normal;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+.upl svg{width:17px;height:17px;flex:none}
+/* ===== formulaire produit « pro » : sections, polices, notes, jauges, éditeur de texte ===== */
+.fsec{grid-column:1/-1;margin-top:10px;padding-top:16px;border-top:1px solid var(--line)}
+.fsec:first-child{border-top:none;margin-top:0;padding-top:0}
+.fsec[hidden]{display:none}
+.fsec h4{font-size:21px;font-style:italic;color:var(--deep)}
+.fsec p{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+.tagsf,.chipsf,.fontf,.gaugef{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tagsf{padding:8px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.tagsf .tg{display:inline-flex;align-items:center;gap:6px;padding:6px 8px 6px 12px;border-radius:30px;background:linear-gradient(120deg,#7a1128,#a9782f);color:#fff;font-size:12.5px}
+.tagsf .tg button{border:none;background:rgba(255,255,255,.25);color:#fff;width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:11px;line-height:1;padding:0}
+.tagsf input.tg-in{flex:1;min-width:140px;border:none!important;box-shadow:none!important;background:transparent!important;padding:7px 6px!important;outline:none}
+.tg-sug{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;padding-top:4px}
+.tg-sug span{font-size:11.5px;color:var(--muted);align-self:center;margin-right:2px}
+.tg-sug button,.cf-b{border:1px solid var(--line);background:#fff;color:var(--ink);padding:6px 12px;border-radius:30px;font-size:12px;cursor:pointer;transition:.2s}
+.tg-sug button:hover,.cf-b:hover{border-color:var(--gold);color:var(--gold)}
+.cf-b.on{background:linear-gradient(120deg,#7a1128,#a9782f);color:#fff;border-color:transparent}
+.gaugef .gg{display:flex;gap:6px}
+.gaugef .gg button{width:44px;height:14px;border:none;border-radius:8px;background:rgba(128,118,100,.25);cursor:pointer;padding:0;transition:.2s}
+.gaugef .gg button.on{background:linear-gradient(90deg,#a9782f,#7a1128)}
+.gaugef .gw{font-style:normal;font-size:13px;font-weight:600;color:var(--wine);min-width:80px}
+.gaugef .gx{border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline}
+.fontf{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.ff{border:2px solid var(--line);background:#fff;border-radius:16px;padding:12px 14px;text-align:left;cursor:pointer;transition:.2s;display:flex;flex-direction:column;gap:2px}
+.ff b{font-size:24px;line-height:1.15;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ff span{font-size:11px;color:var(--muted)}
+.ff.on{border-color:var(--gold);box-shadow:0 0 0 3px rgba(169,120,47,.18)}
+.rtew{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.rtb{display:flex;flex-wrap:wrap;gap:5px;padding:8px;border-bottom:1px solid var(--line);background:rgba(169,120,47,.05)}
+.rtb button{min-width:34px;height:34px;padding:0 9px;border:1px solid var(--line);background:#fff;border-radius:9px;cursor:pointer;font:600 13px 'Inter',sans-serif;color:var(--ink)}
+.rtb button:hover{border-color:var(--gold);color:var(--gold)}
+.rtb .sw2{width:34px;padding:0;position:relative}.rtb .sw2::after{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--c)}
+.rtb .sep{width:1px;background:var(--line);margin:3px 3px}
+.rte{min-height:190px;max-height:420px;overflow-y:auto;padding:16px 18px;font-size:15px;line-height:1.8;outline:none;color:var(--ink)}
+.rte:empty::before{content:attr(data-ph);color:var(--muted)}
+.rte p{margin:0 0 12px}.rte h4{font:italic 600 22px/1.25 'Cormorant Garamond',serif;margin:16px 0 6px}
+.rte ul,.rte ol{margin:0 0 12px;padding-left:22px}.rte blockquote{margin:12px 0;padding:4px 0 4px 16px;border-left:3px solid var(--gold);font:italic 500 18px/1.5 'Cormorant Garamond',serif}
+.rte a{color:var(--wine);text-decoration:underline}
 </style>
+<script src="winfum-fiche.js"></script>
 </head>
 <body>
 
@@ -433,7 +473,7 @@ async function enter(user){
 }
 
 /* ---------- navigation ---------- */
-const NAV=[['dash','Tableau de bord'],['map','Où modifier quoi'],['sep','Boutique'],['products','Produits'],['categories','Catégories'],['orders','Commandes'],['customers','Clients'],['sep','Site'],['heroes','Grandes affiches'],['announces','Annonces à la une'],['promos','Bannières promo'],['moments','Moments partagés'],['content','Contenu du site'],['about','À propos de nous'],['sep','Équipe'],['managers','Comptes managers','super']];
+const NAV=[['dash','Tableau de bord'],['map','Où modifier quoi'],['sep','Boutique'],['products','Produits'],['categories','Catégories'],['reviews','Avis clients'],['orders','Commandes'],['customers','Clients'],['sep','Site'],['heroes','Grandes affiches'],['announces','Annonces à la une'],['promos','Bannières promo'],['moments','Moments partagés'],['content','Contenu du site'],['about','À propos de nous'],['sep','Équipe'],['managers','Comptes managers','super']];
 function buildNav(){
   $('nav').innerHTML=NAV.filter(n=>n[2]!=='super'||me.role==='super_admin').map(n=>n[0]==='sep'?`<div class="nsep">${n[1]}</div>`:`<a href="#/${n[0]}" data-r="${n[0]}">${svg(n[0])}${n[1]}</a>`).join('');
 }
@@ -454,32 +494,63 @@ const deptOpts=()=>allowed().map(d=>[d,cap(d)]);
 const thumb=(u,vid)=>`<span class="th">${u&&!vid?`<img src="${esc(u)}" alt="" onerror="this.remove()">`:(vid?'▶':'')}</span>`;
 const pill=(on,a='Actif',b='Masqué')=>`<span class="pill ${on?'ok':''}">${on?a:b}</span>`;
 const catName=id=>{const c=(cache.categories||[]).find(x=>x.id===id);return c?c.name:'—'};
+const FAMILIES=['Boisé','Floral','Oriental / Ambré','Frais / Aquatique','Fruité','Gourmand','Épicé','Aromatique','Musqué','Cuiré','Chypré','Fougère'];
+const CONCS=['Eau de parfum','Eau de toilette','Extrait de parfum','Eau de Cologne','Brume parfumée'];
+const NOTE_SUG=['Bergamote','Citron','Mandarine','Orange','Pamplemousse','Poivre rose','Gingembre','Lavande','Rose','Jasmin','Iris','Géranium','Cèdre','Vétiver','Santal','Patchouli','Ambre','Musc','Vanille','Fève tonka','Oud','Cuir','Café','Caramel'];
+const prodName=id=>{const p=(cache.products||[]).find(x=>String(x.id)===String(id));return p?p.name:'—'};
 const E={
  products:{table:'products',label:'produit',plural:'Produits',dept:1,by:'created_by',slugFrom:'name',order:[['created_at',false]],act:1,
   search:r=>[r.name,r.sku,r.slug,catName(r.category_id)].join(' '),
   before:v=>{v.updated_at=new Date().toISOString();},
   cols:[{l:'',f:r=>thumb(r.images&&r.images[0])},{l:'Produit',f:r=>`<div class="nm"><b>${esc(r.name)}</b><span>${esc(r.sku||r.slug)}</span></div>`},{l:'Dépt',f:r=>`<span class="pill ${r.department==='vin'?'wine':'gold'}">${esc(r.department)}</span>`},{l:'Catégorie',f:r=>esc(catName(r.category_id))},{l:'Prix détail',f:r=>`<span class="price">${fnum(r.price_retail)} G</span>`},{l:'Stock',f:r=>`<span class="pill ${r.stock<=0?'bad':r.stock<=LOW_STOCK?'warn':'ok'}">${r.stock} ${esc(r.unit_label||'')}</span>`},{l:'Statut',f:r=>pill(r.is_active,'Visible')}],
   fields:[
-   {k:'department',l:'Département',t:'sel',o:deptOpts,req:1,def:'parfum'},
+   {t:'sec',l:'Informations de base',p:'Ce que les clients voient en premier sur la carte du produit.'},
+   {k:'department',l:'Boutique',t:'sel',o:deptOpts,req:1,def:'parfum'},
    {k:'category_id',l:'Catégorie',t:'ref',src:'categories'},
-   {k:'name',l:'Nom',t:'text',req:1,full:1},
-   {k:'slug',l:'Slug (adresse)',t:'text',ph:'généré depuis le nom si vide'},
-   {k:'sku',l:'SKU',t:'text'},
+   {k:'name',l:'Nom du produit',t:'text',req:1,full:1},
    {k:'price_retail',l:'Prix détail (G)',t:'num',req:1},
-   {k:'stock',l:'Stock',t:'num',def:0},
-   {k:'unit_label',l:'Unité',t:'text',def:'unité',ph:'flacon 50ml, bouteille 75cl…'},
-   {k:'rating',l:'Note /5',t:'num',step:'0.1'},
-   {k:'pack_label',l:'Libellé du pack',t:'text',ph:'Pack de 6 pour 1290 G',full:1},
-   {k:'description',l:'Description',t:'area',full:1},
+   {k:'stock',l:'Stock (alerte interne)',t:'num',def:0},
+   {k:'pack_label',l:'Pack / vente en gros',t:'text',ph:'Pack de 6 pour 1290 G',full:1},
+   {k:'badge',det:1,l:'Étiquette sur la photo',t:'sel',o:[['','Aucune'],['Nouveau','Nouveau'],['Best-seller','Best-seller'],['Coup de cœur','Coup de cœur'],['Édition limitée','Édition limitée'],['Exclusif','Exclusif'],['Promo','Promo']]},
+   {k:'rating',l:'Note de départ /5',t:'num',step:'0.1',help:"Affichée tant qu'aucun client n'a noté. Ensuite, c'est la moyenne des avis clients."},
+   {t:'sec',l:'Style du titre',p:'Choisissez la police du nom du produit : elle change sur la carte ET sur la fiche.'},
+   {k:'title_font',det:1,t:'font',l:'Police du nom',full:1,def:'classic'},
+   {k:'tagline',det:1,l:'Accroche sous le titre',t:'text',ph:'Un sillage boisé, chaud et élégant',full:1},
+   {t:'sec',l:'Photos & vidéos',p:'La 1re image est la photo de la carte. Elle s\'affiche en entier (toute la hauteur), quel que soit son format.'},
    {k:'images',l:'Images — un lien par ligne (la 1re est la photo principale)',t:'urls',full:1},
    {k:'videos',l:'Vidéos — un lien par ligne',t:'urls',full:1},
+   {t:'sec',l:'Description',p:'Mettez en forme votre texte : gras, sous-titres, listes à puces, citation, couleurs, liens.'},
+   {k:'desc_html',det:1,t:'rich',l:'Texte de présentation',full:1,also:'description'},
+   {k:'highlights',det:1,t:'tags',l:'Points forts (jusqu\'à 6)',full:1,max:6,ph:'ex. Tenue exceptionnelle sur la peau',help:'Petites puces affichées sous le prix.'},
+   {t:'sec',l:'Fiche du parfum',p:'Pyramide olfactive, tenue, sillage… affichés sur la fiche.',dep:'department=parfum'},
+   {k:'family',det:1,l:'Famille olfactive',t:'sel',o:[['','— Non précisée —'],...FAMILIES.map(x=>[x,x])],dep:'department=parfum'},
+   {k:'concentration',det:1,l:'Concentration',t:'sel',o:[['','— Non précisée —'],...CONCS.map(x=>[x,x])],dep:'department=parfum'},
+   {k:'volume_ml',det:1,l:'Contenance (ml)',t:'num',dep:'department=parfum'},
+   {k:'notes_top',det:1,l:'Notes de tête',t:'tags',sug:NOTE_SUG,full:1,ph:'Tapez une note puis Entrée',dep:'department=parfum'},
+   {k:'notes_heart',det:1,l:'Notes de cœur',t:'tags',sug:NOTE_SUG,full:1,ph:'Tapez une note puis Entrée',dep:'department=parfum'},
+   {k:'notes_base',det:1,l:'Notes de fond',t:'tags',sug:NOTE_SUG,full:1,ph:'Tapez une note puis Entrée',dep:'department=parfum'},
+   {k:'longevity',det:1,l:'Tenue sur la peau',t:'gauge',words:['','Légère','Modérée','Bonne','Longue','Très longue'],dep:'department=parfum'},
+   {k:'sillage',det:1,l:'Sillage',t:'gauge',words:['','Intime','Discret','Modéré','Marqué','Puissant'],dep:'department=parfum'},
+   {k:'seasons',det:1,l:'Saisons',t:'chips',o:['Printemps','Été','Automne','Hiver'],full:1,dep:'department=parfum'},
+   {k:'moments',det:1,l:'Moments',t:'chips',o:['Journée','Soirée','Quotidien','Bureau','Sortie','Cadeau'],full:1,dep:'department=parfum'},
+   {t:'sec',l:'Fiche du vin',p:'Caractéristiques, dégustation et accords affichés sur la fiche.',dep:'department=vin'},
    {k:'abv',l:'Alcool (% vol.)',t:'num',step:'0.1',dep:'department=vin'},
    {k:'volume_cl',l:'Volume (cl)',t:'num',dep:'department=vin'},
    {k:'region',l:'Région',t:'text',dep:'department=vin'},
    {k:'grape',l:'Cépage',t:'text',dep:'department=vin'},
    {k:'aging',l:'Élevage',t:'text',dep:'department=vin'},
    {k:'residual_sugar',l:'Sucre résiduel',t:'text',dep:'department=vin'},
+   {k:'serving_temp',det:1,l:'Température de service',t:'text',ph:'ex. 16 °C',dep:'department=vin'},
+   {k:'tasting_eye',det:1,l:'Dégustation · Œil',t:'text',ph:'Robe rubis profond',full:1,dep:'department=vin'},
+   {k:'tasting_nose',det:1,l:'Dégustation · Nez',t:'text',ph:'Fruits noirs, épices douces',full:1,dep:'department=vin'},
+   {k:'tasting_mouth',det:1,l:'Dégustation · Bouche',t:'text',ph:'Ample, tanins soyeux',full:1,dep:'department=vin'},
+   {k:'pairing',det:1,l:'Accords mets & vin',t:'text',ph:'Viandes grillées, fromages affinés',full:1,dep:'department=vin'},
+   {t:'sec',l:'Publication'},
    {k:'is_active',l:'Visible sur le site',t:'bool',def:true,full:1}]},
+ reviews:{table:'product_reviews',label:'avis',plural:'Avis clients',dept:0,by:null,noNew:1,needs:'products',order:[['created_at',false]],act:1,note:"Modérez les avis laissés par les clients : masquez un avis inapproprié ou supprimez-le. La moyenne affichée sur le site se met à jour toute seule.",
+  search:r=>[r.author,r.comment,prodName(r.product_id)].join(' '),
+  cols:[{l:'Produit',f:r=>`<div class="nm"><b>${esc(prodName(r.product_id))}</b></div>`},{l:'Note',f:r=>`<span style="color:#c99a3b;letter-spacing:2px">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>`},{l:'Client',f:r=>esc(r.author||'—')},{l:'Commentaire',f:r=>esc((r.comment||'—').slice(0,90))},{l:'Date',f:r=>new Date(r.created_at).toLocaleDateString('fr-FR')},{l:'Statut',f:r=>pill(r.is_active,'Visible')}],
+  fields:[{k:'is_active',l:'Visible sur le site',t:'bool',def:true,full:1},{k:'comment',l:'Commentaire (vous pouvez corriger un propos inapproprié)',t:'area',full:1}]},
  categories:{table:'categories',label:'catégorie',plural:'Catégories',dept:1,by:null,slugFrom:'name',order:[['department',true],['sort_order',true]],act:1,
   search:r=>[r.name,r.slug].join(' '),
   cols:[{l:'Nom',f:r=>{const p=(cache.categories||[]).find(x=>x.id===r.parent_id);return `<div class="nm"><b>${p?esc(p.name)+' › ':''}${esc(r.name)}</b><span>${esc(r.slug)}</span></div>`}},{l:'Dépt',f:r=>`<span class="pill ${r.department==='vin'?'wine':'gold'}">${esc(r.department)}</span>`},{l:'Type',f:r=>r.parent_id?'Sous-catégorie':'Catégorie'},{l:'Ordre',f:r=>r.sort_order},{l:'Statut',f:r=>pill(r.is_active)}],
@@ -518,17 +589,17 @@ async function load(name){
 /* ---------- vue liste générique ---------- */
 function listView(name){
   const c=E[name];
-  $('view').innerHTML=head(c.plural,c.note||`${c.plural} — ajoutez, modifiez ou masquez.`,(name==='categories'?`<button class="btn ghost" data-a="seedcats">Catégories par défaut</button>`:'')+`<button class="btn" data-a="new" data-e="${name}">+ Ajouter</button>`)+locCard(name)+
+  $('view').innerHTML=head(c.plural,c.note||`${c.plural} — ajoutez, modifiez ou masquez.`,(name==='categories'?`<button class="btn ghost" data-a="seedcats">Catégories par défaut</button>`:'')+(c.noNew?'':`<button class="btn" data-a="new" data-e="${name}">+ Ajouter</button>`))+locCard(name)+
   `<div class="tools"><input type="search" id="q" placeholder="Rechercher…" value="${esc(st.q[name]||'')}">${c.dept&&allowed().length>1?`<div class="chips" id="dchips">${['all','parfum','vin'].map(d=>`<span class="chip ${(st.dept[name]||'all')===d?'on':''}" data-a="dept" data-e="${name}" data-d="${d}">${d==='all'?'Tout':cap(d)}</span>`).join('')}</div>`:''}</div><div id="list"><div class="spin"></div></div>`;
   $('q').addEventListener('input',e=>{st.q[name]=e.target.value;renderList(name);});
-  load(name).then(()=>renderList(name));
+  (c.needs?load(c.needs):Promise.resolve()).then(()=>load(name)).then(()=>renderList(name));
 }
 A.dept=d=>{st.dept[d.e]=d.d;document.querySelectorAll('#dchips .chip').forEach(c=>c.classList.toggle('on',c.dataset.d===d.d));renderList(d.e);};
 function renderList(name){
   const c=E[name];let rows=cache[name]||[];const q=(st.q[name]||'').toLowerCase(),d=st.dept[name]||'all';
   if(q)rows=rows.filter(r=>c.search(r).toLowerCase().includes(q));
   if(d!=='all')rows=rows.filter(r=>r.department===d);
-  if(!rows.length){$('list').innerHTML=`<div class="tbl"><div class="empty"><h3 class="serif">Rien ici pour l'instant</h3><p>${q?'Aucun résultat pour cette recherche.':`Cliquez sur « Ajouter » pour créer un ${c.label}.`}</p></div></div>`;return;}
+  if(!rows.length){$('list').innerHTML=`<div class="tbl"><div class="empty"><h3 class="serif">Rien ici pour l'instant</h3><p>${q?'Aucun résultat pour cette recherche.':c.noNew?'Les avis laissés par les clients apparaîtront ici.':`Cliquez sur « Ajouter » pour créer un ${c.label}.`}</p></div></div>`;return;}
   $('list').innerHTML=`<div class="tbl"><table><thead><tr>${c.cols.map(x=>`<th>${x.l}</th>`).join('')}<th></th></tr></thead><tbody>${rows.map(r=>`<tr>${c.cols.map(x=>`<td>${x.f(r)}</td>`).join('')}<td class="act">${c.act?`<button class="ib" title="${r.is_active?'Masquer':'Afficher'}" data-a="tog" data-e="${name}" data-id="${r.id}">${svg(r.is_active?'eye':'eyeoff')}</button>`:''}<button class="ib" title="Modifier" data-a="edit" data-e="${name}" data-id="${r.id}">${svg('edit')}</button><button class="ib d" title="Supprimer" data-a="del" data-e="${name}" data-id="${r.id}">${svg('del')}</button></td></tr>`).join('')}</tbody></table></div>`;
 }
 A.tog=async d=>{const r=cache[d.e].find(x=>x.id===d.id);const {error}=await sb.from(E[d.e].table).update({is_active:!r.is_active}).eq('id',d.id);if(error)return toast(err(error),1);toast(r.is_active?'Masqué':'Affiché');await load(d.e);renderList(d.e);};
@@ -566,7 +637,8 @@ function refOpts(f,dept,selfId,val){
   return `<option value="">${esc(f.none||'— Aucune —')}</option>`+cs.map(c=>`<option value="${c.id}" ${c.id===val?'selected':''}>${esc(label(c))}</option>`).join('');
 }
 function fieldHTML(f,row){
-  let v=row[f.k];if(v==null)v=f.def!==undefined?f.def:'';
+  if(f.t==='sec')return `<div class="fsec"${f.dep?` data-dep="${f.dep}"`:''}><h4 class="serif">${f.l}</h4>${f.p?`<p>${f.p}</p>`:''}</div>`;
+  let v=f.det?(row.details||{})[f.k]:row[f.k];if(v==null)v=f.def!==undefined?f.def:'';
   const dep=f.dep?` data-dep="${f.dep}"`:'',cls=`fld${f.full?' full':''}`,lab=`<label>${f.l}${f.req?' <b>*</b>':''}</label>${f.at?`<span class="at">📍 ${esc(f.at)}</span>`:''}`,hint=f.help?`<div class="hint">${f.help}</div>`:'';
   let inp='';
   if(f.t==='text')inp=`<input type="text" name="${f.k}" value="${esc(v)}" placeholder="${esc(f.ph||'')}">`;
@@ -576,6 +648,12 @@ function fieldHTML(f,row){
   else if(f.t==='url')inp=`<div class="urlfield"><input type="text" name="${f.k}" value="${esc(v)}" placeholder="Collez un lien, ou choisissez un fichier →" data-prev="1"><label class="upl">${svg('upload')}<span>Galerie</span><input type="file" accept="image/*,video/*" style="display:none" onchange="wfUpload(this)"></label></div><div class="pv">${v?`<img src="${esc(v)}" alt="" onerror="this.remove()">`:''}</div>`;
   else if(f.t==='sel'){const o=typeof f.o==='function'?f.o():f.o;inp=`<select name="${f.k}">${o.map(([a,b])=>`<option value="${esc(a)}" ${String(a)===String(v)?'selected':''}>${esc(b)}</option>`).join('')}</select>`;}
   else if(f.t==='ref')inp=`<select name="${f.k}" data-ref="1">${refOpts(f,row.department||f.dd,row.id,v)}</select>`;
+  else if(f.t==='tags'){const arr=Array.isArray(v)?v:String(v||'').split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean);inp=`<div class="tagsf" data-max="${f.max||12}"><input type="hidden" name="${f.k}" value="${esc(JSON.stringify(arr))}"><input type="text" class="tg-in" placeholder="${esc(f.ph||'')}" enterkeyhint="done">${f.sug?`<div class="tg-sug"><span>Suggestions :</span>${f.sug.map(x=>`<button type="button" data-sug="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}</div>`;}
+  else if(f.t==='chips'){const arr=Array.isArray(v)?v:[];inp=`<div class="chipsf"><input type="hidden" name="${f.k}" value="${esc(JSON.stringify(arr))}">${f.o.map(x=>`<button type="button" class="cf-b ${arr.includes(x)?'on':''}" data-cf="${esc(x)}">${esc(x)}</button>`).join('')}</div>`;}
+  else if(f.t==='gauge'){const n=Math.max(0,Math.min(5,Number(v)||0));inp=`<div class="gaugef" data-words='${esc(JSON.stringify(f.words||[]))}'><input type="hidden" name="${f.k}" value="${n||''}"><span class="gg">${[1,2,3,4,5].map(i=>`<button type="button" data-g="${i}" class="${i<=n?'on':''}" aria-label="${i} sur 5"></button>`).join('')}</span><em class="gw">${(f.words||[])[n]||''}</em><button type="button" class="gx" data-g="0">Effacer</button></div>`;}
+  else if(f.t==='font'){const cur=WinfumFiche.FONTS[v]?v:'classic';inp=`<div class="fontf"><input type="hidden" name="${f.k}" value="${cur}">${Object.entries(WinfumFiche.FONTS).map(([k,o])=>{WinfumFiche.ensureFont(k);return `<button type="button" class="ff ${k===cur?'on':''}" data-ff="${k}"><b style="font-family:${o.css};font-style:${o.st||'normal'};font-weight:${o.w||600};${o.tt?'text-transform:uppercase;font-size:17px;':''}">${esc(row.name||'Nom du produit')}</b><span>${o.label}</span></button>`;}).join('')}</div>`;}
+  else if(f.t==='rich'){const html=(row.details&&row.details.desc_html)?WinfumFiche.clean(row.details.desc_html):WinfumFiche.clean(String(row.description||'').split(/\n{2,}/).map(x=>'<p>'+esc(x).replace(/\n/g,'<br>')+'</p>').join(''));
+    inp=`<div class="rtew"><div class="rtb"><button type="button" data-c="bold" title="Gras"><b>B</b></button><button type="button" data-c="italic" title="Italique"><i>I</i></button><button type="button" data-c="underline" title="Souligné"><u>U</u></button><i class="sep"></i><button type="button" data-c="h4" title="Sous-titre">Titre</button><button type="button" data-c="ul" title="Liste à puces">• Liste</button><button type="button" data-c="ol" title="Liste numérotée">1. Liste</button><button type="button" data-c="quote" title="Citation">❝</button><i class="sep"></i><button type="button" class="sw2" data-c="col" data-v="#1c1a17" style="--c:#1c1a17" title="Couleur normale"></button><button type="button" class="sw2" data-c="col" data-v="#a9782f" style="--c:#a9782f" title="Or"></button><button type="button" class="sw2" data-c="col" data-v="#7a1128" style="--c:#7a1128" title="Bordeaux"></button><button type="button" class="sw2" data-c="col" data-v="#8d8a85" style="--c:#8d8a85" title="Gris"></button><i class="sep"></i><button type="button" data-c="link" title="Lien">🔗</button><button type="button" data-c="clear" title="Effacer la mise en forme">Tx</button></div><div class="rte" contenteditable="true" data-ph="Décrivez le produit : son histoire, son caractère, comment le porter / le déguster…">${html}</div><input type="hidden" name="${f.k}" value=""></div>`;}
   else if(f.t==='bool')return `<div class="${cls}"${dep}><label class="sw"><input type="checkbox" name="${f.k}" ${v?'checked':''}><i></i><span>${f.l}</span></label>${f.at?`<span class="at" style="margin-left:52px">📍 ${esc(f.at)}</span>`:''}</div>`;
   return `<div class="${cls}"${dep}>${lab}${inp}${hint}</div>`;
 }
@@ -584,21 +662,67 @@ function refreshRefs(name,form,row){
   const dept=form.elements.department?form.elements.department.value:null;
   E[name].fields.filter(f=>f.t==='ref').forEach(f=>{const s=form.elements[f.k];if(!s)return;const cur=s.value;s.innerHTML=refOpts(f,dept,row.id,cur);});
 }
-function collect(c,form){
-  const v={};
+function collect(c,form,row){
+  const v={},D={...((row&&row.details)||{})};let hasDet=false;
   for(const f of c.fields){
+    if(f.t==='sec')continue;
     const el=form.elements[f.k];if(!el)continue;
+    if(f.det)hasDet=true;
     if(f.dep&&el.closest('[data-dep]').hidden)continue;
     let x;
     if(f.t==='bool')x=el.checked;
     else if(f.t==='num'){x=el.value===''?null:Number(el.value);}
     else if(f.t==='urls')x=el.value.split('\n').map(s=>s.trim()).filter(Boolean);
     else if(f.t==='sel')x=el.value;
+    else if(f.t==='tags'||f.t==='chips'){try{x=JSON.parse(el.value||'[]')}catch(e){x=[]}}
+    else if(f.t==='gauge')x=el.value===''?null:Number(el.value);
+    else if(f.t==='font')x=el.value||'classic';
+    else if(f.t==='rich'){const html=WinfumFiche.clean(el.parentElement.querySelector('.rte').innerHTML);x=html||null;if(f.also)v[f.also]=html?WinfumFiche.plain(html):null;}
     else{x=el.value.trim();if(x===''&&!f.keep)x=null;}
     if(f.req&&(x===null||x===''||Number.isNaN(x))){toast(`Champ obligatoire : ${f.l}`,1);el.focus();return null;}
-    v[f.k]=x;
+    if(f.det){if(x===null||x===''||(Array.isArray(x)&&!x.length)||(f.k==='title_font'&&x==='classic'))delete D[f.k];else D[f.k]=x;}
+    else v[f.k]=x;
   }
+  if(hasDet)v.details=D;
   return v;
+}
+/* ---------- champs avancés : notes (tags), jauges, choix multiples, polices, éditeur de texte ---------- */
+function wireProductWidgets(form){
+  const setJSON=(box,arr)=>{box.querySelector('input[type=hidden]').value=JSON.stringify(arr);};
+  const getJSON=box=>{try{return JSON.parse(box.querySelector('input[type=hidden]').value||'[]')}catch(e){return[]}};
+  const drawTags=box=>{box.querySelectorAll('.tg').forEach(x=>x.remove());const inp=box.querySelector('.tg-in');
+    getJSON(box).forEach((t,i)=>{const b=document.createElement('span');b.className='tg';b.innerHTML=`${esc(t)}<button type="button" data-rm="${i}" aria-label="Retirer">✕</button>`;box.insertBefore(b,inp);});};
+  const addTag=(box,t)=>{t=String(t||'').trim().slice(0,40);if(!t)return;const a=getJSON(box);if(a.length>=(+box.dataset.max||12)||a.some(x=>x.toLowerCase()===t.toLowerCase()))return;a.push(t);setJSON(box,a);drawTags(box);};
+  form.querySelectorAll('.tagsf').forEach(box=>{drawTags(box);const inp=box.querySelector('.tg-in');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===','){e.preventDefault();addTag(box,inp.value);inp.value='';}else if(e.key==='Backspace'&&!inp.value){const a=getJSON(box);a.pop();setJSON(box,a);drawTags(box);}});
+    inp.addEventListener('blur',()=>{if(inp.value.trim()){addTag(box,inp.value);inp.value='';}});
+    box.addEventListener('click',e=>{const rm=e.target.closest('[data-rm]'),sg=e.target.closest('[data-sug]');
+      if(rm){const a=getJSON(box);a.splice(+rm.dataset.rm,1);setJSON(box,a);drawTags(box);}
+      if(sg)addTag(box,sg.dataset.sug);});});
+  form.addEventListener('click',e=>{
+    const cf=e.target.closest('[data-cf]');if(cf){const box=cf.closest('.chipsf'),a=getJSON(box),v=cf.dataset.cf,i=a.indexOf(v);if(i>-1)a.splice(i,1);else a.push(v);setJSON(box,a);cf.classList.toggle('on',i<0);return;}
+    const g=e.target.closest('[data-g]');if(g){const box=g.closest('.gaugef'),n=+g.dataset.g,words=JSON.parse(box.dataset.words||'[]'),inp=box.querySelector('input[type=hidden]');
+      const next=(n&&inp.value==String(n))?0:n;inp.value=next||'';box.querySelectorAll('.gg button').forEach(b=>b.classList.toggle('on',+b.dataset.g<=next));box.querySelector('.gw').textContent=words[next]||'';return;}
+    const ff=e.target.closest('[data-ff]');if(ff){const box=ff.closest('.fontf');box.querySelector('input[type=hidden]').value=ff.dataset.ff;box.querySelectorAll('.ff').forEach(b=>b.classList.toggle('on',b===ff));return;}
+  });
+  /* éditeur de texte */
+  form.querySelectorAll('.rtew').forEach(w=>{
+    const ed=w.querySelector('.rte');
+    w.querySelector('.rtb').addEventListener('mousedown',e=>e.preventDefault());
+    ed.addEventListener('paste',e=>{e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData('text/plain');document.execCommand('insertText',false,t);});
+    const inBlock=tag=>{let n=getSelection().anchorNode;n=n&&(n.nodeType===1?n:n.parentElement);while(n&&n!==ed){if(n.tagName===tag)return true;n=n.parentElement;}return false;};
+    w.querySelector('.rtb').addEventListener('click',e=>{const b=e.target.closest('button[data-c]');if(!b)return;ed.focus();const c=b.dataset.c;
+      if(c==='h4')document.execCommand('formatBlock',false,inBlock('H4')?'p':'h4');
+      else if(c==='quote')document.execCommand('formatBlock',false,inBlock('BLOCKQUOTE')?'p':'blockquote');
+      else if(c==='ul')document.execCommand('insertUnorderedList');
+      else if(c==='ol')document.execCommand('insertOrderedList');
+      else if(c==='col')document.execCommand('foreColor',false,b.dataset.v);
+      else if(c==='link'){const sel=getSelection();if(sel.isCollapsed)return toast('Sélectionnez d\'abord le texte à transformer en lien',1);const rg=sel.getRangeAt(0).cloneRange();const u=prompt('Adresse du lien (https://…, mailto:…, tel:…). Laissez vide pour retirer le lien.','https://');ed.focus();sel.removeAllRanges();sel.addRange(rg);if(u===null)return;const v=u.trim();if(!v||v==='https://')document.execCommand('unlink');else if(/^(https?:\/\/|mailto:|tel:)/i.test(v))document.execCommand('createLink',false,v);else toast('Lien non valide',1);}
+      else if(c==='clear'){document.execCommand('removeFormat');document.execCommand('unlink');document.execCommand('formatBlock',false,'p');}
+      else document.execCommand(c);});
+  });
+  /* le nom du produit se reflète dans l'aperçu des polices */
+  const nm=form.elements.name;if(nm)nm.addEventListener('input',()=>form.querySelectorAll('.ff b').forEach(b=>b.textContent=nm.value||'Nom du produit'));
 }
 A.new=d=>openForm(d.e);
 A.edit=d=>openForm(d.e,d.id);
@@ -606,13 +730,13 @@ function openForm(name,id){
   const c=E[name];const row=id?cache[name].find(r=>r.id===id):{};
   if(!id&&c.dept&&!row.department)row.department=allowed()[0];
   modal(`<div class="mh"><h3 class="serif">${id?'Modifier':'Nouveau'} ${c.label}</h3><button class="x" data-a="close">✕</button></div><div class="mb">${MLOC(name)}<form id="f" class="fg" onsubmit="return false">${c.fields.map(f=>fieldHTML(f,row)).join('')}</form>${name==='products'&&id?'<div class="tiers" id="tiers"></div>':''}${name==='products'&&!id?'<p class="hint" style="margin-top:16px">Enregistrez d\'abord le produit : vous pourrez ensuite ajouter ses paliers de prix gros.</p>':''}</div><div class="mf"><button class="btn ghost" data-a="close">Fermer</button><button class="btn" data-a="save" data-e="${name}" data-id="${id||''}">Enregistrer</button></div>`);
-  const form=$('f');applyDeps(form);
+  const form=$('f');applyDeps(form);wireProductWidgets(form);
   form.addEventListener('change',e=>{if(e.target.name==='department'){applyDeps(form);refreshRefs(name,form,row);}});
   form.addEventListener('input',e=>{if(e.target.dataset.prev){const u=e.target.value.trim();e.target.parentElement.querySelector('.pv').innerHTML=/^https?:/.test(u)?`<img src="${esc(u)}" alt="" onerror="this.remove()">`:'';}});
   if(name==='products'&&id)tiersUI(id);
 }
 A.save=async(d,btn)=>{
-  const c=E[d.e],form=$('f'),id=d.id;const v=collect(c,form);if(!v)return;
+  const c=E[d.e],form=$('f'),id=d.id;const row0=id?(cache[d.e]||[]).find(r=>r.id===id):null,v=collect(c,form,row0);if(!v)return;
   const auto=!v.slug&&c.slugFrom&&v[c.slugFrom];if(auto)v.slug=slugify(v[c.slugFrom]);
   if(c.before)c.before(v);
   btn.disabled=true;
@@ -620,7 +744,7 @@ A.save=async(d,btn)=>{
   let {data,error}=await run();
   if(error&&auto&&/duplicate|unique/i.test(error.message)){v.slug+='-'+Math.random().toString(36).slice(2,5);({data,error}=await run());}
   btn.disabled=false;
-  if(error)return toast(err(error),1);
+  if(error)return toast(/details/i.test(error.message)?"Colonne « details » absente : exécutez une fois le fichier winfum_products_setup.sql dans Supabase (SQL Editor), puis réessayez.":err(error),1);
   toast('Enregistré');await load(d.e);if(d.e==='categories')await loadCats();
   if(d.e==='products'&&!id){openForm('products',data.id);}else closeModal();
   renderListSafe(d.e);
@@ -646,7 +770,7 @@ A.tierdel=async d=>{const {error}=await sb.from('product_price_tiers').delete().
 
 /* ---------- vues ---------- */
 const V={};
-['products','categories','heroes','announces','promos','moments'].forEach(n=>V[n]=()=>listView(n));
+['products','categories','reviews','heroes','announces','promos','moments'].forEach(n=>V[n]=()=>listView(n));
 
 V.dash=async()=>{
   const cnt=async(t,f)=>{let q=sb.from(t).select('id',{count:'exact',head:true});if(f)q=f(q);const {count}=await q;return count||0;};
@@ -788,6 +912,7 @@ Object.entries(FAT).forEach(([e,m])=>E[e].fields.forEach(f=>{if(m[f.k])f.at=m[f.
 const MLOC=n=>{const L=LOCS[n];if(!L)return '';if(n==='products')return `<div class="mloc"><span>📍</span><div>Ce produit apparaît sur <b>l'Accueil</b> et sur la page de sa boutique (<b>JB Parfumerie</b> ou <b>Fun For Us</b>). Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></div>`;const x=L[0];return `<div class="mloc"><span>📍</span><div>Page <b>${esc(WIRES[x.p].n)}</b> › <b>${esc(x.zone)}</b>.${L.length>1?' (aussi : '+L.slice(1).map(y=>esc(WIRES[y.p].n)+' › '+esc(y.zone)).join(' ; ')+')':''} Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></div>`;};
 
 /* ---------- Où modifier quoi (plan du site) ---------- */
+icons.reviews='<path d="M12 2.6l2.9 6 6.5.9-4.7 4.6 1.1 6.5L12 17.5l-5.8 3.1 1.1-6.5L2.6 9.5l6.5-.9z"/>';
 icons.map='<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>';
 icons.about='<circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01"/>';
 const MAPROWS=[
