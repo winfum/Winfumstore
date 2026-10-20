@@ -7,6 +7,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="winfum-store.js"></script>
+<link rel="preconnect" href="https://cxobpfaffgevxblnbwft.supabase.co" crossorigin>
+<link rel="preconnect" href="https://i.postimg.cc" crossorigin>
 <script src="winfum-share.js"></script>
 <script src="winfum-site.js"></script>
 <title>WINFUM — Parfums &amp; Vins d'exception</title>
@@ -637,17 +639,14 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
    Laissez "" pour ne rien afficher (un fond élégant apparaît).
    ============================================================ */
 const LOGO_URL="https://i.postimg.cc/cH4Hyzb7/Logo-winfum.png";
-const PARFUM_POSTER_URL="https://i.postimg.cc/B6YvqgWW/Parfum-winfum.png";
-const VIN_POSTER_URL="https://i.postimg.cc/W3W42nRL/Vin-winfum.png";
+const PARFUM_POSTER_URL="";   // (inutilisé) réglé dans Manager › Images & logo
+const VIN_POSTER_URL="";
 
 /* ANNONCES À LA UNE (affiches ou vidéos) — la carte s'adapte toute seule au format du média.
    t = 'image' ou 'video' · u = lien du média · tag/title/text = textes · cta+link = bouton (facultatif)
    Supprimez une ligne pour retirer une annonce ; tableau vide = la section disparaît.  */
-let announcements=[
- {id:'a1',t:'image',u:'',ratio:.8,tag:'Nouveauté',title:'Nouvelle collection Homme',text:'Ambre Noir et Cèdre Royal : des sillages boisés signés JB Parfumerie.',cta:'Voir les parfums',link:'jbparfumerie.html'},
- {id:'a2',t:'video',u:'',ratio:1.78,tag:'Vidéo',title:'Vendanges 2026',text:'Dans le chai avec Fun For Us : la récolte en images.',cta:'Voir les vins',link:'funforus.html'},
- {id:'a3',t:'image',u:'',ratio:1,tag:'Professionnels',title:'Offre gros volume',text:'Tarifs dégressifs pour boutiques, hôtels et restaurants.',cta:'Nous écrire',link:'https://wa.me/50948821521'},
-];
+let announcements=[];   /* alimenté par Manager › Annonces à la une */
+let annReady=false,heroReady=false,heroFallback=false;
 
 /* PRODUITS — prix en G. Modifiez aussi les mêmes produits dans jbparfumerie.html / funforus.html */
 let products=[
@@ -669,26 +668,29 @@ let products=[
 ];
 /* ============================================================ */
 const DEMO_PRODUCTS=products.slice();
+products=[];   /* les vrais produits arrivent de la base ; les exemples ne servent qu'en secours */
 
 const $=id=>document.getElementById(id);
 const CATL={homme:'Homme',femme:'Femme',mixte:'Mixte',rouge:'Rouge',blanc:'Blanc',rose:'Rosé'};
 const cssImg=(k,u)=>document.documentElement.style.setProperty(k,u?`url("${u}")`:'none');
-document.querySelectorAll('.logo-img').forEach(i=>i.src=LOGO_URL);
-cssImg('--parfum-img',PARFUM_POSTER_URL);cssImg('--vin-img',VIN_POSTER_URL);
+WinfumSite.logo(LOGO_URL);
+{const c0=WinfumSite.cached();cssImg('--parfum-img',c0.parfum_poster_url||'');cssImg('--vin-img',c0.vin_poster_url||'');}
 
 /* preloader : le mot WINFUM est « tapé » lettre par lettre sous le logo (curseur doré, léger temps d'hésitation, reflet qui passe à la fin) */
 (function(){
   const word="WINFUM",pw=$('pre-word'),sub=$('pre-sub'),subTxt=(sub.textContent||'Parfums · Vins').trim(),reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
   pw.innerHTML='<span class="tw"></span><i class="caret"></i>';
   const tw=pw.querySelector('.tw'),caret=pw.querySelector('.caret');sub.innerHTML='';
-  const gaps=[620,150,170,340,150,165];      /* délai avant chaque lettre (ms) : W-I-N … pause … F-U-M */
+  const gaps=[300,110,120,220,110,120];      /* délai avant chaque lettre (ms) : W-I-N … pause … F-U-M */
   let t=0;
   word.split('').forEach((l,i)=>{t+=reduce?0:gaps[i];setTimeout(()=>{const s=document.createElement('span');s.className='ch';s.style.setProperty('--i',i);s.textContent=l;tw.appendChild(s);},t);});
-  const typed=t+420;
+  const typed=t+200;
   setTimeout(()=>{caret.classList.add('done');tw.classList.add('shine');$('pre-line').style.animationDelay='0s';$('pre-line').style.animationPlayState='running';},typed+80);
-  setTimeout(()=>{subTxt.split('').forEach((c,i)=>{const s=document.createElement('span');s.className='sc';s.textContent=c;sub.appendChild(s);setTimeout(()=>s.classList.add('on'),reduce?0:i*38);});},typed+520);
-  const end=typed+520+subTxt.length*38+900;
-  setTimeout(()=>$('preloader').classList.add('hide'),end);
+  setTimeout(()=>{subTxt.split('').forEach((c,i)=>{const s=document.createElement('span');s.className='sc';s.textContent=c;sub.appendChild(s);setTimeout(()=>s.classList.add('on'),reduce?0:i*22);});},typed+240);
+  const end=typed+240+subTxt.length*22+450;
+  let seen=false;try{seen=sessionStorage.getItem('wf_pre')==='1';}catch(e){}
+  if(seen){$('preloader').classList.add('hide');return;}
+  setTimeout(()=>{$('preloader').classList.add('hide');try{sessionStorage.setItem('wf_pre','1');}catch(e){}},end);
 })();
 
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
@@ -705,6 +707,8 @@ let heroIdx=0,heroTimer=null,heroHold=false;
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ARR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 function renderHero(){
+  if(!heroReady){$('hero-s').hidden=false;$('hs').classList.add('loading');$('hs-track').innerHTML='';$('hs-dots').innerHTML='';return;}
+  $('hs').classList.remove('loading');
   const n=heroSlides.length;if(heroIdx>=n)heroIdx=0;
   $('hero-s').hidden=!n;
   $('hs-track').innerHTML=heroSlides.map((s,i)=>`<div class="hs-slide${i===heroIdx?' active':''}">${s.u?`<img src="${esc(s.u)}" alt="${esc(s.title||'Affiche Winfum')}"${i?' loading="lazy"':''}>`:''}<a class="hs-btn" href="${esc(s.link||'#parfums')}"${/^https?:/.test(s.link||'')?' target="_blank" rel="noopener"':''}>${esc(s.cta||'Découvrir')}${ARR}</a></div>`).join('');
@@ -764,6 +768,7 @@ function annBtn(a){
 }
 function renderAnn(){
   const rail=$('ann-rail');rail.innerHTML='';
+  if(!annReady){$('annonces').style.display='';rail.innerHTML='<div class="ann-card sk"></div><div class="ann-card sk"></div><div class="ann-card sk"></div>';$('ann-dots').innerHTML='';return;}
   $('annonces').style.display=announcements.length?'':'none';
   if(!announcements.length)return;
   announcements.forEach((a,i)=>{
@@ -791,6 +796,7 @@ function toggleFav(id,el){
 
 /* grilles */
 function renderGrids(){
+  if(!window.__shopReady){['parfum','vin'].forEach(t=>{$('grid-'+t).innerHTML=WinfumSite.skelCards(4);});return;}
   ['parfum','vin'].forEach(type=>{
     const g=$('grid-'+type);g.innerHTML='';
     const L=products.filter(p=>p.type===type);
@@ -820,17 +826,22 @@ async function getSb(){
   if(!window.supabase){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
   return window.WINFUM_SB||(window.WINFUM_SB=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY));
 }
+function fallbackHero(){   /* sans affiche créée dans l'admin : les 2 affiches « Parfums / Vins » de Images & logo, si elles existent */
+  const c=WinfumSite.cached(),L=[];
+  if(c.parfum_poster_url)L.push({u:c.parfum_poster_url,cta:'Voir la boutique Parfums',link:'jbparfumerie.html'});
+  if(c.vin_poster_url)L.push({u:c.vin_poster_url,cta:'Voir la boutique Vins',link:'funforus.html'});
+  return L;
+}
+function applyBanners(rows){
+  rows=rows||[];
+  const ann=rows.filter(b=>b.placement==='home_announce').map(b=>({id:String(b.id),t:b.media_type==='video'?'video':'image',u:b.image_url||'',tag:b.tag||'',title:b.title||'',text:b.body||'',cta:b.cta_label||'',link:b.link_url||''}));
+  const hero=rows.filter(b=>b.placement==='home_hero'&&b.image_url).map(b=>({u:b.image_url,cta:b.cta_label||'',link:b.link_url||'',title:b.title||''}));
+  announcements=ann;annReady=true;renderAnn();
+  heroFallback=!hero.length;heroSlides=hero.length?hero:fallbackHero();heroIdx=0;heroReady=true;renderHero();
+}
 async function loadBanners(){
-  try{
-    const sb=await getSb();
-    const {data,error}=await sb.from('banners').select('*').in('placement',['home_announce','home_hero']).eq('is_active',true).order('sort_order',{ascending:true});
-    if(error)throw error;
-    const rows=data||[];
-    const ann=rows.filter(b=>b.placement==='home_announce').map(b=>({id:String(b.id),t:b.media_type==='video'?'video':'image',u:b.image_url||'',tag:b.tag||'',title:b.title||'',text:b.body||'',cta:b.cta_label||'',link:b.link_url||''}));
-    const hero=rows.filter(b=>b.placement==='home_hero'&&b.image_url).map(b=>({u:b.image_url,cta:b.cta_label||'',link:b.link_url||'',title:b.title||''}));
-    if(ann.length){announcements=ann;renderAnn();}
-    if(hero.length){heroSlides=hero;heroIdx=0;renderHero();}
-  }catch(e){console.warn('Bannières :',e.message||e);}
+  try{await WinfumSite.swr('home_banners','banners?select=*&placement=in.(home_announce,home_hero)&is_active=eq.true&order=sort_order.asc',applyBanners);}
+  catch(e){console.warn('Bannières :',e.message||e);if(!annReady){annReady=true;heroFallback=true;heroSlides=fallbackHero();heroReady=true;renderAnn();renderHero();}}
 }
 
 /* ============================================================ */
@@ -850,32 +861,44 @@ function mapRow(r,catsById){
   return p;
 }
 /* notes des clients : moyenne + nombre d'avis par produit (table product_reviews ; ignorée si elle n'existe pas encore) */
-async function loadRatings(sb){
-  try{const r=await sb.from('product_reviews').select('product_id,rating').eq('is_active',true).limit(5000);if(r.error)throw r.error;
-    const m={};(r.data||[]).forEach(x=>{(m[x.product_id]=m[x.product_id]||[]).push(x.rating);});
-    products.forEach(p=>{const a=m[String(p.id)];if(a&&a.length){p.rating=Math.round(a.reduce((s,v)=>s+v,0)/a.length*10)/10;p.ratingCount=a.length;}});}catch(e){}
+function applyRatings(rows){
+  const m={};(rows||[]).forEach(x=>{(m[x.product_id]=m[x.product_id]||[]).push(x.rating);});
+  let changed=false;
+  products.forEach(p=>{const a=m[String(p.id)];const r=a&&a.length?Math.round(a.reduce((s,v)=>s+v,0)/a.length*10)/10:p.rating,n=a&&a.length?a.length:p.ratingCount;
+    if(r!==p.rating||n!==p.ratingCount){p.rating=r;p.ratingCount=n;changed=true;}});
+  return changed;
+}
+async function loadRatings(){
+  try{const rows=await WinfumSite.rest('product_reviews?select=product_id,rating&is_active=eq.true&limit=5000');
+    WinfumSite.lsSet('home_rate',rows);if(applyRatings(rows))renderGrids();}catch(e){}
+}
+function applyHome(cats,prods){
+  const catsById={};(cats||[]).forEach(c=>catsById[c.id]=c);
+  homeCats=cats||[];homeCatsReady=true;buildHomeCats();
+  const real={parfum:[],vin:[]};
+  (prods||[]).forEach(r=>{const p=mapRow(r,catsById);real[p.type].push(p);});
+  const next=[];
+  ['parfum','vin'].forEach(d=>{if(real[d].length)next.push(...real[d]);else if(SHOW_DEMO_WHEN_EMPTY)next.push(...DEMO_PRODUCTS.filter(p=>p.type===d));});
+  products=next;applyRatings(WinfumSite.lsGet('home_rate')||[]);window.__shopReady=true;
+  renderGrids();renderCart();
+  WS.suggest(products,[['parfum','Parfums','#a9782f'],['vin','Vins','#7a1128']],null,catName);
+  if($('search-overlay').classList.contains('open'))renderSearch($('search-input').value);
+  handleDeepLink();
 }
 async function loadProducts(){
+  const QC='categories?select=*&is_active=eq.true',QP='products?select=*&is_active=eq.true&department=in.(parfum,vin)&order=created_at.desc';
+  const cc=WinfumSite.lsGet('home_cats'),cp=WinfumSite.lsGet('home_prods'),had=!!(cc&&cp);
+  if(had)applyHome(cc,cp);
   try{
-    const sb=await getSb();
-    const [catsRes,prodRes]=await Promise.all([
-      sb.from('categories').select('*').eq('is_active',true),
-      sb.from('products').select('*').eq('is_active',true).in('department',['parfum','vin']).order('created_at',{ascending:false})
-    ]);
-    if(prodRes.error)throw prodRes.error;
-    const catsById={};(catsRes.data||[]).forEach(c=>catsById[c.id]=c);
-    homeCats=catsRes.data||[];buildHomeCats();
-    const real={parfum:[],vin:[]};
-    (prodRes.data||[]).forEach(r=>{const p=mapRow(r,catsById);real[p.type].push(p);});
-    const next=[];
-    ['parfum','vin'].forEach(d=>{if(real[d].length)next.push(...real[d]);else if(SHOW_DEMO_WHEN_EMPTY)next.push(...DEMO_PRODUCTS.filter(p=>p.type===d));});
-    products=next;window.__shopReady=true;
-    await loadRatings(sb);
-    renderGrids();renderCart();
-    WS.suggest(products,[['parfum','Parfums','#a9782f'],['vin','Vins','#7a1128']],null,catName);
-    if($('search-overlay').classList.contains('open'))renderSearch($('search-input').value);
-    handleDeepLink();
-  }catch(e){window.__shopReady=true;renderCart();console.warn('Produits :',e.message||e);}
+    const [cats,prods]=await Promise.all([WinfumSite.rest(QC),WinfumSite.rest(QP)]);
+    const changed=!had||JSON.stringify(cats)!==JSON.stringify(cc)||JSON.stringify(prods)!==JSON.stringify(cp);
+    WinfumSite.lsSet('home_cats',cats);WinfumSite.lsSet('home_prods',prods);
+    if(changed)applyHome(cats,prods);
+    await loadRatings();
+  }catch(e){
+    console.warn('Produits :',e.message||e);
+    if(!had){homeCatsReady=true;buildHomeCats();products=SHOW_DEMO_WHEN_EMPTY?DEMO_PRODUCTS.slice():[];window.__shopReady=true;renderGrids();renderCart();}
+  }
 }
 document.addEventListener('click',e=>{document.querySelectorAll('.cat-dd[open]').forEach(d=>{if(!d.contains(e.target))d.removeAttribute('open')})});
 function openSearch(){$('search-overlay').classList.add('open');setTimeout(()=>$('search-input').focus(),250);renderSearch('');}
@@ -1098,11 +1121,12 @@ function checkout(){
 const CAT_SUB={homme:'Élégance',femme:'Signature',mixte:'Intemporel',rouge:'Corsé',blanc:'Frais',rose:'Léger'};
 const CAT_BG={homme:'#2b2925',femme:'#e8b9c4',mixte:'#c9ab6d',rouge:'#4a0a17',blanc:'#d8c48a',rose:'#d98fa0'};
 const CAT_DEF={parfum:['Homme','Femme','Mixte'],vin:['Rouge','Blanc','Rosé']};
-let SITE={},homeCats=[];
+let SITE=WinfumSite.cached(),homeCats=[],homeCatsReady=false;
 const cssUrl=u=>String(u).replace(/["'()\s\\]/g,c=>encodeURIComponent(c));
 function buildHomeCats(){
   [['parfum','jbparfumerie.html','Univers'],['vin','funforus.html','Cépage']].forEach(([dept,page,dflt])=>{
     const box=$('cats-'+dept);if(!box)return;
+    if(!homeCatsReady){box.innerHTML='<div class="cat sk"></div><div class="cat sk"></div><div class="cat sk"></div><div class="cat sk"></div>';return;}
     let names=homeCats.filter(c=>c.department===dept&&!c.parent_id).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).map(c=>c.name);
     if(!names.length)names=CAT_DEF[dept];
     box.innerHTML=names.map(n=>{
@@ -1114,10 +1138,9 @@ function buildHomeCats(){
 buildHomeCats();
 WinfumSite.content().then(c=>{
   SITE=c;
-  if(c.parfum_poster_url)cssImg('--parfum-img',c.parfum_poster_url);
-  if(c.vin_poster_url)cssImg('--vin-img',c.vin_poster_url);
-  heroSlides.forEach(h=>{if(h.def==='parfum'&&c.parfum_poster_url)h.u=c.parfum_poster_url;if(h.def==='vin'&&c.vin_poster_url)h.u=c.vin_poster_url;});
-  renderHero();buildHomeCats();
+  cssImg('--parfum-img',c.parfum_poster_url||'');cssImg('--vin-img',c.vin_poster_url||'');
+  if(heroReady&&heroFallback){heroSlides=fallbackHero();renderHero();}
+  buildHomeCats();
 });
 renderAnn();renderHero();renderGrids();renderCart();WS.suggest(products,[['parfum','Parfums','#a9782f'],['vin','Vins','#7a1128']],null,catName);loadBanners();loadProducts();
 window.addEventListener('load',()=>{

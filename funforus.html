@@ -7,6 +7,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="winfum-store.js"></script>
+<link rel="preconnect" href="https://cxobpfaffgevxblnbwft.supabase.co" crossorigin>
+<link rel="preconnect" href="https://i.postimg.cc" crossorigin>
 <script src="winfum-share.js"></script>
 <script src="winfum-site.js"></script>
 <title>Fun For Us — une collection Winfum</title>
@@ -467,13 +469,13 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
 </main>
 
 <div class="wrap">
-  <div class="promo reveal">
+  <div class="promo reveal loading">
     <div class="pbg"></div>
     <div class="pc">
       <span class="tag" id="promo-tag" style="color:#e9c988"></span>
       <h3 class="serif" id="promo-title"></h3>
       <p id="promo-text"></p>
-      <a class="btn" id="promo-link" href="#">Voir la boutique Parfums</a>
+      <a class="btn" id="promo-link" href="#" style="display:none">Voir la boutique Parfums</a>
     </div>
   </div>
 </div>
@@ -533,7 +535,7 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
    Laissez "" pour ne rien afficher (un fond élégant apparaît à la place).
    ============================================================ */
 const LOGO_URL="https://i.postimg.cc/cH4Hyzb7/Logo-winfum.png";
-const HERO_POSTER_URL="https://i.postimg.cc/W3W42nRL/Vin-winfum.png";   // affiche du haut de la page (image)
+const HERO_POSTER_URL="";   // (inutilisé) l'affiche se règle dans Manager › Images & logo
 const HERO_VIDEO_URL="";    // OU vidéo du haut de page (.mp4) — prioritaire sur l'affiche si remplie
 const THEME_ROUGE_URL="";   // photo de la carte "Rouge"
 const THEME_BLANC_URL="";   // photo de la carte "Blanc"
@@ -564,32 +566,55 @@ function mapWine(r,catsById){
   return {id:r.id,name:r.name,cat:slugCat(label),catLabel:label,region:r.region||'',retail:r.price_retail,pack:r.pack_label||'',abv:r.abv!=null?r.abv+'%':'',vol:r.volume_cl?r.volume_cl+' cl':'',rating:r.rating||0,ratingCount:0,details:r.details||{},ph:(r.name||'').slice(0,2).toUpperCase(),desc:r.description||'',ing,media:media.length?media:[{t:'image',u:''}]};
 }
 /* notes des clients : moyenne + nombre d'avis par produit (table product_reviews ; ignorée si elle n'existe pas encore) */
-async function loadRatings(sb){
-  try{const r=await sb.from('product_reviews').select('product_id,rating').eq('is_active',true).limit(5000);if(r.error)throw r.error;
-    const m={};(r.data||[]).forEach(x=>{(m[x.product_id]=m[x.product_id]||[]).push(x.rating);});
-    products.forEach(p=>{const a=m[String(p.id)];if(a&&a.length){p.rating=Math.round(a.reduce((s,v)=>s+v,0)/a.length*10)/10;p.ratingCount=a.length;}});}catch(e){}
+/* notes moyennes : mémorisées aussi, pour que la 2e visite ne « saute » pas quand elles arrivent */
+function applyRatings(rows){
+  const m={};(rows||[]).forEach(x=>{(m[x.product_id]=m[x.product_id]||[]).push(x.rating);});
+  let changed=false;
+  products.forEach(p=>{const a=m[String(p.id)];const r=a&&a.length?Math.round(a.reduce((s,v)=>s+v,0)/a.length*10)/10:p.rating,n=a&&a.length?a.length:p.ratingCount;
+    if(r!==p.rating||n!==p.ratingCount){p.rating=r;p.ratingCount=n;changed=true;}});
+  return changed;
 }
-async function loadShop(){
-  try{
-    const sb=await WinfumSite.sb();
-    loadMoments(sb);
-    const [catsRes,prodRes]=await Promise.all([
-      sb.from('categories').select('*').eq('department','vin').eq('is_active',true).order('sort_order'),
-      sb.from('products').select('*').eq('department','vin').eq('is_active',true).order('created_at',{ascending:false})
-    ]);
-    const cats=catsRes.data||[];const catsById={};cats.forEach(c=>catsById[c.id]=c);
-    CATL={};cats.forEach(c=>{CATL[slugCat(c.name)]=c.name;});
-    products=(prodRes.data||[]).map(r=>mapWine(r,catsById));
-    await loadRatings(sb);
-    buildChips(cats);lastCats=cats;buildCats(cats);
-    renderGrid();window.__shopReady=true;renderCart();handleDeepLink();
+async function loadRatings(){
+  try{const rows=await WinfumSite.rest('product_reviews?select=product_id,rating&is_active=eq.true&limit=5000');
+    WinfumSite.lsSet('vin_rate',rows);if(applyRatings(rows))renderGrid();}catch(e){}
+}
+/* Chargement : la 2e visite s'affiche instantanément avec le catalogue mémorisé, puis se met à jour sans clignoter.
+   1re visite : cartes « skeleton » le temps de la réponse. */
+let catsReady=false,shopFirst=true;
+function applyShop(cats,prods){
+  const catsById={};cats.forEach(c=>catsById[c.id]=c);
+  CATL={};cats.forEach(c=>{CATL[slugCat(c.name)]=c.name;});
+  products=(prods||[]).map(r=>mapWine(r,catsById));
+  applyRatings(WinfumSite.lsGet('vin_rate')||[]);
+  catsReady=true;
+  buildChips(cats);lastCats=cats;buildCats(cats);
+  renderGrid();window.__shopReady=true;renderCart();handleDeepLink();
+  if(shopFirst){shopFirst=false;
     const qc=slugCat(new URLSearchParams(location.search).get('cat')||'');
     if(qc!=='autre'&&CATL[qc]){setFilter(qc);setTimeout(()=>$('vins').scrollIntoView({behavior:'smooth'}),300);}
-    WS.suggest(products,[],'vin',p=>p.catLabel);
-    if($('search-overlay').classList.contains('open'))renderSearch($('search-input').value);
+  }
+  WS.suggest(products,[],'vin',p=>p.catLabel);
+  if($('search-overlay').classList.contains('open'))renderSearch($('search-input').value);
+}
+async function loadShop(){
+  const QC='categories?select=*&department=eq.vin&is_active=eq.true&order=sort_order.asc';
+  const QP='products?select=*&department=eq.vin&is_active=eq.true&order=created_at.desc';
+  const cc=WinfumSite.lsGet('vin_cats'),cp=WinfumSite.lsGet('vin_prods');
+  const had=!!(cc&&cp);
+  if(had)applyShop(cc,cp);else{
+    $('grid').innerHTML=WinfumSite.skelCards(6);
+    $('cats').innerHTML='<div class="cat sk"></div><div class="cat sk"></div><div class="cat sk"></div><div class="cat sk"></div>';
+  }
+  loadMoments();
+  try{
+    const [cats,prods]=await Promise.all([WinfumSite.rest(QC),WinfumSite.rest(QP)]);
+    const changed=!had||JSON.stringify(cats)!==JSON.stringify(cc)||JSON.stringify(prods)!==JSON.stringify(cp);
+    WinfumSite.lsSet('vin_cats',cats);WinfumSite.lsSet('vin_prods',prods);
+    if(changed){applyShop(cats,prods);}
+    await loadRatings();
   }catch(e){
     console.warn('Chargement produits :',e.message);window.__shopReady=true;momentsLoaded=true;renderMoments();renderCart();
-    $('grid').innerHTML='<div class="sempty" style="grid-column:1/-1;padding:60px 0">Impossible de charger les produits pour le moment.</div>';
+    if(!had){catsReady=true;buildCats([]);$('grid').innerHTML='<div class="sempty" style="grid-column:1/-1;padding:60px 0">Impossible de charger les produits pour le moment. Vérifiez votre connexion puis rechargez la page.</div>';}
   }
 }
 function buildChips(cats){
@@ -611,21 +636,37 @@ function mapMoment(r){
   (r.images||[]).forEach(u=>add('image',u));(r.videos||[]).forEach(u=>add('video',u));
   return {id:r.id,title:r.title||'',cls:r.layout||'',cat:r.category||'',desc:r.description||'',date:r.event_date||'',place:r.location||'',album};
 }
-async function loadMoments(sb){
-  try{
-    const {data,error}=await sb.from('collection_moments').select('*').eq('collection','funforus').eq('is_active',true).order('sort_order',{ascending:true}).order('created_at',{ascending:false});
-    if(error)throw error;
-    moments=(data||[]).map(mapMoment).filter(m=>m.album.length);
-  }catch(e){console.warn('Moments :',e.message||e);moments=[];}
-  momentsLoaded=true;renderMoments();
+async function loadMoments(){
+  const Q='collection_moments?select=*&collection=eq.funforus&is_active=eq.true&order=sort_order.asc,created_at.desc';
+  const ap=rows=>{moments=(rows||[]).map(mapMoment).filter(m=>m.album.length);momentsLoaded=true;renderMoments();};
+  try{await WinfumSite.swr('vin_moments',Q,ap);}
+  catch(e){console.warn('Moments :',e.message||e);if(!momentsLoaded){moments=[];momentsLoaded=true;renderMoments();}}
 }
 /* ============================================================ */
 
 const $=id=>document.getElementById(id);
 const cssImg=(k,u)=>document.documentElement.style.setProperty(k,u?`url("${u}")`:'none');
-document.querySelectorAll('.logo-img').forEach(i=>i.src=LOGO_URL);
-cssImg('--hero-img',HERO_POSTER_URL);cssImg('--rouge-img',THEME_ROUGE_URL);cssImg('--blanc-img',THEME_BLANC_URL);cssImg('--rose-img',THEME_ROSE_URL);cssImg('--promo-img',PROMO_JB_IMG_URL);
-$('promo-tag').textContent=PROMO_JB_TAG;$('promo-title').textContent=PROMO_JB_TITLE;$('promo-text').textContent=PROMO_JB_TEXT;$('promo-link').href=PROMO_JB_LINK;
+WinfumSite.logo(LOGO_URL);
+WinfumSite.hero($('hero'),'vin_poster_url');
+/* Bannière du bas : créée dans Manager › Bannières promo (emplacement « Fun For Us → Parfums »). Sans bannière : texte par défaut. */
+function paintPromo(b){
+  const el=document.querySelector('.promo');
+  const d=b||{tag:PROMO_JB_TAG,title:PROMO_JB_TITLE,body:PROMO_JB_TEXT,cta_label:'Voir la boutique Parfums',link_url:PROMO_JB_LINK,image_url:''};
+  $('promo-tag').textContent=d.tag||'';$('promo-tag').style.display=d.tag?'':'none';
+  $('promo-title').textContent=d.title||'';$('promo-text').textContent=d.body||'';
+  const a=$('promo-link');
+  if(d.cta_label){a.textContent=d.cta_label;a.href=WinfumSite.safeLink(d.link_url,PROMO_JB_LINK);a.style.display='';}else a.style.display='none';
+  const u=WinfumSite.safeUrl(d.image_url);
+  const done=()=>{el.classList.remove('loading');el.classList.add('img-ready');};
+  if(u){const im=new Image();im.onload=()=>{document.documentElement.style.setProperty('--promo-img',`url("${u}")`);done();};im.onerror=done;im.src=u;}
+  else{document.documentElement.style.setProperty('--promo-img','none');done();}
+}
+(function(){
+  const c=WinfumSite.lsGet('promo_vin');if(c)paintPromo(c.row);
+  WinfumSite.rest('banners?select=*&placement=eq.promo_vin_to_parfum&is_active=eq.true&order=created_at.desc&limit=1')
+    .then(rows=>{const b=(rows&&rows[0])||null;WinfumSite.lsSet('promo_vin',{row:b});if(!c||JSON.stringify(c.row)!==JSON.stringify(b))paintPromo(b);})
+    .catch(()=>{if(!c)paintPromo(null);});
+})();
 
 const MUTED='<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19 5l-6.5 14M19 19L12.5 5"/>',SOUND='<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/>';
 let heroVideo=null;
@@ -633,7 +674,7 @@ function setHeroVideo(u){
   if(!u||heroVideo)return;
   heroVideo=document.createElement('video');heroVideo.className='cover';heroVideo.style.zIndex=0;
   Object.assign(heroVideo,{src:u,autoplay:true,loop:true,muted:true,playsInline:true});
-  $('hero').insertBefore(heroVideo,$('hero-poster').nextSibling);$('hero').classList.add('has-video');$('mute-i').innerHTML=MUTED;
+  $('hero').insertBefore(heroVideo,$('hero-poster').nextSibling);$('hero').classList.add('has-video','img-ready');$('mute-i').innerHTML=MUTED;
 }
 setHeroVideo(HERO_VIDEO_URL);
 function toggleMute(){if(!heroVideo)return;heroVideo.muted=!heroVideo.muted;$('mute-i').innerHTML=heroVideo.muted?MUTED:SOUND;}
@@ -692,7 +733,7 @@ function filterCat(cat){setFilter(cat);$('vins').scrollIntoView({behavior:'smoot
 /* cartes « Choisissez votre cépage » : une carte par catégorie du département Vin (admin › Catégories),
    image = admin › Contenu du site › Cartes catégories */
 const CAT_SUB={rouge:'Corsé',blanc:'Frais',rose:'Léger'},CAT_BG={rouge:'#4a0a17',blanc:'#d8c48a',rose:'#d98fa0'};
-let SITE={},lastCats=[];
+let SITE=WinfumSite.cached(),lastCats=[];
 const cssUrl=u=>String(u).replace(/["'()\s\\]/g,c=>encodeURIComponent(c));
 function buildCats(cats){
   const box=$('cats');if(!box)return;
@@ -707,9 +748,8 @@ function buildCats(cats){
 /* images / vidéo / logo choisis dans l'admin */
 WinfumSite.content().then(c=>{
   SITE=c;
-  if(c.vin_poster_url)cssImg('--hero-img',c.vin_poster_url);
   if(c.vin_hero_video_url)setHeroVideo(c.vin_hero_video_url);
-  buildCats(lastCats);
+  if(catsReady)buildCats(lastCats);
 });
 
 /* moments */
@@ -725,6 +765,7 @@ function renderMomentChips(){
 }
 function renderMoments(){
   const box=$('mgrid');box.innerHTML='';
+  if(!momentsLoaded){$('mchips').hidden=true;box.innerHTML='<div class="mo tall sk"></div><div class="mo sk"></div><div class="mo sk"></div><div class="mo wide sk"></div><div class="mo sk"></div>';return;}
   const real=moments.length>0;
   renderMomentChips();
   const list=real?moments.filter(m=>mFilter==='all'||m.cat===mFilter):MOMENT_DEMO.map(m=>({...m,album:[]}));
