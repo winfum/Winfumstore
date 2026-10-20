@@ -109,6 +109,8 @@
   }
   var SEASONS = ['Printemps', 'Été', 'Automne', 'Hiver'], MOMENTS = ['Journée', 'Soirée', 'Quotidien', 'Bureau', 'Sortie', 'Cadeau'];
 
+  function firstImg(P) { var m = (P.media || []).filter(function (x) { return x.t === 'image' && safeUrl(x.u); }); return m.length ? safeUrl(m[0].u) : ''; }
+
   /* ---------------------------------------------------------------- construction de la fiche */
   function build(P) {
     var d = P.details || {}, vin = P.type === 'vin', h = '';
@@ -130,7 +132,9 @@
     var badge = d.badge ? '<span class="fx-badge">' + esc(d.badge) + '</span>' : '';
 
     h += '<span class="x pm-x" onclick="closeProduct()" aria-label="Fermer">✕</span>';
-    h += '<div class="fx-media">' + badge + '<div class="fx-scroll" id="pm-scroll">' + slides + '</div>' + (media.length > 1 ? '<span class="fx-count"><b>1</b>/' + media.length + '</span>' : '') + '</div>' + thumbs;
+    var has3d = !!(window.Winfum3D && Winfum3D.has(d) && (d.model3d !== 'photo' || d.model3d_glb || firstImg(P)));
+    var btn3d = has3d ? '<button type="button" class="fx-3d-btn" data-3d aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/><path d="M12 12l8.5-4.7M12 12L3.5 7.3M12 12v9.5"/></svg><span>Voir en 3D</span></button><div class="fx-3d" data-3dbox hidden></div>' : '';
+    h += '<div class="fx-media' + (has3d ? ' has3d' : '') + '">' + badge + '<div class="fx-scroll" id="pm-scroll">' + slides + '</div>' + (media.length > 1 ? '<span class="fx-count"><b>1</b>/' + media.length + '</span>' : '') + btn3d + '</div>' + thumbs;
 
     /* en-tête */
     var fam = d.family || (vin ? (P.region || '') : '');
@@ -210,6 +214,25 @@
     var sync = function () { var i = Math.round(sc.scrollLeft / Math.max(1, sc.clientWidth)); thumbs.forEach(function (t, j) { t.classList.toggle('on', i === j); }); if (cnt) cnt.textContent = i + 1; };
     sc.onscroll = sync;
     thumbs.forEach(function (t, i) { t.onclick = function () { sc.scrollTo({ left: i * sc.clientWidth, behavior: 'smooth' }); }; });
+
+    /* vue 3D (si l'admin a choisi un modèle pour ce produit) */
+    if (window.__winfum3d) { try { window.__winfum3d.dispose(); } catch (e) {} window.__winfum3d = null; }
+    var b3 = $('[data-3d]'), box3 = $('[data-3dbox]'), inst3 = null, on3 = false, token3 = 0;
+    function stop3() {
+      token3++; on3 = false;
+      if (inst3) { try { inst3.dispose(); } catch (e) {} inst3 = null; }
+      if (box3) { box3.hidden = true; box3.innerHTML = ''; }
+      if (b3) { b3.classList.remove('on'); b3.setAttribute('aria-pressed', 'false'); b3.querySelector('span').textContent = 'Voir en 3D'; }
+    }
+    if (b3 && box3) b3.onclick = function () {
+      if (on3) return stop3();
+      var dd = P.details || {}, my = ++token3;
+      on3 = true; box3.hidden = false;
+      b3.classList.add('on'); b3.setAttribute('aria-pressed', 'true'); b3.querySelector('span').textContent = 'Photos';
+      Winfum3D.mount(box3, { model: dd.model3d, photo: firstImg(P), dept: P.type, depth: dd.model3d_depth, labelRect: dd.model3d_label, glb: dd.model3d_glb, liquid: dd.model3d_liquid, cap: dd.model3d_cap, glass: dd.model3d_glass, name: P.name, brand: P.brand, sub: (P.type === 'vin' ? 'Vin ' : 'Parfum ') + String(P.catLabel || '').toLowerCase() })
+        .then(function (i) { if (my !== token3) { i && i.dispose(); return; } inst3 = i; })
+        .catch(function () { if (my !== token3) return; toast('La vue 3D n\'est pas disponible sur cet appareil.', 1); stop3(); b3.remove(); });
+    };
 
     var fav = $('#pm-fav'); fav.classList.toggle('active', !!H.isFav);
     fav.onclick = function () { if (H.onFav) H.onFav(fav); };

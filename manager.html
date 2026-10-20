@@ -287,6 +287,16 @@ a.where:hover{box-shadow:var(--nm-in-sm)}
 .gaugef .gg button.on{background:linear-gradient(90deg,#a9782f,#7a1128)}
 .gaugef .gw{font-style:normal;font-size:13px;font-weight:600;color:var(--wine);min-width:80px}
 .gaugef .gx{border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline}
+.m3dbox>select{width:100%}
+.m3dopts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.m3dopts label{font-size:11px}
+.m3dcol{display:flex;gap:8px;align-items:center}
+.m3dcol input[type=color]{width:44px;height:40px;padding:2px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer}
+.m3dcol button{border:none;background:none;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer}
+.m3dadv{margin-top:12px}.m3dadv summary{cursor:pointer;font-size:12px;color:var(--muted)}
+.m3dprev{display:none;margin-top:12px;height:340px;border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+.m3dprev.on{display:block}
+@media(max-width:640px){.m3dopts{grid-template-columns:1fr}.m3dprev{height:300px}}
 .fontf{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
 .ff{border:2px solid var(--line);background:#fff;border-radius:16px;padding:12px 14px;text-align:left;cursor:pointer;transition:.2s;display:flex;flex-direction:column;gap:2px}
 .ff b{font-size:24px;line-height:1.15;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -337,6 +347,7 @@ input[type=date]{width:100%;padding:12px 14px;border:1px solid var(--line);borde
 @media(max-width:700px){.todo{padding:14px}.todo .ti{width:40px;height:40px}}
 </style>
 <script src="winfum-fiche.js"></script>
+<script src="winfum-3d.js"></script>
 </head>
 <body>
 
@@ -557,6 +568,8 @@ const E={
    {t:'sec',l:'Photos & vidéos',p:'La 1re image est la photo de la carte. Elle s\'affiche en entier (toute la hauteur), quel que soit son format.'},
    {k:'images',l:'Images — un lien par ligne (la 1re est la photo principale)',t:'urls',full:1},
    {k:'videos',l:'Vidéos — un lien par ligne',t:'urls',full:1},
+   {t:'sec',l:'Vue 3D (facultatif)',p:"Donnez à ce produit une vue 3D tactile : choisissez le modèle qui lui ressemble (flacon ou bouteille). Laissez « Aucun » pour ne rien afficher."},
+   {k:'m3d',t:'m3d',full:1},
    {t:'sec',l:'Description',p:'Mettez en forme votre texte : gras, sous-titres, listes à puces, citation, couleurs, liens.'},
    {k:'desc_html',det:1,t:'rich',l:'Texte de présentation',full:1,also:'description'},
    {k:'highlights',det:1,t:'tags',l:'Points forts (jusqu\'à 6)',full:1,max:6,ph:'ex. Tenue exceptionnelle sur la peau',help:'Petites puces affichées sous le prix.'},
@@ -673,7 +686,7 @@ A.seedcats=async()=>{
 
 /* ---------- modales ---------- */
 function modal(html,small){$('modal').className=small?'sm':'';$('modal').innerHTML=html;$('mov').classList.add('on');}
-function closeModal(){$('mov').classList.remove('on');}
+function closeModal(){$('mov').classList.remove('on');if(window.__winfum3d){try{window.__winfum3d.dispose()}catch(e){}window.__winfum3d=null;}}
 A.close=closeModal;
 $('mov').addEventListener('mousedown',e=>{if(e.target.id==='mov')closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
@@ -693,6 +706,7 @@ function refOpts(f,dept,selfId,val){
   return `<option value="">${esc(f.none||'— Aucune —')}</option>`+cs.map(c=>`<option value="${c.id}" ${c.id===val?'selected':''}>${esc(label(c))}</option>`).join('');
 }
 function fieldHTML(f,row){
+  if(f.t==='m3d')return m3dHTML(row,f);
   if(f.t==='sec')return `<div class="fsec"${f.dep?` data-dep="${f.dep}"`:''}><h4 class="serif">${f.l}</h4>${f.p?`<p>${f.p}</p>`:''}</div>`;
   let v=f.det?(row.details||{})[f.k]:row[f.k];if(v==null)v=f.def!==undefined?f.def:'';
   const dep=f.dep?` data-dep="${f.dep}"`:'',cls=`fld${f.full?' full':''}`,lab=`<label>${f.l}${f.req?' <b>*</b>':''}</label>${f.at?`<span class="at">📍 ${esc(f.at)}</span>`:''}`,hint=f.help?`<div class="hint">${f.help}</div>`:'';
@@ -723,6 +737,7 @@ function collect(c,form,row){
   const v={},D={...((row&&row.details)||{})};let hasDet=false;
   for(const f of c.fields){
     if(f.t==='sec')continue;
+    if(f.t==='m3d'){hasDet=true;['model3d','model3d_glb','model3d_liquid','model3d_cap','model3d_glass','model3d_depth','model3d_label'].forEach(k=>delete D[k]);Object.assign(D,read3D(form));continue;}
     const el=form.elements[f.k];if(!el)continue;
     if(f.det)hasDet=true;
     if(f.dep&&el.closest('[data-dep]').hidden)continue;
@@ -743,6 +758,61 @@ function collect(c,form,row){
   if(hasDet)v.details=D;
   return v;
 }
+
+/* ---------- vue 3D : choix du modèle, du verre, du bouchon, de la couleur + aperçu en direct ---------- */
+function m3dOpts(dept,sel){return '<option value="">— Aucun (photos seulement) —</option><option value="photo" '+(sel==='photo'?'selected':'')+'>✨ Automatique d\'après la 1ʳᵉ photo du produit (recommandé)</option>'+Winfum3D.PRESETS.filter(p=>!dept||p.dept===dept).map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>Modèle générique : ${esc(p.label)}</option>`).join('');}
+function m3dHTML(row,f){
+  const D=row.details||{},dept=row.department||'';
+  const gl=Object.entries(Winfum3D.GLASS).map(([k,o])=>`<option value="${k}" ${D.model3d_glass===k?'selected':''}>${esc(o.label)}</option>`).join('');
+  const cp=Object.entries(Winfum3D.CAPS).map(([k,o])=>`<option value="${k}" ${D.model3d_cap===k?'selected':''}>${esc(o.label)}</option>`).join('');
+  return `<div class="fld full m3dbox"><label>Modèle 3D</label>${f&&f.at?`<span class="at">📍 ${esc(f.at)}</span>`:''}
+  <select name="m3d_model">${m3dOpts(dept,D.model3d)}</select>
+  <div class="m3dopts">
+   <div><label>Verre</label><select name="m3d_glass"><option value="">Par défaut du modèle</option>${gl}</select></div>
+   <div><label>Bouchon / capsule</label><select name="m3d_cap"><option value="">Par défaut du modèle</option>${cp}</select></div>
+   <div><label>Couleur du liquide</label><div class="m3dcol"><input type="color" name="m3d_liquid" value="${esc(D.model3d_liquid||'#c9a24a')}" data-unset="${D.model3d_liquid?'0':'1'}"><button type="button" data-m3d="reset">Par défaut</button></div></div>
+  </div>
+  <details class="m3dadv"><summary>Réglages avancés (si la 3D automatique n'est pas parfaite)</summary>
+   <div class="m3dopts">
+    <div><label>Épaisseur du flacon (0,35 fin → 1 carré)</label><input type="number" name="m3d_depth" min="0.3" max="1.1" step="0.05" value="${esc(D.model3d_depth||'')}" placeholder="auto"></div>
+    <div style="grid-column:span 2"><label>Étiquette (en % de la photo : gauche, haut, droite, bas)</label><input type="text" name="m3d_label" value="${esc(D.model3d_label||'')}" placeholder="auto — ex. 34, 44, 66, 86"></div>
+   </div></details>
+  <div class="urlfield" style="margin-top:12px"><input type="text" name="m3d_glb" value="${esc(D.model3d_glb||'')}" placeholder="Option avancée : lien d'un fichier .glb (vrai modèle 3D du produit)"><label class="upl">${svg('upload')}<span>Fichier .glb</span><input type="file" accept=".glb,.gltf,model/gltf-binary" style="display:none" onchange="wfUpload(this)"></label></div>
+  <div class="m3dprev" data-prev3d></div>
+  <div class="hint">Choisissez un modèle : un aperçu s'affiche ici, tournez-le du doigt. Sur le site, le client verra un bouton « Voir en 3D » sur la fiche. Un fichier .glb remplace le modèle choisi.</div></div>`;
+}
+function wire3D(form){
+  const box=form.querySelector('.m3dbox');if(!box)return;
+  const prev=box.querySelector('[data-prev3d]'),g=n=>form.elements[n];let t=null,seq=0;
+  const cfg=()=>{const dept=g('department')?g('department').value:'',col=g('m3d_liquid'),cs=g('category_id'),cat=cs&&cs.selectedOptions[0]&&cs.value?cs.selectedOptions[0].textContent.split('›').pop().trim():'';
+    const im=g('images')?String(g('images').value).split('\n').map(x=>x.trim()).filter(Boolean)[0]||'':'';
+    return {model:g('m3d_model').value,photo:im,dept:dept,depth:g('m3d_depth')?g('m3d_depth').value:'',labelRect:g('m3d_label')?g('m3d_label').value.trim():'',glb:g('m3d_glb').value.trim(),glass:g('m3d_glass').value,cap:g('m3d_cap').value,liquid:col.dataset.unset==='1'?'':col.value,name:(g('name')&&g('name').value.trim())||'Nom du produit',brand:dept==='vin'?'Fun For Us':'JB Parfumerie',sub:((dept==='vin'?'Vin ':'Parfum ')+cat).trim().toLowerCase()};};
+  const draw=()=>{clearTimeout(t);t=setTimeout(async()=>{
+    const c=cfg(),my=++seq;
+    if(!c.model&&!c.glb){if(window.__winfum3d){try{window.__winfum3d.dispose()}catch(e){}window.__winfum3d=null;}prev.innerHTML='';prev.classList.remove('on');return;}
+    prev.classList.add('on');
+    try{await Winfum3D.mount(prev,c);}catch(e){if(my===seq&&e.message!=='obsolete'){prev.innerHTML=`<p class="hint" style="padding:22px;text-align:center">${esc(e.message||'Aperçu 3D indisponible')}</p>`;}}
+  },250);};
+  form.addEventListener('input',e=>{const n=e.target.name;if(n==='m3d_liquid'){e.target.dataset.unset='0';draw();}else if(n==='m3d_glb'||n==='name'||n==='images'||n==='m3d_depth'||n==='m3d_label')draw();});
+  form.addEventListener('change',e=>{const n=e.target.name;
+    if(n==='department'){const s=g('m3d_model');if(s){const cur=s.value;s.innerHTML=m3dOpts(e.target.value,cur);}}
+    if(['department','category_id','m3d_model','m3d_glass','m3d_cap','m3d_glb'].includes(n))draw();});
+  box.addEventListener('click',e=>{if(!e.target.closest('[data-m3d=reset]'))return;const c=g('m3d_liquid'),p=Winfum3D.preset(g('m3d_model').value);c.dataset.unset='1';c.value=p?p.liquid:'#c9a24a';draw();});
+  draw();
+}
+function read3D(form){
+  const g=n=>form.elements[n];if(!g('m3d_model'))return {};
+  const model=g('m3d_model').value,glb=g('m3d_glb').value.trim();
+  if(!model&&!glb)return {};
+  const o={};if(model)o.model3d=model;if(glb)o.model3d_glb=glb;
+  if(g('m3d_glass').value)o.model3d_glass=g('m3d_glass').value;
+  if(g('m3d_cap').value)o.model3d_cap=g('m3d_cap').value;
+  if(g('m3d_liquid').dataset.unset!=='1')o.model3d_liquid=g('m3d_liquid').value;
+  if(g('m3d_depth')&&g('m3d_depth').value)o.model3d_depth=Number(g('m3d_depth').value);
+  if(g('m3d_label')&&g('m3d_label').value.trim())o.model3d_label=g('m3d_label').value.trim();
+  return o;
+}
+
 /* ---------- champs avancés : notes (tags), jauges, choix multiples, polices, éditeur de texte ---------- */
 function wireProductWidgets(form){
   const setJSON=(box,arr)=>{box.querySelector('input[type=hidden]').value=JSON.stringify(arr);};
@@ -787,7 +857,7 @@ function openForm(name,id){
   const c=E[name];const row=id?cache[name].find(r=>r.id===id):{};
   if(!id&&c.dept&&!row.department)row.department=allowed()[0];
   modal(`<div class="mh"><h3 class="serif">${id?'Modifier':'Nouveau'} ${c.label}</h3><button class="x" data-a="close">✕</button></div><div class="mb">${MLOC(name)}<form id="f" class="fg" onsubmit="return false">${c.fields.map(f=>fieldHTML(f,row)).join('')}</form>${name==='products'&&id?'<div class="tiers" id="tiers"></div>':''}${name==='products'&&!id?'<p class="hint" style="margin-top:16px">Enregistrez d\'abord le produit : vous pourrez ensuite ajouter ses paliers de prix gros.</p>':''}</div><div class="mf"><button class="btn ghost" data-a="close">Fermer</button><button class="btn" data-a="save" data-e="${name}" data-id="${id||''}">Enregistrer</button></div>`);
-  const form=$('f');applyDeps(form);wireProductWidgets(form);
+  const form=$('f');applyDeps(form);wireProductWidgets(form);wire3D(form);
   form.addEventListener('change',e=>{if(e.target.name==='department'){applyDeps(form);refreshRefs(name,form,row);}});
   form.addEventListener('input',e=>{if(e.target.dataset.prev){const u=e.target.value.trim();const pv=e.target.closest('.fld').querySelector('.pv');if(pv)pv.innerHTML=/^https?:/.test(u)?`<img src="${esc(u)}" alt="" onerror="this.remove()">`:'';}});
   if(name==='products'&&id)tiersUI(id);
@@ -966,7 +1036,7 @@ const LOCS={
  about:[{p:'about',hl:['hero','story','values','tl','cta'],zone:'Toute la page « À propos de nous »',what:"Tout se modifie directement sur la page, en mode édition.",a:'?edit=1'}]};
 const HOW={
  moments:['Touchez <b>+ Ajouter</b> et choisissez une <b>catégorie</b> (Entre amis, Vendanges, Dîner…).','Mettez une <b>photo ou vidéo de couverture</b> : bouton « Galerie » pour la prendre dans votre téléphone.','Dans <b>Album</b>, ajoutez d\'autres photos et vidéos : le visiteur les fait défiler.','Touchez <b>Enregistrer</b> : le moment apparaît tout de suite sur la page Fun For Us.'],
- products:['Touchez <b>+ Ajouter</b>, choisissez la boutique (<b>Parfum</b> ou <b>Vin</b>), puis remplissez le nom et le prix.','Ajoutez les photos : la <b>1re photo</b> est celle de la carte.','Touchez <b>Enregistrer</b> : le produit est en ligne.','Pour le cacher sans le supprimer, touchez l\'œil 👁 dans la liste.'],
+ products:['Touchez <b>+ Ajouter</b>, choisissez la boutique (<b>Parfum</b> ou <b>Vin</b>), puis remplissez le nom et le prix.','Ajoutez les photos : la <b>1re photo</b> est celle de la carte.','Touchez <b>Enregistrer</b> : le produit est en ligne.','Pour le cacher sans le supprimer, touchez l\'œil 👁 dans la liste.','<b>Vue 3D :</b> dans « Vue 3D », choisissez « ✨ Automatique d\'après la 1re photo » (photo de face, fond blanc, flacon entier). L\'étiquette et la couleur du liquide sont reprises de la photo ; vous pouvez changer la couleur à côté.'],
  categories:['Une catégorie = une <b>carte</b> et un <b>filtre</b> sur la boutique (Homme, Femme, Rouge, Blanc…).','Après avoir créé une catégorie, ajoutez <b>son image</b> dans « Images & logo ».','Chaque produit se range dans une catégorie depuis sa fiche.'],
  heroes:['Ce sont les <b>grandes images</b> qui défilent sur l\'accueil toutes les 7 secondes.','Touchez <b>+ Ajouter</b>, choisissez l\'image (format large), puis un bouton si vous voulez.','L\'<b>ordre</b> décide de la position dans le défilement.'],
  announces:['Une annonce = une <b>carte « À la une »</b> en haut de l\'accueil (nouveauté, promo, vidéo).','Touchez <b>+ Ajouter</b> : image ou vidéo, titre, texte, et un bouton si besoin.','Au clic, le visiteur ouvre l\'annonce en grand ; le bouton « retour » du téléphone la referme.'],
@@ -987,7 +1057,7 @@ const WHERE={
  categories:r=>r.department==='vin'?chip('vin','Cartes + filtres'):chip('parfum','Cartes + filtres','#homme')};
 Object.keys(WHERE).forEach(n=>{const cols=E[n].cols;cols.splice(cols.length-1,0,{l:'Où ça apparaît',f:WHERE[n]});});
 const FAT={
- products:{department:'Choisit la boutique : Parfum → JB Parfumerie · Vin → Fun For Us',category_id:'Carte + filtre de la boutique (Homme / Femme / Mixte ou Rouge / Blanc / Rosé)',name:'Titre sur la carte produit et sur la fiche',slug:"Adresse interne de la fiche (non affichée)",sku:'Référence interne',price_retail:'Prix affiché sur la carte et la fiche',stock:'Disponibilité sur la fiche · alerte « Stock bas » ici',unit_label:'Unité affichée avec le prix (ex. flacon 50ml)',rating:'Note affichée sur la fiche',pack_label:'Ligne « pack » (vente en gros) sur la fiche',description:'Texte de la fiche produit (ouverte au clic sur la carte)',images:'Carrousel de la fiche · la 1re image = photo de la carte',videos:'Vidéo dans la fiche produit',abv:'Caractéristiques de la fiche vin',volume_cl:'Caractéristiques de la fiche vin',region:'Caractéristiques de la fiche vin',grape:'Caractéristiques de la fiche vin',aging:'Caractéristiques de la fiche vin',residual_sugar:'Caractéristiques de la fiche vin',is_active:'Décoché = le produit disparaît du site (sans être supprimé)'},
+ products:{department:'Choisit la boutique : Parfum → JB Parfumerie · Vin → Fun For Us',category_id:'Carte + filtre de la boutique (Homme / Femme / Mixte ou Rouge / Blanc / Rosé)',name:'Titre sur la carte produit et sur la fiche',slug:"Adresse interne de la fiche (non affichée)",sku:'Référence interne',price_retail:'Prix affiché sur la carte et la fiche',stock:'Disponibilité sur la fiche · alerte « Stock bas » ici',unit_label:'Unité affichée avec le prix (ex. flacon 50ml)',rating:'Note affichée sur la fiche',pack_label:'Ligne « pack » (vente en gros) sur la fiche',description:'Texte de la fiche produit (ouverte au clic sur la carte)',m3d:'Fiche produit › bouton « Voir en 3D » sur la photo',images:'Carrousel de la fiche · la 1re image = photo de la carte',videos:'Vidéo dans la fiche produit',abv:'Caractéristiques de la fiche vin',volume_cl:'Caractéristiques de la fiche vin',region:'Caractéristiques de la fiche vin',grape:'Caractéristiques de la fiche vin',aging:'Caractéristiques de la fiche vin',residual_sugar:'Caractéristiques de la fiche vin',is_active:'Décoché = le produit disparaît du site (sans être supprimé)'},
  categories:{department:'Boutique concernée : JB Parfumerie ou Fun For Us',parent_id:'Fait de cette catégorie une sous-catégorie',name:'Nom du filtre / de la carte catégorie',sort_order:'Position dans la liste des filtres',is_active:'Décoché = catégorie masquée du site'},
  heroes:{image_url:'Accueil › Grande affiche (image plein cadre)',cta_label:'Accueil › texte du bouton posé sur l\'affiche',link_url:'Accueil › page ouverte par le bouton',title:'Usage interne uniquement (non affiché)',sort_order:'Accueil › ordre de défilement des affiches',is_active:'Décoché = affiche retirée du défilement'},
  announces:{media_type:'Accueil › À la une : image ou vidéo',sort_order:'Accueil › À la une : position dans le défilement',image_url:'Accueil › À la une : visuel de la carte',tag:'Accueil › À la une : petite étiquette sur la carte',title:'Accueil › À la une : titre de la carte',body:'Accueil › À la une : texte sous le titre',cta_label:'Accueil › À la une : texte du bouton',link_url:'Accueil › À la une : page ouverte par le bouton',is_active:'Décoché = annonce retirée de « À la une »'},
