@@ -8,6 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="winfum-store.js"></script>
 <script src="winfum-share.js"></script>
+<script src="winfum-site.js"></script>
 <title>JB Parfumerie — une collection Winfum</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap">
@@ -391,9 +392,9 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
 <div class="ov" id="menu-overlay" onclick="toggleMenu(false)"></div>
 <div id="mobile-menu">
   <div class="menu-top"><span class="brand" style="font-size:18px">JB Parfumerie</span><span class="x" onclick="toggleMenu(false)">✕</span></div>
-  <a href="#homme" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#4a463e"><rect x="9.5" y="2" width="5" height="3.2" rx="1"/><path d="M12 5.2V8"/><path d="M8.5 8h7a3.5 3.5 0 013.5 3.5v6a3.5 3.5 0 01-3.5 3.5h-7A3.5 3.5 0 015 17.5v-6A3.5 3.5 0 018.5 8z"/><path d="M9.2 14.2h5.6"/></svg><span>Homme</span></a>
-  <a href="#femme" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#d98fa0"><rect x="9.5" y="2" width="5" height="3.2" rx="1"/><path d="M12 5.2V8"/><path d="M8.5 8h7a3.5 3.5 0 013.5 3.5v6a3.5 3.5 0 01-3.5 3.5h-7A3.5 3.5 0 015 17.5v-6A3.5 3.5 0 018.5 8z"/><path d="M9.2 14.2h5.6"/></svg><span>Femme</span></a>
-  <a href="#mixte" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#c9ab6d"><rect x="9.5" y="2" width="5" height="3.2" rx="1"/><path d="M12 5.2V8"/><path d="M8.5 8h7a3.5 3.5 0 013.5 3.5v6a3.5 3.5 0 01-3.5 3.5h-7A3.5 3.5 0 015 17.5v-6A3.5 3.5 0 018.5 8z"/><path d="M9.2 14.2h5.6"/></svg><span>Mixte</span></a>
+  <a href="#parfums" onclick="toggleMenu(false);setFilter('homme')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#4a463e"><rect x="9.5" y="2" width="5" height="3.2" rx="1"/><path d="M12 5.2V8"/><path d="M8.5 8h7a3.5 3.5 0 013.5 3.5v6a3.5 3.5 0 01-3.5 3.5h-7A3.5 3.5 0 015 17.5v-6A3.5 3.5 0 018.5 8z"/><path d="M9.2 14.2h5.6"/></svg><span>Homme</span></a>
+  <a href="#parfums" onclick="toggleMenu(false);setFilter('femme')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#d98fa0"><rect x="9.5" y="2" width="5" height="3.2" rx="1"/><path d="M12 5.2V8"/><path d="M8.5 8h7a3.5 3.5 0 013.5 3.5v6a3.5 3.5 0 01-3.5 3.5h-7A3.5 3.5 0 015 17.5v-6A3.5 3.5 0 018.5 8z"/><path d="M9.2 14.2h5.6"/></svg><span>Femme</span></a>
+  <a href="#parfums" onclick="toggleMenu(false);setFilter('mixte')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#c9ab6d"><rect x="9.5" y="2" width="5" height="3.2" rx="1"/><path d="M12 5.2V8"/><path d="M8.5 8h7a3.5 3.5 0 013.5 3.5v6a3.5 3.5 0 01-3.5 3.5h-7A3.5 3.5 0 015 17.5v-6A3.5 3.5 0 018.5 8z"/><path d="M9.2 14.2h5.6"/></svg><span>Mixte</span></a>
   <div class="m-sub">Nos catégories</div>
   <a href="jbparfumerie.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#a9782f"><rect x="9.5" y="2" width="5" height="3.2" rx="1"/><path d="M12 5.2V8"/><path d="M8.5 8h7a3.5 3.5 0 013.5 3.5v6a3.5 3.5 0 01-3.5 3.5h-7A3.5 3.5 0 015 17.5v-6A3.5 3.5 0 018.5 8z"/><path d="M9.2 14.2h5.6"/></svg><span>JB Parfumerie</span><span class="pro" style="margin-left:auto">PRO</span></a>
   <a href="funforus.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#7a1128"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Fun For Us · Vins</span><span class="pro" style="margin-left:auto">PRO</span></a>
@@ -433,12 +434,7 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
 
 <main class="wrap">
   <div class="sec-head reveal"><h2 class="serif">Choisissez votre univers</h2></div>
-  <div class="cats">
-    <div class="cat c-homme active" id="homme" onclick="filterCat('homme',this)"><div class="bg"></div><div class="tx"><small>Élégance</small><h3 class="serif">Homme</h3></div></div>
-    <div class="cat c-femme" id="femme" onclick="filterCat('femme',this)"><div class="bg"></div><div class="tx"><small>Signature</small><h3 class="serif">Femme</h3></div></div>
-    <div class="cat c-mixte" id="mixte" onclick="filterCat('mixte',this)"><div class="bg"></div><div class="tx"><small>Intemporel</small><h3 class="serif">Mixte</h3></div></div>
-    <div class="cat c-all" onclick="filterCat('all',this)"><div class="bg"></div><div class="tx"><small>Tout voir</small><h3 class="serif">Collection</h3></div></div>
-  </div>
+  <div class="cats" id="cats"></div>
 
   <div class="sec-head reveal" id="parfums">
     <div><span class="tag">JB Parfumerie</span><h2 class="serif">Nos fragrances</h2></div>
@@ -547,8 +543,7 @@ async function loadRatings(sb){
 }
 async function loadShop(){
   try{
-    if(!window.supabase){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
-    const sb=window.WINFUM_SB||(window.WINFUM_SB=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY));
+    const sb=await WinfumSite.sb();
     const [catsRes,prodRes]=await Promise.all([
       sb.from('categories').select('*').eq('department','parfum').eq('is_active',true).order('sort_order'),
       sb.from('products').select('*').eq('department','parfum').eq('is_active',true).order('created_at',{ascending:false})
@@ -557,8 +552,10 @@ async function loadShop(){
     CATL={};cats.forEach(c=>{CATL[slugCat(c.name)]=c.name;});
     products=(prodRes.data||[]).map(r=>mapProduct(r,catsById));
     await loadRatings(sb);
-    buildChips(cats);
+    buildChips(cats);lastCats=cats;buildCats(cats);
     renderGrid();window.__shopReady=true;renderCart();handleDeepLink();
+    const qc=slugCat(new URLSearchParams(location.search).get('cat')||'');
+    if(qc!=='autre'&&CATL[qc]){setFilter(qc);setTimeout(()=>$('parfums').scrollIntoView({behavior:'smooth'}),300);}
     WS.suggest(products,[],'parfum',p=>p.catLabel);
     if($('search-overlay').classList.contains('open'))renderSearch($('search-input').value);
   }catch(e){
@@ -582,11 +579,13 @@ $('promo-tag').textContent=PROMO_WINE_TAG;$('promo-title').textContent=PROMO_WIN
 
 const MUTED='<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19 5l-6.5 14M19 19L12.5 5"/>',SOUND='<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/>';
 let heroVideo=null;
-if(HERO_VIDEO_URL){
+function setHeroVideo(u){
+  if(!u||heroVideo)return;
   heroVideo=document.createElement('video');heroVideo.className='cover';heroVideo.style.zIndex=0;
-  Object.assign(heroVideo,{src:HERO_VIDEO_URL,autoplay:true,loop:true,muted:true,playsInline:true});
+  Object.assign(heroVideo,{src:u,autoplay:true,loop:true,muted:true,playsInline:true});
   $('hero').insertBefore(heroVideo,$('hero-poster').nextSibling);$('hero').classList.add('has-video');$('mute-i').innerHTML=MUTED;
 }
+setHeroVideo(HERO_VIDEO_URL);
 function toggleMute(){if(!heroVideo)return;heroVideo.muted=!heroVideo.muted;$('mute-i').innerHTML=heroVideo.muted?MUTED:SOUND;}
 
 const PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
@@ -630,12 +629,36 @@ function renderGrid(){
     g.appendChild(el);io.observe(el);
   });
 }
-function setFilter(f){filter=f;document.querySelectorAll('#chips .chip').forEach(c=>c.classList.toggle('active',c.dataset.f===f));renderGrid();}
-document.querySelectorAll('#chips .chip').forEach(c=>c.onclick=()=>setFilter(c.dataset.f));
-function filterCat(cat,el){
-  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));el.classList.add('active');
-  setFilter(cat);$('parfums').scrollIntoView({behavior:'smooth'});
+function setFilter(f){
+  filter=f;
+  document.querySelectorAll('#chips .chip').forEach(c=>c.classList.toggle('active',c.dataset.f===f));
+  document.querySelectorAll('#cats .cat').forEach(c=>c.classList.toggle('active',c.dataset.f===f));
+  renderGrid();
 }
+document.querySelectorAll('#chips .chip').forEach(c=>c.onclick=()=>setFilter(c.dataset.f));
+function filterCat(cat){setFilter(cat);$('parfums').scrollIntoView({behavior:'smooth'});}
+/* cartes « Choisissez votre univers » : une carte par catégorie du département Parfum (admin › Catégories),
+   image = admin › Contenu du site › Cartes catégories */
+const CAT_SUB={homme:'Élégance',femme:'Signature',mixte:'Intemporel'},CAT_BG={homme:'#2b2925',femme:'#e8b9c4',mixte:'#c9ab6d'};
+let SITE={},lastCats=[];
+const cssUrl=u=>String(u).replace(/["'()\s\\]/g,c=>encodeURIComponent(c));
+function buildCats(cats){
+  const box=$('cats');if(!box)return;
+  let list=(cats||[]).filter(c=>!c.parent_id).map(c=>c.name);
+  if(!list.length)list=['Homme','Femme','Mixte'];
+  box.innerHTML=list.map(n=>{
+    const k=slugCat(n),img=SITE[WinfumSite.themeKey(n)]||'';
+    return `<div class="cat${filter===k?' active':''}" data-f="${k}"><div class="bg" style="background-color:${CAT_BG[k]||'#3a352c'}${img?`;background-image:url('${cssUrl(img)}')`:''}"></div><div class="tx"><small>${CAT_SUB[k]||'Univers'}</small><h3 class="serif">${esc0(n)}</h3></div></div>`;
+  }).join('')+`<div class="cat c-all${filter==='all'?' active':''}" data-f="all"><div class="bg"></div><div class="tx"><small>Tout voir</small><h3 class="serif">Collection</h3></div></div>`;
+  box.querySelectorAll('.cat').forEach(c=>c.onclick=()=>filterCat(c.dataset.f));
+}
+/* images / vidéo / logo choisis dans l'admin */
+WinfumSite.content().then(c=>{
+  SITE=c;
+  if(c.parfum_poster_url)cssImg('--hero-img',c.parfum_poster_url);
+  if(c.parfum_hero_video_url)setHeroVideo(c.parfum_hero_video_url);
+  buildCats(lastCats);
+});
 
 function toggleMenu(o){$('mobile-menu').classList.toggle('open',o);$('menu-overlay').classList.toggle('open',o);}
 function toggleTheme(){const html=document.documentElement,isDark=html.getAttribute('data-theme')==='dark';if(isDark){html.removeAttribute('data-theme');try{localStorage.setItem('winfum_theme','light')}catch(e){}}else{html.setAttribute('data-theme','dark');try{localStorage.setItem('winfum_theme','dark')}catch(e){}}}
@@ -766,13 +789,17 @@ window.addEventListener('popstate',e=>{
 });
 
 let vList=[],vIdx=0;
-function openViewer(list,i){vList=list;vIdx=i;renderViewer();$('viewer').classList.add('open');}
+function openViewer(list,i){
+  vList=list;vIdx=i||0;renderViewer();
+  if(!$('viewer').classList.contains('open')){$('viewer').classList.add('open');sheetOpen('viewer',viewerUI);}
+}
 function renderViewer(){
   const it=vList[vIdx];$('v-media').innerHTML=mediaEl(it,true,it.label||'');
   const dl=$('v-dl');dl.style.display=it.u?'flex':'none';if(it.u)dl.href=it.u;
 }
 function navViewer(d){vIdx=(vIdx+d+vList.length)%vList.length;renderViewer();}
-function closeViewer(){$('viewer').classList.remove('open');$('v-media').innerHTML='';}
+function viewerUI(){$('viewer').classList.remove('open');$('v-media').innerHTML='';}
+function closeViewer(){if(!$('viewer').classList.contains('open'))return;viewerUI();sheetClosed('viewer');}
 document.addEventListener('keydown',e=>{
   if($('viewer').classList.contains('open')){
     if(e.key==='ArrowRight')navViewer(1);if(e.key==='ArrowLeft')navViewer(-1);if(e.key==='Escape')closeViewer();

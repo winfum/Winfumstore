@@ -8,6 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="winfum-store.js"></script>
 <script src="winfum-share.js"></script>
+<script src="winfum-site.js"></script>
 <title>WINFUM — Parfums &amp; Vins d'exception</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap">
@@ -555,6 +556,12 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
 </section>
 
 <main class="wrap">
+  <section id="univers">
+    <div class="sec-head reveal"><div><span class="tag">JB Parfumerie</span><h2 class="serif">Choisissez votre univers</h2></div></div>
+    <div class="cats" id="cats-parfum"></div>
+    <div class="sec-head reveal"><div><span class="tag">Fun For Us</span><h2 class="serif">Choisissez votre cépage</h2></div></div>
+    <div class="cats" id="cats-vin"></div>
+  </section>
   <section id="parfums">
     <div class="sec-head reveal"><div><span class="tag">Signature</span><h2 class="serif">Nos parfums</h2></div><a href="jbparfumerie.html" class="tag">Toute la collection</a></div>
     <div class="grid" id="grid-parfum"></div>
@@ -690,8 +697,8 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 /* grandes affiches (rectangle couché) — 1 slide toutes les 7 secondes */
 const HERO_DELAY=7000;
 let heroSlides=[
- {u:PARFUM_POSTER_URL,cta:'Voir la boutique Parfums',link:'jbparfumerie.html'},
- {u:VIN_POSTER_URL,cta:'Voir la boutique Vins',link:'funforus.html'}
+ {u:PARFUM_POSTER_URL,def:'parfum',cta:'Voir la boutique Parfums',link:'jbparfumerie.html'},
+ {u:VIN_POSTER_URL,def:'vin',cta:'Voir la boutique Vins',link:'funforus.html'}
 ];
 let heroIdx=0,heroTimer=null,heroHold=false;
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -856,6 +863,7 @@ async function loadProducts(){
     ]);
     if(prodRes.error)throw prodRes.error;
     const catsById={};(catsRes.data||[]).forEach(c=>catsById[c.id]=c);
+    homeCats=catsRes.data||[];buildHomeCats();
     const real={parfum:[],vin:[]};
     (prodRes.data||[]).forEach(r=>{const p=mapRow(r,catsById);real[p.type].push(p);});
     const next=[];
@@ -999,7 +1007,10 @@ function shareProduct(){if(curP)WinfumShare.product(curP);}
 
 /* viewer (produits + annonces) */
 let vList=[],vIdx=0,vMode='media';
-function openViewer(list,i,mode){vList=list;vIdx=i;vMode=mode||'media';renderViewer();$('viewer').classList.add('open');}
+function openViewer(list,i,mode){
+  vList=list;vIdx=i||0;vMode=mode||'media';renderViewer();
+  if(!$('viewer').classList.contains('open')){$('viewer').classList.add('open');sheetOpen('viewer',viewerUI);}
+}
 function renderViewer(){
   const it=vList[vIdx];$('v-media').innerHTML=mediaEl(it,true,it.label||'');
   $('v-title').textContent=vMode==='ann'?it.title:'';$('v-text').textContent=vMode==='ann'?(it.text||''):'';
@@ -1011,10 +1022,11 @@ const itemLink=()=>{const it=vList[vIdx];return vMode==='ann'?base()+'#a-'+it.id
 function shareCurrent(){const it=vList[vIdx];shareLink(itemLink(),it.title||it.label||'Winfum',it.text);}
 function copyCurrent(){copyLink(itemLink());}
 function navViewer(d){vIdx=(vIdx+d+vList.length)%vList.length;renderViewer();}
-function closeViewer(){
+function viewerUI(){
   $('viewer').classList.remove('open');$('v-media').innerHTML='';
   if(vMode==='ann'&&location.hash.startsWith('#a-'))history.replaceState(history.state,'',location.pathname+location.search);
 }
+function closeViewer(){if(!$('viewer').classList.contains('open'))return;viewerUI();sheetClosed('viewer');}
 document.addEventListener('keydown',e=>{
   if($('viewer').classList.contains('open')){
     if(e.key==='ArrowRight')navViewer(1);if(e.key==='ArrowLeft')navViewer(-1);if(e.key==='Escape')closeViewer();
@@ -1080,6 +1092,32 @@ function checkout(){
   window.open('https://wa.me/50948821521?text='+encodeURIComponent(msg),'_blank');
 }
 
+/* cartes catégories de l'accueil : une carte par catégorie (admin › Catégories) ; un clic ouvre la boutique déjà filtrée.
+   Image de chaque carte = admin › Contenu du site › Cartes catégories */
+const CAT_SUB={homme:'Élégance',femme:'Signature',mixte:'Intemporel',rouge:'Corsé',blanc:'Frais',rose:'Léger'};
+const CAT_BG={homme:'#2b2925',femme:'#e8b9c4',mixte:'#c9ab6d',rouge:'#4a0a17',blanc:'#d8c48a',rose:'#d98fa0'};
+const CAT_DEF={parfum:['Homme','Femme','Mixte'],vin:['Rouge','Blanc','Rosé']};
+let SITE={},homeCats=[];
+const cssUrl=u=>String(u).replace(/["'()\s\\]/g,c=>encodeURIComponent(c));
+function buildHomeCats(){
+  [['parfum','jbparfumerie.html','Univers'],['vin','funforus.html','Cépage']].forEach(([dept,page,dflt])=>{
+    const box=$('cats-'+dept);if(!box)return;
+    let names=homeCats.filter(c=>c.department===dept&&!c.parent_id).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).map(c=>c.name);
+    if(!names.length)names=CAT_DEF[dept];
+    box.innerHTML=names.map(n=>{
+      const k=slugCat(n),img=SITE[WinfumSite.themeKey(n)]||'';
+      return `<a class="cat" href="${page}?cat=${encodeURIComponent(k)}"><div class="bg" style="background-color:${CAT_BG[k]||'#4a463e'}${img?`;background-image:url('${cssUrl(img)}')`:''}"></div><div class="tx"><small>${esc(CAT_SUB[k]||dflt)}</small><h3 class="serif">${esc(n)}</h3></div></a>`;
+    }).join('')+`<a class="cat" href="${page}"><div class="bg" style="background-image:linear-gradient(150deg,${dept==='vin'?'#4a0a17,#c9a24a':'#a9782f,#7a1128'})"></div><div class="tx"><small>Tout voir</small><h3 class="serif">Collection</h3></div></a>`;
+  });
+}
+buildHomeCats();
+WinfumSite.content().then(c=>{
+  SITE=c;
+  if(c.parfum_poster_url)cssImg('--parfum-img',c.parfum_poster_url);
+  if(c.vin_poster_url)cssImg('--vin-img',c.vin_poster_url);
+  heroSlides.forEach(h=>{if(h.def==='parfum'&&c.parfum_poster_url)h.u=c.parfum_poster_url;if(h.def==='vin'&&c.vin_poster_url)h.u=c.vin_poster_url;});
+  renderHero();buildHomeCats();
+});
 renderAnn();renderHero();renderGrids();renderCart();WS.suggest(products,[['parfum','Parfums','#a9782f'],['vin','Vins','#7a1128']],null,catName);loadBanners();loadProducts();
 window.addEventListener('load',()=>{
   handleDeepLink();if(deepDone)return;

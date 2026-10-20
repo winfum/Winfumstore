@@ -8,6 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="winfum-store.js"></script>
 <script src="winfum-share.js"></script>
+<script src="winfum-site.js"></script>
 <title>Fun For Us — une collection Winfum</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap">
@@ -185,6 +186,16 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 .mo .pl{position:absolute;top:12px;right:12px;z-index:2;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.88);display:flex;align-items:center;justify-content:center;color:var(--wine)}
 .mo .pl svg{width:12px;height:12px;margin-left:2px}
 @media(max-width:780px){.mgrid{grid-template-columns:repeat(2,1fr);grid-auto-rows:140px}}
+.mo .cnt{position:absolute;top:12px;left:12px;z-index:2;padding:4px 10px;border-radius:20px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;letter-spacing:.08em}
+.mo.static{cursor:default}
+#mchips{overflow-x:auto;flex-wrap:nowrap;max-width:100%;padding-bottom:4px;scrollbar-width:none}#mchips::-webkit-scrollbar{display:none}#mchips .chip{white-space:nowrap;flex:none}
+.mnote{grid-column:1/-1;text-align:center;font-size:12px;color:var(--muted);padding:6px 0 0}
+.v-cap{max-width:min(640px,88vw);color:#fff;text-align:center;margin-top:14px}
+.v-cap small{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.7}
+.v-cap b{display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:24px;font-weight:600;margin-top:2px}
+.v-cap span{display:block;font-size:13px;opacity:.85;line-height:1.5;margin-top:4px}
+.v-count{position:fixed;top:calc(env(safe-area-inset-top,0px) + 24px);left:22px;color:#fff;font-size:12px;letter-spacing:.12em;z-index:501}
+@media(max-width:780px){.v-media{height:54vh}}
 
 /* promo JB */
 .promo{margin:10px 0 50px;border-radius:24px;overflow:hidden;position:relative;min-height:240px;display:flex;align-items:center;background:linear-gradient(120deg,#1c1a17,#3a352c 60%,#4a463e)}
@@ -395,9 +406,9 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
 <div class="ov" id="menu-overlay" onclick="toggleMenu(false)"></div>
 <div id="mobile-menu">
   <div class="menu-top"><span class="brand" style="font-size:18px">Fun For Us</span><span class="x" onclick="toggleMenu(false)">✕</span></div>
-  <a href="#rouge" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#7a1128"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Rouge</span></a>
-  <a href="#blanc" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#c9a24a"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Blanc</span></a>
-  <a href="#rose" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#d98fa0"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Rosé</span></a>
+  <a href="#vins" onclick="toggleMenu(false);setFilter('rouge')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#7a1128"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Rouge</span></a>
+  <a href="#vins" onclick="toggleMenu(false);setFilter('blanc')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#c9a24a"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Blanc</span></a>
+  <a href="#vins" onclick="toggleMenu(false);setFilter('rose')"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#d98fa0"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Rosé</span></a>
   <div class="m-sub">Nos catégories</div>
   <a href="jbparfumerie.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#a9782f"><rect x="9.5" y="2" width="5" height="3.2" rx="1"/><path d="M12 5.2V8"/><path d="M8.5 8h7a3.5 3.5 0 013.5 3.5v6a3.5 3.5 0 01-3.5 3.5h-7A3.5 3.5 0 015 17.5v-6A3.5 3.5 0 018.5 8z"/><path d="M9.2 14.2h5.6"/></svg><span>JB Parfumerie</span><span class="pro" style="margin-left:auto">PRO</span></a>
   <a href="funforus.html" onclick="toggleMenu(false)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#7a1128"><path d="M8 3h8l-1 8a3 3 0 01-6 0L8 3z"/><path d="M12 14v7M9 21h6"/></svg><span>Fun For Us · Vins</span><span class="pro" style="margin-left:auto">PRO</span></a>
@@ -437,12 +448,7 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
 
 <main class="wrap">
   <div class="sec-head reveal"><h2 class="serif">Choisissez votre cépage</h2></div>
-  <div class="cats">
-    <div class="cat c-rouge active" id="rouge" onclick="filterCat('rouge',this)"><div class="bg"></div><div class="tx"><small>Corsé</small><h3 class="serif">Rouge</h3></div></div>
-    <div class="cat c-blanc" id="blanc" onclick="filterCat('blanc',this)"><div class="bg"></div><div class="tx"><small>Frais</small><h3 class="serif">Blanc</h3></div></div>
-    <div class="cat c-rose" id="rose" onclick="filterCat('rose',this)"><div class="bg"></div><div class="tx"><small>Léger</small><h3 class="serif">Rosé</h3></div></div>
-    <div class="cat c-all" onclick="filterCat('all',this)"><div class="bg"></div><div class="tx"><small>Tout voir</small><h3 class="serif">Collection</h3></div></div>
-  </div>
+  <div class="cats" id="cats"></div>
 
   <div class="sec-head reveal" id="vins">
     <div><span class="tag">Fun For Us</span><h2 class="serif">Nos vins</h2></div>
@@ -454,9 +460,7 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
 
   <div class="sec-head reveal" id="moments">
     <div><span class="tag">Instants Winfum</span><h2 class="serif">Moments partagés</h2></div>
-    <div class="chips" id="mchips">
-      <span class="chip active" data-f="all">Tout</span><span class="chip" data-f="image">Photos</span><span class="chip" data-f="video">Vidéos</span>
-    </div>
+    <div class="chips" id="mchips"></div>
   </div>
   <div class="mgrid" id="mgrid"></div>
 </main>
@@ -511,12 +515,14 @@ mark{background:rgba(201,162,74,.30);color:inherit;border-radius:3px;padding:0 2
 
 <div class="ov" id="viewer">
   <div class="v-close" onclick="closeViewer()">✕</div>
+  <div class="v-count" id="v-count"></div>
   <div class="v-nav l" onclick="navViewer(-1)">‹</div>
   <div class="v-nav r" onclick="navViewer(1)">›</div>
   <div class="v-media" id="v-media"></div>
+  <div class="v-cap" id="v-cap" hidden><small id="v-meta"></small><b id="v-title"></b><span id="v-text"></span></div>
   <div class="v-act">
     <a class="v-btn" id="v-dl" download target="_blank" title="Enregistrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg></a>
-    <div class="v-btn" onclick="shareProduct()" title="Partager"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 3.9M15.4 6.6L8.6 10.5"/></svg></div>
+    <div class="v-btn" onclick="shareViewer()" title="Partager"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 3.9M15.4 6.6L8.6 10.5"/></svg></div>
   </div>
 </div>
 
@@ -564,8 +570,8 @@ async function loadRatings(sb){
 }
 async function loadShop(){
   try{
-    if(!window.supabase){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
-    const sb=window.WINFUM_SB||(window.WINFUM_SB=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY));
+    const sb=await WinfumSite.sb();
+    loadMoments(sb);
     const [catsRes,prodRes]=await Promise.all([
       sb.from('categories').select('*').eq('department','vin').eq('is_active',true).order('sort_order'),
       sb.from('products').select('*').eq('department','vin').eq('is_active',true).order('created_at',{ascending:false})
@@ -574,12 +580,14 @@ async function loadShop(){
     CATL={};cats.forEach(c=>{CATL[slugCat(c.name)]=c.name;});
     products=(prodRes.data||[]).map(r=>mapWine(r,catsById));
     await loadRatings(sb);
-    buildChips(cats);
+    buildChips(cats);lastCats=cats;buildCats(cats);
     renderGrid();window.__shopReady=true;renderCart();handleDeepLink();
+    const qc=slugCat(new URLSearchParams(location.search).get('cat')||'');
+    if(qc!=='autre'&&CATL[qc]){setFilter(qc);setTimeout(()=>$('vins').scrollIntoView({behavior:'smooth'}),300);}
     WS.suggest(products,[],'vin',p=>p.catLabel);
     if($('search-overlay').classList.contains('open'))renderSearch($('search-input').value);
   }catch(e){
-    console.warn('Chargement produits :',e.message);window.__shopReady=true;renderCart();
+    console.warn('Chargement produits :',e.message);window.__shopReady=true;momentsLoaded=true;renderMoments();renderCart();
     $('grid').innerHTML='<div class="sempty" style="grid-column:1/-1;padding:60px 0">Impossible de charger les produits pour le moment.</div>';
   }
 }
@@ -589,14 +597,27 @@ function buildChips(cats){
   box.querySelectorAll('.chip').forEach(c=>c.onclick=()=>setFilter(c.dataset.f));
 }
 function esc0(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-/* Moments partagés — collez vos liens photo/vidéo dans u */
-const moments=[
- {t:'image',u:'',title:"Entre amis",cls:'tall'},
- {t:'image',u:'',title:"Dîner d'exception",cls:''},
- {t:'video',u:'',title:"Dans le chai",cls:''},
- {t:'image',u:'',title:"Célébration",cls:'wide'},
- {t:'image',u:'',title:"Vendanges 2026",cls:''},
-];
+/* Moments partagés : ajoutés depuis l'admin / manager (table collection_moments).
+   Tant qu'aucun moment n'est publié, des emplacements d'exemple (sans photo) s'affichent. */
+let moments=[],momentsLoaded=false;
+const MOMENT_DEMO=[
+ {title:"Entre amis",cat:'Entre amis',cls:'tall'},{title:"Dîner d'exception",cat:'Dîner'},{title:"Dans le chai",cat:'Dans le chai'},
+ {title:"Célébration",cat:'Célébration',cls:'wide'},{title:"Vendanges",cat:'Vendanges'}];
+function mapMoment(r){
+  const album=[],seen={};
+  const add=(t,u)=>{u=String(u||'').trim();if(u&&!seen[u]){seen[u]=1;album.push({t,u});}};
+  add(r.media_type==='video'?'video':'image',r.media_url);
+  (r.images||[]).forEach(u=>add('image',u));(r.videos||[]).forEach(u=>add('video',u));
+  return {id:r.id,title:r.title||'',cls:r.layout||'',cat:r.category||'',desc:r.description||'',date:r.event_date||'',place:r.location||'',album};
+}
+async function loadMoments(sb){
+  try{
+    const {data,error}=await sb.from('collection_moments').select('*').eq('collection','funforus').eq('is_active',true).order('sort_order',{ascending:true}).order('created_at',{ascending:false});
+    if(error)throw error;
+    moments=(data||[]).map(mapMoment).filter(m=>m.album.length);
+  }catch(e){console.warn('Moments :',e.message||e);moments=[];}
+  momentsLoaded=true;renderMoments();
+}
 /* ============================================================ */
 
 const $=id=>document.getElementById(id);
@@ -607,11 +628,13 @@ $('promo-tag').textContent=PROMO_JB_TAG;$('promo-title').textContent=PROMO_JB_TI
 
 const MUTED='<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19 5l-6.5 14M19 19L12.5 5"/>',SOUND='<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/>';
 let heroVideo=null;
-if(HERO_VIDEO_URL){
+function setHeroVideo(u){
+  if(!u||heroVideo)return;
   heroVideo=document.createElement('video');heroVideo.className='cover';heroVideo.style.zIndex=0;
-  Object.assign(heroVideo,{src:HERO_VIDEO_URL,autoplay:true,loop:true,muted:true,playsInline:true});
+  Object.assign(heroVideo,{src:u,autoplay:true,loop:true,muted:true,playsInline:true});
   $('hero').insertBefore(heroVideo,$('hero-poster').nextSibling);$('hero').classList.add('has-video');$('mute-i').innerHTML=MUTED;
 }
+setHeroVideo(HERO_VIDEO_URL);
 function toggleMute(){if(!heroVideo)return;heroVideo.muted=!heroVideo.muted;$('mute-i').innerHTML=heroVideo.muted?MUTED:SOUND;}
 
 /* média : image, vidéo ou emplacement vide */
@@ -658,29 +681,62 @@ function renderGrid(){
   });
 }
 function setFilter(f){
-  filter=f;document.querySelectorAll('#chips .chip').forEach(c=>c.classList.toggle('active',c.dataset.f===f));renderGrid();
+  filter=f;
+  document.querySelectorAll('#chips .chip').forEach(c=>c.classList.toggle('active',c.dataset.f===f));
+  document.querySelectorAll('#cats .cat').forEach(c=>c.classList.toggle('active',c.dataset.f===f));
+  renderGrid();
 }
 document.querySelectorAll('#chips .chip').forEach(c=>c.onclick=()=>setFilter(c.dataset.f));
-function filterCat(cat,el){
-  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));el.classList.add('active');
-  setFilter(cat);$('vins').scrollIntoView({behavior:'smooth'});
+function filterCat(cat){setFilter(cat);$('vins').scrollIntoView({behavior:'smooth'});}
+/* cartes « Choisissez votre cépage » : une carte par catégorie du département Vin (admin › Catégories),
+   image = admin › Contenu du site › Cartes catégories */
+const CAT_SUB={rouge:'Corsé',blanc:'Frais',rose:'Léger'},CAT_BG={rouge:'#4a0a17',blanc:'#d8c48a',rose:'#d98fa0'};
+let SITE={},lastCats=[];
+const cssUrl=u=>String(u).replace(/["'()\s\\]/g,c=>encodeURIComponent(c));
+function buildCats(cats){
+  const box=$('cats');if(!box)return;
+  let list=(cats||[]).filter(c=>!c.parent_id).map(c=>c.name);
+  if(!list.length)list=['Rouge','Blanc','Rosé'];
+  box.innerHTML=list.map(n=>{
+    const k=slugCat(n),img=SITE[WinfumSite.themeKey(n)]||'';
+    return `<div class="cat${filter===k?' active':''}" data-f="${k}"><div class="bg" style="background-color:${CAT_BG[k]||'#5a1a28'}${img?`;background-image:url('${cssUrl(img)}')`:''}"></div><div class="tx"><small>${CAT_SUB[k]||'Cépage'}</small><h3 class="serif">${esc0(n)}</h3></div></div>`;
+  }).join('')+`<div class="cat c-all${filter==='all'?' active':''}" data-f="all"><div class="bg"></div><div class="tx"><small>Tout voir</small><h3 class="serif">Collection</h3></div></div>`;
+  box.querySelectorAll('.cat').forEach(c=>c.onclick=()=>filterCat(c.dataset.f));
 }
+/* images / vidéo / logo choisis dans l'admin */
+WinfumSite.content().then(c=>{
+  SITE=c;
+  if(c.vin_poster_url)cssImg('--hero-img',c.vin_poster_url);
+  if(c.vin_hero_video_url)setHeroVideo(c.vin_hero_video_url);
+  buildCats(lastCats);
+});
 
 /* moments */
 let mFilter='all';
+const fmtDate=d=>{try{return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});}catch(e){return '';}};
+function renderMomentChips(){
+  const box=$('mchips'),cats=[];
+  moments.forEach(m=>{if(m.cat&&cats.indexOf(m.cat)<0)cats.push(m.cat);});
+  if(mFilter!=='all'&&cats.indexOf(mFilter)<0)mFilter='all';
+  box.hidden=cats.length<2;
+  box.innerHTML=`<span class="chip${mFilter==='all'?' active':''}" data-f="all">Tout</span>`+cats.map(c=>`<span class="chip${mFilter===c?' active':''}" data-f="${esc0(c)}">${esc0(c)}</span>`).join('');
+  box.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{mFilter=c.dataset.f;renderMoments();});
+}
 function renderMoments(){
   const box=$('mgrid');box.innerHTML='';
-  const list=moments.filter(m=>mFilter==='all'||m.t===mFilter);
-  list.forEach((m,i)=>{
-    const el=document.createElement('div');el.className='mo '+(m.cls||'');
-    el.innerHTML=mediaEl(m,false,m.title)+(m.t==='video'?`<div class="pl">${PLAY}</div>`:'')+`<div class="tx"><small>${m.t==='video'?'Vidéo':'Photo'}</small><h4 class="serif">${m.title}</h4></div>`;
-    el.onclick=()=>openViewer(list.map(x=>({...x,label:x.title})),i);
+  const real=moments.length>0;
+  renderMomentChips();
+  const list=real?moments.filter(m=>mFilter==='all'||m.cat===mFilter):MOMENT_DEMO.map(m=>({...m,album:[]}));
+  list.forEach(m=>{
+    const cv=m.album[0],el=document.createElement('div');
+    el.className='mo '+(m.cls||'')+(real?'':' static');
+    const label=m.cat||(cv&&cv.t==='video'?'Vidéo':'Photo'),meta=label+(m.date?' · '+fmtDate(m.date):'');
+    el.innerHTML=mediaEl(cv,false,esc0(m.title))+(cv&&cv.t==='video'?`<div class="pl">${PLAY}</div>`:'')+(m.album.length>1?`<div class="cnt">${m.album.length} médias</div>`:'')+`<div class="tx"><small>${esc0(meta)}</small><h4 class="serif">${esc0(m.title)}</h4></div>`;
+    if(real)el.onclick=()=>openViewer(m.album.map(x=>({...x,label:m.title,title:m.title,text:m.desc,cap:[m.cat,m.date?fmtDate(m.date):'',m.place].filter(Boolean).join(' · ')})),0,'moment');
     box.appendChild(el);
   });
+  if(!real&&momentsLoaded){const n=document.createElement('div');n.className='mnote';n.textContent='Les premiers moments partagés arrivent bientôt.';box.appendChild(n);}
 }
-document.querySelectorAll('#mchips .chip').forEach(c=>c.onclick=()=>{
-  mFilter=c.dataset.f;document.querySelectorAll('#mchips .chip').forEach(x=>x.classList.toggle('active',x===c));renderMoments();
-});
 
 /* menu + recherche */
 function toggleMenu(o){$('mobile-menu').classList.toggle('open',o);$('menu-overlay').classList.toggle('open',o);}
@@ -812,16 +868,31 @@ window.addEventListener('popstate',e=>{
   if(e.state&&e.state.pm)openProduct(e.state.pid,true);else{closeProduct(true);closeViewer();}
 });
 
-/* viewer */
-let vList=[],vIdx=0;
-function openViewer(list,i){vList=list;vIdx=i;renderViewer();$('viewer').classList.add('open');}
+/* viewer (produits + moments) — le bouton « retour » du téléphone ferme seulement la visionneuse */
+let vList=[],vIdx=0,vMode='media';
+function openViewer(list,i,mode){
+  vList=list;vIdx=i||0;vMode=mode||'media';renderViewer();
+  if(!$('viewer').classList.contains('open')){$('viewer').classList.add('open');sheetOpen('viewer',viewerUI);}
+}
 function renderViewer(){
   const it=vList[vIdx];
   $('v-media').innerHTML=mediaEl(it,true,it.label||'');
+  const cap=vMode==='moment'&&(it.title||it.text||it.cap);
+  $('v-cap').hidden=!cap;
+  if(cap){$('v-meta').textContent=it.cap||'';$('v-title').textContent=it.title||'';$('v-text').textContent=it.text||'';}
+  $('v-count').textContent=vList.length>1?(vIdx+1)+' / '+vList.length:'';
+  document.querySelectorAll('.v-nav').forEach(n=>n.style.display=vList.length>1?'flex':'none');
   const dl=$('v-dl');dl.style.display=it.u?'flex':'none';if(it.u)dl.href=it.u;
 }
 function navViewer(d){vIdx=(vIdx+d+vList.length)%vList.length;renderViewer();}
-function closeViewer(){$('viewer').classList.remove('open');$('v-media').innerHTML='';}
+function viewerUI(){$('viewer').classList.remove('open');$('v-media').innerHTML='';}
+function closeViewer(){if(!$('viewer').classList.contains('open'))return;viewerUI();sheetClosed('viewer');}
+async function shareViewer(){
+  if(vMode!=='moment')return shareProduct();
+  const it=vList[vIdx];if(!it||!it.u)return;
+  if(navigator.share){try{await navigator.share({title:it.title||'Winfum',text:(it.title||'Un moment Winfum')+' — Fun For Us',url:it.u});return;}catch(e){if(e&&e.name==='AbortError')return;}}
+  try{await navigator.clipboard.writeText(it.u);toast('Lien copié');}catch(e){prompt('Copiez le lien :',it.u);}
+}
 document.addEventListener('keydown',e=>{
   if($('viewer').classList.contains('open')){
     if(e.key==='ArrowRight')navViewer(1);if(e.key==='ArrowLeft')navViewer(-1);if(e.key==='Escape')closeViewer();
