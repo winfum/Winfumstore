@@ -349,6 +349,7 @@ details.mloc{display:block}details.mloc summary{cursor:pointer;font-weight:600}
 </style>
 <script src="winfum-fiche.js"></script>
 <script src="winfum-3d.js"></script>
+<script src="winfum-img.js"></script>
 </head>
 <body>
 
@@ -409,7 +410,7 @@ function toggleTheme(){const html=document.documentElement,isDark=html.getAttrib
 function toast(m,bad){const t=$('toast');t.textContent=m;t.classList.toggle('bad',!!bad);t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),bad?4200:2200);}
 const MEDIA_BUCKET='media'; // bucket Supabase Storage (public) à créer une fois : Storage → New bucket → nom "media" → Public
 async function wfUpload(input){
-  const file=input.files&&input.files[0];if(!file)return;
+  let file=input.files&&input.files[0];if(!file)return;file=await WFImg.compress(file);
   const wrap=input.closest('.urlfield'),label=input.closest('label'),urlInput=wrap.querySelector('input[type=text]'),pv=wrap.parentElement.querySelector('.pv');
   label.classList.add('busy');const span=label.querySelector('span'),orig=span.textContent;span.textContent='Envoi…';
   try{
@@ -431,8 +432,8 @@ async function wfUploadMulti(input){
   const wrap=input.closest('.urlsfield'),label=input.closest('label'),ta=wrap.querySelector('textarea');
   label.classList.add('busy');const span=label.querySelector('span'),orig=span.textContent;
   let done=0;const urls=[];
-  for(const file of files){
-    span.textContent=`Envoi ${++done}/${files.length}…`;
+  for(let file of files){
+    span.textContent=`Envoi ${++done}/${files.length}…`;file=await WFImg.compress(file);
     try{
       const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
       const path=`${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
@@ -523,7 +524,7 @@ const NAV=[
  ['dash','Accueil','Vos raccourcis'],['map','Où modifier quoi','Plan du site'],
  ['sep','Ma boutique'],['products','Produits','Parfums et vins'],['categories','Catégories','Homme, Femme, Rouge…'],['reviews','Avis clients','Notes et commentaires'],['orders','Commandes','Suivi des commandes'],['customers','Clients','Comptes « Mon espace »'],
  ['sep','Ventes & livraison'],['payments','Paiements','Preuves MonCash / NatCash'],['orders','Commandes & livraison','En cours, livrée…'],['zones','Zones de livraison','Frais et durée'],['messages','Messages','Support clients'],['sep','Pages du site'],['heroes','Affiches de l\'accueil','Grandes images qui défilent'],['announces','Annonces à la une','Nouveautés, promos'],['promos','Bannières promo','Bas des pages boutique'],['moments','Moments partagés','Photos et vidéos Fun For Us'],['content','Images & logo','Cartes, logo, affiches'],['about','À propos de nous','Page de présentation'],
- ['sep','Équipe'],['managers','Comptes managers','Accès de l\'équipe','super']];
+ ['sep','Équipe'],['images','Images','Alléger les photos','super'],['managers','Comptes managers','Accès de l\'équipe','super']];
 function buildNav(){
   $('nav').innerHTML=NAV.filter(n=>n[3]!=='super'||me.role==='super_admin').map(n=>n[0]==='sep'?`<div class="nsep">${n[1]}</div>`:`<a href="#/${n[0]}" data-r="${n[0]}">${svg(n[0])}<span class="nt"><b>${n[1]}</b><small>${n[2]||''}</small></span></a>`).join('');
 }
@@ -1015,6 +1016,26 @@ V.messages=async()=>{
   if(!msgCh)msgCh=sb.channel('mgr-msg').on('postgres_changes',{event:'INSERT',schema:'public',table:'order_messages'},p=>{if(p.new.sender==='client'){toast('💬 Nouveau message client');if(location.hash.includes('messages'))V.messages();}}).subscribe();
 };
 
+/* ===== Optimisation des images existantes ===== */
+Object.assign(icons,{images:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>'});
+V.images=async()=>{$('view').innerHTML=head('Images','Allège les photos trop lourdes (plus de 400 Ko), sans changer leurs liens.','<button class="btn" data-a="img-opt">⚡ Optimiser maintenant</button>')+'<div class="panel glass" id="imgst"><p class="hint">Les nouvelles photos sont déjà allégées automatiquement. Ce bouton traite celles qui existent déjà.</p></div>';};
+A['img-opt']=async()=>{
+  const st=$('imgst');st.innerHTML='<div class="spin"></div>';let all=[],off=0;
+  for(;;){const {data,error}=await sb.storage.from(MEDIA_BUCKET).list('',{limit:100,offset:off,sortBy:{column:'name',order:'asc'}});
+    if(error){st.innerHTML='<p class="hint">'+esc(err(error))+'</p>';return;}
+    if(!data||!data.length)break;all=all.concat(data);if(data.length<100)break;off+=100;}
+  const files=all.filter(f=>f.metadata&&f.metadata.size>400*1024&&/^image\/(jpeg|png|webp)/.test(f.metadata.mimetype||''));
+  if(!files.length){st.innerHTML='<p><b>Tout est déjà léger ✓</b></p>';return;}
+  let saved=0,done=0,fail=0;
+  for(const f of files){
+    st.innerHTML=`<p>Optimisation ${done+1} / ${files.length}…</p><p class="hint">Économisé : ${(saved/1048576).toFixed(1)} Mo</p>`;
+    try{const {data:blob,error:e1}=await sb.storage.from(MEDIA_BUCKET).download(f.name);if(e1)throw e1;
+      const nf=await WFImg.compress(new File([blob],f.name,{type:f.metadata.mimetype}));
+      if(nf.size<f.metadata.size*.9){const {error:e2}=await sb.storage.from(MEDIA_BUCKET).upload(f.name,nf,{upsert:true,contentType:nf.type,cacheControl:'31536000'});if(e2)throw e2;saved+=f.metadata.size-nf.size;}
+    }catch(e){fail++;}
+    done++;}
+  st.innerHTML=`<p><b>${done} image(s) traitée(s)</b> — ${(saved/1048576).toFixed(1)} Mo économisés${fail?` · ${fail} échec(s) (exécutez winfum_images_setup.sql dans Supabase)`:''}.</p><p class="hint">Le cache peut mettre quelques minutes à se rafraîchir.</p>`;
+};
 /* contenu du site */
 const LOCK={logo_url:"Toutes les pages › logo en haut à gauche + page de connexion",parfum_poster_url:"Accueil › visuel « Nos parfums » · JB Parfumerie › image d'ouverture",vin_poster_url:"Accueil › visuel « Nos vins » · Fun For Us › image d'ouverture",theme_homme_url:"JB Parfumerie › carte « Homme » (Choisissez votre univers)",theme_femme_url:"JB Parfumerie › carte « Femme »",theme_mixte_url:"JB Parfumerie › carte « Mixte »",theme_rouge_url:"Fun For Us › carte « Rouge »",theme_blanc_url:"Fun For Us › carte « Blanc »",theme_rose_url:"Fun For Us › carte « Rosé »",parfum_hero_video_url:"JB Parfumerie › vidéo en haut de page (remplace l'affiche)",vin_hero_video_url:"Fun For Us › vidéo en haut de page (remplace l'affiche)"};
 const CARD_DEF={parfum:['Homme','Femme','Mixte'],vin:['Rouge','Blanc','Rosé']};

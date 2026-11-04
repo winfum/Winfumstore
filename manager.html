@@ -349,6 +349,7 @@ details.mloc{display:block}details.mloc summary{cursor:pointer;font-weight:600}
 </style>
 <script src="winfum-fiche.js"></script>
 <script src="winfum-3d.js"></script>
+<script src="winfum-img.js"></script>
 </head>
 <body>
 
@@ -409,7 +410,7 @@ function toggleTheme(){const html=document.documentElement,isDark=html.getAttrib
 function toast(m,bad){const t=$('toast');t.textContent=m;t.classList.toggle('bad',!!bad);t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),bad?4200:2200);}
 const MEDIA_BUCKET='media'; // bucket Supabase Storage (public) à créer une fois : Storage → New bucket → nom "media" → Public
 async function wfUpload(input){
-  const file=input.files&&input.files[0];if(!file)return;
+  let file=input.files&&input.files[0];if(!file)return;file=await WFImg.compress(file);
   const wrap=input.closest('.urlfield'),label=input.closest('label'),urlInput=wrap.querySelector('input[type=text]'),pv=wrap.parentElement.querySelector('.pv');
   label.classList.add('busy');const span=label.querySelector('span'),orig=span.textContent;span.textContent='Envoi…';
   try{
@@ -431,8 +432,8 @@ async function wfUploadMulti(input){
   const wrap=input.closest('.urlsfield'),label=input.closest('label'),ta=wrap.querySelector('textarea');
   label.classList.add('busy');const span=label.querySelector('span'),orig=span.textContent;
   let done=0;const urls=[];
-  for(const file of files){
-    span.textContent=`Envoi ${++done}/${files.length}…`;
+  for(let file of files){
+    span.textContent=`Envoi ${++done}/${files.length}…`;file=await WFImg.compress(file);
     try{
       const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
       const path=`${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
@@ -1203,7 +1204,7 @@ V.about=()=>{
   .pm input,.pm select,.pm textarea{border-radius:12px!important;padding:12px 14px!important;font-size:15px}
   .pm .mf{position:sticky;bottom:0;background:var(--bg);box-shadow:0 -10px 20px rgba(0,0,0,.06)}
   .pm .mf .btn{flex:1;padding:14px}
-  .pvc{display:flex;gap:14px;align-items:center;padding:12px;border-radius:18px;background:linear-gradient(135deg,rgba(122,17,40,.1),rgba(169,120,47,.12));margin-bottom:6px}
+  .pvc-old{display:flex;gap:14px;align-items:center;padding:12px;border-radius:18px;background:linear-gradient(135deg,rgba(122,17,40,.1),rgba(169,120,47,.12));margin-bottom:6px}
   .pvc .pi{position:relative;width:84px;height:84px;border-radius:14px;overflow:hidden;background:rgba(128,128,128,.2);display:grid;place-items:center;font-size:28px;flex:none}
   .pvc .pi img{width:100%;height:100%;object-fit:cover}.pvc .pi i{position:absolute;left:4px;top:4px;background:#7a1128;color:#fff;font-size:9.5px;font-style:normal;padding:2px 7px;border-radius:12px}
   .pvc small{display:block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.6}.pvc b{display:block;font-size:17px}.pvc span{color:#7a1128;font-weight:700}`;
@@ -1224,16 +1225,94 @@ V.about=()=>{
   A.vm=d=>{vm=d.m;try{localStorage.setItem('wf_mgr_vm',vm);}catch(e){}renderList('products');};
   A.swp=d=>{const g=$('pgrid');if(g)g.scrollBy({left:(+d.d)*g.clientWidth*.8,behavior:'smooth'});};
 
-  const _of=openForm;
-  openForm=function(name,id){
-    _of(name,id);$('modal').classList.add('pm');
-    if(name!=='products')return;const f=$('f');if(!f||document.querySelector('.pvc'))return;
-    const box=document.createElement('div');box.className='pvc';f.parentNode.insertBefore(box,f);
-    const up=()=>{const g=n=>f.elements[n]?f.elements[n].value:'';const im=(g('images')||'').split(/\n/)[0].trim();
-      box.innerHTML=`<div class="pi">${/^(https?:|data:)/.test(im)?`<img src="${esc(im)}" alt="">`:'📷'}${g('badge')?`<i>${esc(g('badge'))}</i>`:''}</div><div><small>Aperçu</small><b>${esc(g('name')||'Nom du produit')}</b><span>${fnum(g('price_retail'))} G</span></div>`;};
-    f.addEventListener('input',up);f.addEventListener('change',up);up();
-    const t=setInterval(()=>{if(!document.body.contains(box))clearInterval(t);else up();},800);
-  };
+  const sc=document.createElement('style');sc.textContent=`
+  .sh{position:fixed;inset:0;z-index:3000;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;animation:shin .25s ease}
+  @keyframes shin{from{transform:translateY(30px);opacity:0}}
+  .sh-in{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;font-size:16px}
+  .sh-h{display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 10px;position:sticky;top:0;background:var(--bg);z-index:2}
+  .sh-h h2{margin:0;font-size:24px;font-family:'Cormorant Garamond',serif}
+  .sh-x{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:transparent;color:inherit;font-size:22px;cursor:pointer}
+  .sh-b{padding:4px 16px 24px;flex:1}.sh-b h4{margin:22px 0 10px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;opacity:.6}
+  .sh-b input[type=text],.sh-b input[type=number],.sh-b input:not([type]),.sh-b textarea{width:100%;min-height:54px;padding:14px 16px;font-size:17px;border-radius:14px;border:1.5px solid var(--line);background:transparent;color:inherit;font-family:inherit}
+  .sh-b textarea{min-height:130px;resize:vertical}.sh-b input:focus,.sh-b textarea:focus{outline:2px solid #7a1128;border-color:transparent}
+  .r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .ch{display:flex;flex-wrap:wrap;gap:10px}.ch button{min-height:50px;padding:0 20px;border-radius:30px;border:1.5px solid var(--line);background:transparent;color:inherit;font-size:16px;font-weight:600;cursor:pointer}
+  .ch button.on{background:#7a1128;border-color:#7a1128;color:#fff}
+  .pv-c{display:flex;gap:16px;align-items:center;padding:14px;border-radius:20px;background:linear-gradient(135deg,rgba(122,17,40,.1),rgba(169,120,47,.14))}
+  .pv-c .pi{position:relative;width:96px;height:96px;border-radius:16px;overflow:hidden;background:rgba(128,128,128,.2);display:grid;place-items:center;font-size:30px;flex:none}.pv-c .pi img{width:100%;height:100%;object-fit:cover}
+  .pv-c small{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.6}.pv-c b{display:block;font-size:19px;margin:2px 0}.pv-c span{color:#7a1128;font-weight:700;font-size:17px}
+  .ph{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ph .it{position:relative;aspect-ratio:1;border-radius:16px;overflow:hidden;border:3px solid transparent;background:rgba(128,128,128,.15)}
+  .ph .it.m{border-color:#7a1128}.ph .it img{width:100%;height:100%;object-fit:cover}
+  .ph .it em{position:absolute;left:6px;bottom:6px;background:#7a1128;color:#fff;font-style:normal;font-size:11px;padding:3px 9px;border-radius:12px}
+  .ph .it button{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(0,0,0,.7);color:#fff;font-size:16px;cursor:pointer}
+  .ph-add{display:flex;align-items:center;justify-content:center;min-height:56px;margin-top:12px;border:2px dashed var(--line);border-radius:16px;font-weight:600;cursor:pointer}
+  .sw-l{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding:16px;border:1.5px solid var(--line);border-radius:16px;font-weight:600;cursor:pointer}
+  .sw-l input{display:none}.sw-l i{width:54px;height:30px;border-radius:30px;background:rgba(128,128,128,.4);position:relative;transition:.2s}.sw-l i:after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+  .sw-l input:checked+i{background:#2f7a4b}.sw-l input:checked+i:after{left:27px}
+  .sh-f{position:sticky;bottom:0;display:flex;gap:10px;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));background:var(--bg);box-shadow:0 -12px 24px rgba(0,0,0,.08)}
+  .sh-s{flex:1;min-height:56px;border:0;border-radius:30px;background:#7a1128;color:#fff;font:700 17px inherit;cursor:pointer}.sh-s:disabled{opacity:.6}
+  .sh-d{width:56px;min-height:56px;border-radius:50%;border:1.5px solid var(--line);background:transparent;font-size:20px;cursor:pointer}
+  .pc2 .bd b{font-size:16px}.pc2 .bd span{font-size:14px}.pc2 .bt .btn{min-height:44px;font-size:14px}.vs button{font-size:14px;padding:11px 16px}`;
+  document.head.appendChild(sc);
+
+  function sheet(title,body,save,del){
+    const o=document.createElement('div');o.className='sh';
+    o.innerHTML=`<div class="sh-in"><div class="sh-h"><button class="sh-x" aria-label="Fermer">←</button><h2>${title}</h2></div><div class="sh-b">${body}</div><div class="sh-f">${del?'<button class="sh-d" type="button" aria-label="Supprimer">🗑</button>':''}<button class="sh-s" type="button">Enregistrer</button></div></div>`;
+    document.body.appendChild(o);document.body.style.overflow='hidden';
+    const close=()=>{o.remove();document.body.style.overflow='';};
+    o.querySelector('.sh-x').onclick=close;
+    o.querySelector('.sh-s').onclick=async e=>{const b=e.currentTarget;b.disabled=true;b.textContent='Enregistrement…';let ok=false;try{ok=await save();}catch(x){toast(err(x),1);}b.disabled=false;b.textContent='Enregistrer';if(ok)close();};
+    if(del)o.querySelector('.sh-d').onclick=async()=>{if(await del())close();};
+    return o;
+  }
+  const chips=(el,items,sel,pick)=>{el.innerHTML=items.map(i=>`<button type="button" class="${sel===i[0]?'on':''}" data-v="${esc(i[0])}">${esc(i[1])}</button>`).join('');el.querySelectorAll('button').forEach(b=>b.onclick=()=>pick(b.dataset.v));};
+  const insertSlug=async(table,v,base,extra)=>{let slug=slugify(base);let r=await sb.from(table).insert({...v,slug,...extra}).select().single();
+    if(r.error&&/duplicate|unique/i.test(r.error.message)){slug+='-'+Math.random().toString(36).slice(2,5);r=await sb.from(table).insert({...v,slug,...extra}).select().single();}return r;};
+
+  async function openProd(id){
+    if(!cache.categories)await load('categories');
+    const row=id?cache.products.find(r=>r.id===id):{};
+    const S={dept:row.department||allowed()[0],cat:row.category_id||'',imgs:[...(row.images||[])]};
+    const plain=h=>String(h||'').replace(/<br\s*\/?>|<\/p>/gi,'\n').replace(/<[^>]+>/g,'').trim();const txt0=plain(row.desc_html||row.description);
+    const o=sheet(id?'Modifier le produit':'Nouveau produit',`<div class="pv-c" id="pp"></div>
+      <h4>Photos</h4><div class="ph" id="ph"></div><label class="ph-add"><input type="file" accept="image/*" multiple hidden id="pf"><span>＋ Ajouter des photos</span></label>
+      <h4>Boutique</h4><div class="ch" id="pd"></div><h4>Catégorie</h4><div class="ch" id="pc"></div>
+      <h4>Nom</h4><input type="text" id="pn" value="${esc(row.name||'')}" placeholder="Ex : Sauvage">
+      <div class="r2"><div><h4>Prix (G)</h4><input type="number" inputmode="numeric" id="pr" value="${row.price_retail==null?'':row.price_retail}" placeholder="0"></div><div><h4>Stock</h4><input type="number" inputmode="numeric" id="ps" value="${row.stock==null?0:row.stock}"></div></div>
+      <h4>Description</h4><textarea id="px" placeholder="Quelques lignes sur le produit…">${esc(txt0)}</textarea>
+      <label class="sw-l"><span>Visible sur le site</span><input type="checkbox" id="pa" ${row.is_active===false?'':'checked'}><i></i></label>`,
+    async()=>{
+      const g=i=>o.querySelector('#'+i),name=g('pn').value.trim();if(!name){toast('Le nom est requis',1);return false;}
+      const t=g('px').value.trim(),v={department:S.dept,category_id:S.cat||null,name,price_retail:+g('pr').value||0,stock:+g('ps').value||0,images:S.imgs,is_active:g('pa').checked,updated_at:new Date().toISOString()};
+      if(t!==txt0){v.description=t;v.desc_html=t?'<p>'+esc(t).replace(/\n/g,'<br>')+'</p>':'';}
+      const r=id?await sb.from('products').update(v).eq('id',id).select().single():await insertSlug('products',v,name,{created_by:me.id});
+      if(r.error){toast(err(r.error),1);return false;}
+      toast('Enregistré ✓');await load('products');renderListSafe('products');return true;
+    },id?async()=>{if(!confirm('Supprimer ce produit définitivement ?'))return false;const {error}=await sb.from('products').delete().eq('id',id);if(error){toast(err(error),1);return false;}toast('Supprimé');await load('products');renderListSafe('products');return true;}:null);
+    const g=i=>o.querySelector('#'+i);
+    const pv=()=>{const im=S.imgs[0];g('pp').innerHTML=`<div class="pi">${im?`<img src="${esc(im)}" alt="">`:'📷'}</div><div><small>Aperçu</small><b>${esc(g('pn').value||'Nom du produit')}</b><span>${fnum(g('pr').value)} G</span></div>`;};
+    const ph=()=>{g('ph').innerHTML=S.imgs.map((u,i)=>`<div class="it ${i?'':'m'}" data-i="${i}"><img src="${esc(u)}" alt="">${i?'':'<em>Principale</em>'}<button type="button" data-x="${i}" aria-label="Retirer">✕</button></div>`).join('');
+      g('ph').querySelectorAll('.it').forEach(el=>el.onclick=e=>{const i=+el.dataset.i;if(e.target.dataset.x!=null){S.imgs.splice(+e.target.dataset.x,1);}else if(i){S.imgs.unshift(S.imgs.splice(i,1)[0]);}ph();pv();});};
+    const dp=()=>chips(g('pd'),allowed().map(d=>[d,cap(d)]),S.dept,v=>{S.dept=v;S.cat='';dp();cp();});
+    const cp=()=>{const cs=(cache.categories||[]).filter(c=>c.department===S.dept&&c.is_active!==false);chips(g('pc'),[['','Aucune'],...cs.map(c=>[c.id,c.name])],S.cat,v=>{S.cat=v;cp();});};
+    g('pf').onchange=async e=>{const fs=[...e.target.files],lb=e.target.parentElement.querySelector('span');let n=0;
+      for(let f of fs){lb.textContent=`Envoi ${++n}/${fs.length}…`;try{f=await WFImg.compress(f);const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg',path=`${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+        const {error}=await sb.storage.from(MEDIA_BUCKET).upload(path,f,{cacheControl:'31536000',upsert:false,contentType:f.type||undefined});if(error)throw error;S.imgs.push(sb.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl);ph();pv();}catch(x){toast(err(x),1);}}
+      lb.textContent='＋ Ajouter des photos';e.target.value='';};
+    ['pn','pr'].forEach(i=>g(i).addEventListener('input',pv));dp();cp();ph();pv();
+  }
+  async function openCat(id){
+    const row=id?cache.categories.find(r=>r.id===id):{};const S={dept:row.department||allowed()[0]};
+    const o=sheet(id?'Modifier la catégorie':'Nouvelle catégorie',`<h4>Boutique</h4><div class="ch" id="cd"></div><h4>Nom</h4><input type="text" id="cn" value="${esc(row.name||'')}" placeholder="Ex : Homme"><label class="sw-l"><span>Visible sur le site</span><input type="checkbox" id="ca" ${row.is_active===false?'':'checked'}><i></i></label>`,
+    async()=>{const name=o.querySelector('#cn').value.trim();if(!name){toast('Le nom est requis',1);return false;}
+      const v={department:S.dept,name,is_active:o.querySelector('#ca').checked};
+      let r;if(id)r=await sb.from('categories').update(v).eq('id',id);else{r=await insertSlug('categories',{...v,sort_order:(cache.categories||[]).length},name+'-'+S.dept,{});}
+      if(r.error){toast(err(r.error),1);return false;}toast('Enregistré ✓');await load('categories');await loadCats();renderListSafe('categories');return true;});
+    const dp=()=>chips(o.querySelector('#cd'),allowed().map(d=>[d,cap(d)]),S.dept,v=>{S.dept=v;dp();});dp();
+  }
+  const _n=A.new,_e=A.edit;
+  A.new=d=>d.e==='products'?openProd():d.e==='categories'?openCat():_n(d);
+  A.edit=d=>d.e==='products'?openProd(d.id):d.e==='categories'?openCat(d.id):_e(d);
 })();
 
 /* ---------- démarrage ---------- */
