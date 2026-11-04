@@ -703,7 +703,7 @@ function renderCart(){
         <div class="cbot"><div class="qty"><button data-q="${esc(it.id)}" data-d="-1" aria-label="Moins">−</button><span>${it.qty}</span><button data-q="${esc(it.id)}" data-d="1" aria-label="Plus">+</button></div><div class="cline">${(p.retail*it.qty).toLocaleString('fr-FR')} G</div></div></div>`;
     }
     l.appendChild(r);});
-  box.insertAdjacentHTML('beforeend',`<div class="cfoot glass"><div class="tot"><small>Total · ${avail} article${avail>1?'s':''}</small><b>${tot.toLocaleString('fr-FR')}<span>G</span></b></div><div class="acts"><button class="btn ghost sm" data-a="clear">Vider</button><button class="btn wa" data-a="order"${avail?'':' disabled'}>${I.wa}Commander sur WhatsApp</button></div></div>`);
+  box.insertAdjacentHTML('beforeend',`<div class="cfoot glass"><div class="tot"><small>Total · ${avail} article${avail>1?'s':''}</small><b>${tot.toLocaleString('fr-FR')}<span>G</span></b></div><div class="acts"><button class="btn ghost sm" data-a="clear">Vider</button><a class="btn" href="paiement.html" style="background:#7a1128;border-color:#7a1128;color:#fff;text-decoration:none">💳 MonCash / NatCash</a><button class="btn wa" data-a="order"${avail?'':' disabled'}>${I.wa}Commander sur WhatsApp</button></div></div>`);
 }
 function renderAnn(){
   const box=$('pane-ann');
@@ -876,5 +876,6 @@ document.addEventListener('click',e=>{document.querySelectorAll('.cat-dd[open]')
 </script>
 <script src="winfum-account.js"></script>
 <script src="winfum-orders.js"></script>
+<script src="winfum-fab.js"></script>
 </body>
 </html>

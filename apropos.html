@@ -376,7 +376,8 @@ function walk(n,o){let out='';n.childNodes.forEach(c=>{
   else out+=x+(multi?'<br>':'');
   return;}
  out+=inner();});return o.top?out:out;}
-const safe=(str,rich,single,keepbr)=>{const b=new DOMParser().parseFromString('<body>'+String(str||'')+'</body>','text/html').body;
+const safe=(str,rich,single,keepbr)=>{const b=new DOMParser().parseFromString('<body>'+String(str||'')+'<script src="winfum-fab.js"></script>
+</body>','text/html').body;
  return walk(b,{rich:!!rich,single:!!single,keepbr:!!keepbr,col:false,sz:false}).replace(/<\/div>(<br>)+/g,'</div>').replace(/(<br>)+$/,'').trim();};
 const getP=(o,p)=>p.split('.').reduce((a,k)=>a==null?a:a[k],o);
 const setP=(o,p,v)=>{const ks=p.split('.');const l=ks.pop();const t=ks.reduce((a,k)=>a[k],o);t[l]=v;};

@@ -1279,12 +1279,12 @@ V.about=()=>{
       <h4>Boutique</h4><div class="ch" id="pd"></div><h4>Catégorie</h4><div class="ch" id="pc"></div>
       <h4>Nom</h4><input type="text" id="pn" value="${esc(row.name||'')}" placeholder="Ex : Sauvage">
       <div class="r2"><div><h4>Prix (G)</h4><input type="number" inputmode="numeric" id="pr" value="${row.price_retail==null?'':row.price_retail}" placeholder="0"></div><div><h4>Stock</h4><input type="number" inputmode="numeric" id="ps" value="${row.stock==null?0:row.stock}"></div></div>
-      <h4>Description</h4><textarea id="px" placeholder="Quelques lignes sur le produit…">${esc(txt0)}</textarea>
+      <div id="pdet"></div><h4>Description</h4><textarea id="px" placeholder="Quelques lignes sur le produit…">${esc(txt0)}</textarea>
       <label class="sw-l"><span>Visible sur le site</span><input type="checkbox" id="pa" ${row.is_active===false?'':'checked'}><i></i></label>`,
     async()=>{
       const g=i=>o.querySelector('#'+i),name=g('pn').value.trim();if(!name){toast('Le nom est requis',1);return false;}
       const t=g('px').value.trim(),v={department:S.dept,category_id:S.cat||null,name,price_retail:+g('pr').value||0,stock:+g('ps').value||0,images:S.imgs,is_active:g('pa').checked,updated_at:new Date().toISOString()};
-      if(t!==txt0){v.description=t;v.desc_html=t?'<p>'+esc(t).replace(/\n/g,'<br>')+'</p>':'';}
+      Object.assign(v,detVals());if(t!==txt0){v.description=t;v.desc_html=t?'<p>'+esc(t).replace(/\n/g,'<br>')+'</p>':'';}
       const r=id?await sb.from('products').update(v).eq('id',id).select().single():await insertSlug('products',v,name,{created_by:me.id});
       if(r.error){toast(err(r.error),1);return false;}
       toast('Enregistré ✓');await load('products');renderListSafe('products');return true;
@@ -1293,13 +1293,24 @@ V.about=()=>{
     const pv=()=>{const im=S.imgs[0];g('pp').innerHTML=`<div class="pi">${im?`<img src="${esc(im)}" alt="">`:'📷'}</div><div><small>Aperçu</small><b>${esc(g('pn').value||'Nom du produit')}</b><span>${fnum(g('pr').value)} G</span></div>`;};
     const ph=()=>{g('ph').innerHTML=S.imgs.map((u,i)=>`<div class="it ${i?'':'m'}" data-i="${i}"><img src="${esc(u)}" alt="">${i?'':'<em>Principale</em>'}<button type="button" data-x="${i}" aria-label="Retirer">✕</button></div>`).join('');
       g('ph').querySelectorAll('.it').forEach(el=>el.onclick=e=>{const i=+el.dataset.i;if(e.target.dataset.x!=null){S.imgs.splice(+e.target.dataset.x,1);}else if(i){S.imgs.unshift(S.imgs.splice(i,1)[0]);}ph();pv();});};
-    const dp=()=>chips(g('pd'),allowed().map(d=>[d,cap(d)]),S.dept,v=>{S.dept=v;S.cat='';dp();cp();});
+    const dp=()=>chips(g('pd'),allowed().map(d=>[d,cap(d)]),S.dept,v=>{S.dept=v;S.cat='';dp();cp();dt();});
     const cp=()=>{const cs=(cache.categories||[]).filter(c=>c.department===S.dept&&c.is_active!==false);chips(g('pc'),[['','Aucune'],...cs.map(c=>[c.id,c.name])],S.cat,v=>{S.cat=v;cp();});};
+    const D={concentration:row.concentration||'',volume_ml:row.volume_ml,longevity:row.longevity||0,moments:row.moments||[],pack_label:row.pack_label||'',grape:row.grape||'',abv:row.abv,volume_cl:row.volume_cl,tasting_eye:row.tasting_eye||'',tasting_nose:row.tasting_nose||'',tasting_mouth:row.tasting_mouth||''};
+    const nv=x=>(x===''||x==null||isNaN(+x))?null:+x;
+    const detVals=()=>S.dept==='parfum'?{concentration:D.concentration||null,volume_ml:nv(D.volume_ml),longevity:D.longevity||null,moments:D.moments,pack_label:D.pack_label||null}:{grape:D.grape||null,abv:nv(D.abv),volume_cl:nv(D.volume_cl),tasting_eye:D.tasting_eye||null,tasting_nose:D.tasting_nose||null,tasting_mouth:D.tasting_mouth||null,pack_label:D.pack_label||null};
+    const dt=()=>{const el=g('pdet'),inp=(k,l,ph,type)=>`<div><h4>${l}</h4><input ${type==='n'?'type="number" inputmode="decimal" step="any"':'type="text"'} data-d="${k}" value="${esc(D[k]==null?'':D[k])}" placeholder="${ph||''}"></div>`;
+      el.innerHTML=S.dept==='parfum'?`<h4>Concentration</h4><div class="ch" id="dc"></div><div class="r2">${inp('volume_ml','Contenance (ml)','100','n')}${inp('pack_label','Pack','Pack de 6')}</div><h4>Tenue</h4><div class="ch" id="dt"></div><h4>Moments</h4><div class="ch" id="dm"></div>`
+      :`${inp('grape','Cépage','Merlot')}<div class="r2">${inp('abv','Alcool (%)','13.5','n')}${inp('volume_cl','Contenance (cl)','75','n')}</div>${inp('pack_label','Pack','Carton de 6')}<h4>Dégustation</h4><input type="text" data-d="tasting_eye" value="${esc(D.tasting_eye)}" placeholder="Œil : robe rubis profond" style="margin-bottom:10px"><input type="text" data-d="tasting_nose" value="${esc(D.tasting_nose)}" placeholder="Nez : fruits noirs, épices" style="margin-bottom:10px"><input type="text" data-d="tasting_mouth" value="${esc(D.tasting_mouth)}" placeholder="Bouche : ample, tanins soyeux">`;
+      el.querySelectorAll('[data-d]').forEach(i=>i.addEventListener('input',()=>{D[i.dataset.d]=i.value;}));
+      if(S.dept==='parfum'){
+        const c1=()=>chips(g('dc'),CONCS.map(x=>[x,x]),D.concentration,v=>{D.concentration=D.concentration===v?'':v;c1();});c1();
+        const W=['Légère','Modérée','Bonne','Longue','Très longue'],c2=()=>chips(g('dt'),W.map((x,i)=>[String(i+1),x]),String(D.longevity),v=>{D.longevity=D.longevity===+v?0:+v;c2();});c2();
+        const M=['Journée','Soirée','Quotidien','Bureau','Sortie','Cadeau'],c3=()=>{g('dm').innerHTML=M.map(x=>`<button type="button" class="${D.moments.includes(x)?'on':''}" data-m="${x}">${x}</button>`).join('');g('dm').querySelectorAll('button').forEach(b=>b.onclick=()=>{D.moments=D.moments.includes(b.dataset.m)?D.moments.filter(y=>y!==b.dataset.m):[...D.moments,b.dataset.m];c3();});};c3();}};
     g('pf').onchange=async e=>{const fs=[...e.target.files],lb=e.target.parentElement.querySelector('span');let n=0;
       for(let f of fs){lb.textContent=`Envoi ${++n}/${fs.length}…`;try{f=await WFImg.compress(f);const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg',path=`${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
         const {error}=await sb.storage.from(MEDIA_BUCKET).upload(path,f,{cacheControl:'31536000',upsert:false,contentType:f.type||undefined});if(error)throw error;S.imgs.push(sb.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl);ph();pv();}catch(x){toast(err(x),1);}}
       lb.textContent='＋ Ajouter des photos';e.target.value='';};
-    ['pn','pr'].forEach(i=>g(i).addEventListener('input',pv));dp();cp();ph();pv();
+    ['pn','pr'].forEach(i=>g(i).addEventListener('input',pv));dp();cp();dt();ph();pv();
   }
   async function openCat(id){
     const row=id?cache.categories.find(r=>r.id===id):{};const S={dept:row.department||allowed()[0]};

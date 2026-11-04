@@ -91,6 +91,8 @@
     '.wf-sub span:first-child{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}' +
     '.wf-sub span:last-child{font-weight:600;font-size:22px}' +
     '.wf-go{width:100%;padding:14px;border:none;border-radius:30px;background:#1c1a17;color:#fff;font:500 11px Inter,system-ui,sans-serif;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;box-shadow:4px 4px 9px var(--nm-lo,rgba(112,92,60,.24)),-3px -3px 8px var(--nm-hi,rgba(255,255,255,.95))}' +
+    '.wf-pay{display:block;width:100%;box-sizing:border-box;margin-bottom:8px;padding:14px;border-radius:30px;background:var(--wine);color:#fff;text-align:center;text-decoration:none;font:600 11px Inter,system-ui,sans-serif;letter-spacing:.15em;text-transform:uppercase}.wf-pay.off{opacity:.45;pointer-events:none}' +
+    '.wf-go{background:#25d366!important}.wf-go:hover{background:#1fb457!important}'+
     '.wf-go:hover{background:var(--wine)}.wf-go:disabled{opacity:.45;cursor:default}' +
     '[data-theme="dark"] .wf-go{background:var(--wine)}' +
     '#wf-toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 90px);transform:translate(-50%,20px);background:#1c1a17;color:#fff;padding:11px 20px;border-radius:30px;font:13px Inter,system-ui,sans-serif;opacity:0;pointer-events:none;transition:.3s;z-index:700;max-width:90vw;text-align:center}' +
@@ -113,11 +115,12 @@
   var dr = document.createElement('div'); dr.id = 'wf-drawer'; dr.setAttribute('role', 'dialog'); dr.setAttribute('aria-label', 'Votre panier');
   dr.innerHTML = '<div class="wf-head"><h3>Votre panier</h3><span class="wf-x" id="wf-close" aria-label="Fermer">✕</span></div>' +
     '<div id="wf-items"></div>' +
-    '<div class="wf-foot"><div class="wf-sub"><span>Total</span><span id="wf-total">0 G</span></div><button class="wf-go" id="wf-go" type="button">Commander sur WhatsApp</button></div>';
+    '<div class="wf-foot"><div class="wf-sub"><span>Total</span><span id="wf-total">0 G</span></div><a class="wf-pay" id="wf-pay" href="paiement.html">💳 Payer · MonCash / NatCash</a><button class="wf-go" id="wf-go" type="button">Commander sur WhatsApp</button></div>';
   var tt = document.createElement('div'); tt.id = 'wf-toast';
   document.body.appendChild(ov); document.body.appendChild(dr); document.body.appendChild(tt);
   $('wf-close').onclick = closeCart;
   $('wf-go').onclick = checkout;
+  window.openCart = openCart;
 
   window.WinfumToast = function (m, bad) {
     tt.textContent = m; tt.classList.toggle('bad', !!bad); tt.classList.add('on');
@@ -172,7 +175,7 @@
       }).join('');
     }
     $('wf-total').textContent = total + ' G';
-    $('wf-go').disabled = !ids.length;
+    $('wf-go').disabled = !ids.length; $('wf-pay').classList.toggle('off', !ids.length);
     var all = Object.keys(m).reduce(function (a, id) { return a + m[id]; }, 0);
     var c = $('wf-count'); if (c) { var n = Object.keys(info).length ? count : all; c.textContent = n; c.classList.toggle('zero', !n); }
   }
