@@ -570,7 +570,7 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 
 <!-- modale profil -->
 <div class="ov" id="ed-ov"><div class="sheet">
-  <h3 class="serif">Modifier mon profil <button class="x" data-close="ed-ov">✕</button></h3>
+  <h3 class="serif">Modifier mon profil <button class="x" data-close="ed-ov" aria-label="Fermer"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-2px"><path d="M6 6l12 12M18 6L6 18"/></svg></button></h3>
   <div class="form" style="padding:0">
     <div class="fld"><label>Nom</label><input class="plain" type="text" id="ed-name"></div>
     <div class="row2"><div class="fld"><label>Année de naissance</label><input class="plain" type="number" id="ed-year" min="1930" max="2018"></div>
@@ -583,7 +583,7 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 
 <!-- visionneuse annonce -->
 <div class="ov" id="viewer" onclick="if(event.target===this)closeViewer()">
-  <div class="vclose" onclick="closeViewer()">✕</div>
+  <div class="vclose" onclick="closeViewer()" aria-label="Fermer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-2px"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
   <div class="vbox">
     <div class="vmedia" id="v-media"></div>
     <div class="vcap"><h3 class="serif" id="v-title"></h3><p id="v-text"></p></div>
@@ -703,7 +703,7 @@ function renderCart(){
         <div class="cbot"><div class="qty"><button data-q="${esc(it.id)}" data-d="-1" aria-label="Moins">−</button><span>${it.qty}</span><button data-q="${esc(it.id)}" data-d="1" aria-label="Plus">+</button></div><div class="cline">${(p.retail*it.qty).toLocaleString('fr-FR')} G</div></div></div>`;
     }
     l.appendChild(r);});
-  box.insertAdjacentHTML('beforeend',`<div class="cfoot glass"><div class="tot"><small>Total · ${avail} article${avail>1?'s':''}</small><b>${tot.toLocaleString('fr-FR')}<span>G</span></b></div><div class="acts"><button class="btn ghost sm" data-a="clear">Vider</button><a class="btn" href="paiement.html" style="background:#7a1128;border-color:#7a1128;color:#fff;text-decoration:none">💳 MonCash / NatCash</a><button class="btn wa" data-a="order"${avail?'':' disabled'}>${I.wa}Commander sur WhatsApp</button></div></div>`);
+  box.insertAdjacentHTML('beforeend',`<div class="cfoot glass"><div class="tot"><small>Total · ${avail} article${avail>1?'s':''}</small><b>${tot.toLocaleString('fr-FR')}<span>G</span></b></div><div class="acts"><button class="btn ghost sm" data-a="clear">Vider</button><a class="btn" href="paiement.html" style="background:#7a1128;border-color:#7a1128;color:#fff;text-decoration:none"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></svg>MonCash / NatCash</a><button class="btn wa" data-a="order"${avail?'':' disabled'}>${I.wa}Commander sur WhatsApp</button></div></div>`);
 }
 function renderAnn(){
   const box=$('pane-ann');
