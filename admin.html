@@ -345,6 +345,7 @@ input[type=date]{width:100%;padding:12px 14px;border:1px solid var(--line);borde
 .cgroup .gh{font-size:12.5px;color:var(--muted);margin:-6px 0 12px;line-height:1.5}
 .ccard .urlfield{margin-top:2px}
 @media(max-width:700px){.todo{padding:14px}.todo .ti{width:40px;height:40px}}
+details.mloc{display:block}details.mloc summary{cursor:pointer;font-weight:600}
 </style>
 <script src="winfum-fiche.js"></script>
 <script src="winfum-3d.js"></script>
@@ -1119,7 +1120,7 @@ const HOW={
  promos:['Une bannière = le <b>grand bandeau du bas</b> d\'une page boutique, qui renvoie vers l\'autre boutique.','Choisissez l\'<b>emplacement</b>, l\'image, le titre et le texte.'],
  reviews:['Les clients notent les produits sur le site.','Masquez un avis inapproprié avec l\'œil 👁, ou supprimez-le.']};
 function howCard(n){
-  const h=HOW[n];if(!h)return '';let closed=false;try{closed=localStorage.getItem('wf_how_'+n)==='1';}catch(e){}
+  const h=HOW[n];if(!h)return '';let closed=true;try{closed=localStorage.getItem('wf_how_'+n)!=='';}catch(e){}
   return `<details class="how glass" data-n="${n}" ${closed?'':'open'}><summary>💡 Comment ça marche ?</summary><ol>${h.map(x=>`<li>${x}</li>`).join('')}</ol></details>`;
 }
 function locCard(name){const L=LOCS[name];if(!L)return '';return `<details class="locc glass"><summary>📍 Où ça apparaît sur le site</summary><div class="lbody">${L.map(x=>`<div class="lrow">${wire(x.p,x.hl)}<div class="lt"><div class="lp">Page · ${esc(WIRES[x.p].n)}</div><div class="lz">${esc(x.zone)}</div><p class="hint">${esc(x.what)}</p><a class="btn ghost sm" href="${WIRES[x.p].u}${x.a||''}" target="_blank">Voir cette zone sur le site ↗</a></div></div>`).join('')}</div></details>`;}
@@ -1140,7 +1141,7 @@ const FAT={
  promos:{placement:'Choisit la page qui affiche la bannière (bas de JB Parfumerie ou bas de Fun For Us)',image_url:'Bannière du bas de page › image de fond',tag:'Bannière du bas de page › petite étiquette',title:'Bannière du bas de page › titre',body:'Bannière du bas de page › texte',cta_label:'Bannière du bas de page › texte du bouton',link_url:'Bannière du bas de page › page ouverte par le bouton',is_active:'Décoché = bannière retirée'},
  moments:{category:'Fun For Us › Moments : filtre au-dessus de la galerie',title:'Fun For Us › Moments : titre sur la vignette et dans le moment ouvert',description:'Fun For Us › Moments : texte sous la photo quand le moment est ouvert',event_date:'Fun For Us › Moments : date affichée sur la vignette',location:'Fun For Us › Moments : lieu affiché dans le moment ouvert',media_type:'Fun For Us › Moments : couverture = photo ou vidéo',media_url:'Fun For Us › Moments : image de la vignette dans la galerie',images:'Fun For Us › Moments : photos que le visiteur fait défiler',videos:'Fun For Us › Moments : vidéos que le visiteur fait défiler',layout:'Fun For Us › Moments : taille de la vignette dans la galerie',sort_order:'Fun For Us › Moments : position dans la galerie',is_active:'Décoché = moment retiré de la galerie'}};
 Object.entries(FAT).forEach(([e,m])=>E[e].fields.forEach(f=>{if(m[f.k])f.at=m[f.k];}));
-const MLOC=n=>{const L=LOCS[n];if(!L)return '';if(n==='products')return `<div class="mloc"><span>📍</span><div>Ce produit apparaît sur <b>l'Accueil</b> et sur la page de sa boutique (<b>JB Parfumerie</b> ou <b>Fun For Us</b>). Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></div>`;const x=L[0];return `<div class="mloc"><span>📍</span><div>Page <b>${esc(WIRES[x.p].n)}</b> › <b>${esc(x.zone)}</b>.${L.length>1?' (aussi : '+L.slice(1).map(y=>esc(WIRES[y.p].n)+' › '+esc(y.zone)).join(' ; ')+')':''} Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></div>`;};
+const MLOC=n=>{const L=LOCS[n];if(!L)return '';if(n==='products')return `<div class="mloc"><span>📍</span><div>Ce produit apparaît sur <b>l'Accueil</b> et sur la page de sa boutique (<b>JB Parfumerie</b> ou <b>Fun For Us</b>). Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></details>`;const x=L[0];return `<div class="mloc"><span>📍</span><div>Page <b>${esc(WIRES[x.p].n)}</b> › <b>${esc(x.zone)}</b>.${L.length>1?' (aussi : '+L.slice(1).map(y=>esc(WIRES[y.p].n)+' › '+esc(y.zone)).join(' ; ')+')':''} Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></details>`;};
 
 /* ---------- Où modifier quoi (plan du site) ---------- */
 icons.reviews='<path d="M12 2.6l2.9 6 6.5.9-4.7 4.6 1.1 6.5L12 17.5l-5.8 3.1 1.1-6.5L2.6 9.5l6.5-.9z"/>';

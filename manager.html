@@ -345,6 +345,7 @@ input[type=date]{width:100%;padding:12px 14px;border:1px solid var(--line);borde
 .cgroup .gh{font-size:12.5px;color:var(--muted);margin:-6px 0 12px;line-height:1.5}
 .ccard .urlfield{margin-top:2px}
 @media(max-width:700px){.todo{padding:14px}.todo .ti{width:40px;height:40px}}
+details.mloc{display:block}details.mloc summary{cursor:pointer;font-weight:600}
 </style>
 <script src="winfum-fiche.js"></script>
 <script src="winfum-3d.js"></script>
@@ -1128,7 +1129,7 @@ const HOW={
  promos:['Une bannière = le <b>grand bandeau du bas</b> d\'une page boutique, qui renvoie vers l\'autre boutique.','Choisissez l\'<b>emplacement</b>, l\'image, le titre et le texte.'],
  reviews:['Les clients notent les produits sur le site.','Masquez un avis inapproprié avec l\'œil 👁, ou supprimez-le.']};
 function howCard(n){
-  const h=HOW[n];if(!h)return '';let closed=false;try{closed=localStorage.getItem('wf_how_'+n)==='1';}catch(e){}
+  const h=HOW[n];if(!h)return '';let closed=true;try{closed=localStorage.getItem('wf_how_'+n)!=='';}catch(e){}
   return `<details class="how glass" data-n="${n}" ${closed?'':'open'}><summary>💡 Comment ça marche ?</summary><ol>${h.map(x=>`<li>${x}</li>`).join('')}</ol></details>`;
 }
 function locCard(name){const L=LOCS[name];if(!L)return '';return `<details class="locc glass"><summary>📍 Où ça apparaît sur le site</summary><div class="lbody">${L.map(x=>`<div class="lrow">${wire(x.p,x.hl)}<div class="lt"><div class="lp">Page · ${esc(WIRES[x.p].n)}</div><div class="lz">${esc(x.zone)}</div><p class="hint">${esc(x.what)}</p><a class="btn ghost sm" href="${WIRES[x.p].u}${x.a||''}" target="_blank">Voir cette zone sur le site ↗</a></div></div>`).join('')}</div></details>`;}
@@ -1149,7 +1150,7 @@ const FAT={
  promos:{placement:'Choisit la page qui affiche la bannière (bas de JB Parfumerie ou bas de Fun For Us)',image_url:'Bannière du bas de page › image de fond',tag:'Bannière du bas de page › petite étiquette',title:'Bannière du bas de page › titre',body:'Bannière du bas de page › texte',cta_label:'Bannière du bas de page › texte du bouton',link_url:'Bannière du bas de page › page ouverte par le bouton',is_active:'Décoché = bannière retirée'},
  moments:{category:'Fun For Us › Moments : filtre au-dessus de la galerie',title:'Fun For Us › Moments : titre sur la vignette et dans le moment ouvert',description:'Fun For Us › Moments : texte sous la photo quand le moment est ouvert',event_date:'Fun For Us › Moments : date affichée sur la vignette',location:'Fun For Us › Moments : lieu affiché dans le moment ouvert',media_type:'Fun For Us › Moments : couverture = photo ou vidéo',media_url:'Fun For Us › Moments : image de la vignette dans la galerie',images:'Fun For Us › Moments : photos que le visiteur fait défiler',videos:'Fun For Us › Moments : vidéos que le visiteur fait défiler',layout:'Fun For Us › Moments : taille de la vignette dans la galerie',sort_order:'Fun For Us › Moments : position dans la galerie',is_active:'Décoché = moment retiré de la galerie'}};
 Object.entries(FAT).forEach(([e,m])=>E[e].fields.forEach(f=>{if(m[f.k])f.at=m[f.k];}));
-const MLOC=n=>{const L=LOCS[n];if(!L)return '';if(n==='products')return `<div class="mloc"><span>📍</span><div>Ce produit apparaît sur <b>l'Accueil</b> et sur la page de sa boutique (<b>JB Parfumerie</b> ou <b>Fun For Us</b>). Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></div>`;const x=L[0];return `<div class="mloc"><span>📍</span><div>Page <b>${esc(WIRES[x.p].n)}</b> › <b>${esc(x.zone)}</b>.${L.length>1?' (aussi : '+L.slice(1).map(y=>esc(WIRES[y.p].n)+' › '+esc(y.zone)).join(' ; ')+')':''} Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></div>`;};
+const MLOC=n=>{const L=LOCS[n];if(!L)return '';if(n==='products')return `<div class="mloc"><span>📍</span><div>Ce produit apparaît sur <b>l'Accueil</b> et sur la page de sa boutique (<b>JB Parfumerie</b> ou <b>Fun For Us</b>). Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></details>`;const x=L[0];return `<div class="mloc"><span>📍</span><div>Page <b>${esc(WIRES[x.p].n)}</b> › <b>${esc(x.zone)}</b>.${L.length>1?' (aussi : '+L.slice(1).map(y=>esc(WIRES[y.p].n)+' › '+esc(y.zone)).join(' ; ')+')':''} Chaque champ ci-dessous indique en doré <b>où</b> il s'affiche.</div></details>`;};
 
 /* ---------- Où modifier quoi (plan du site) ---------- */
 icons.reviews='<path d="M12 2.6l2.9 6 6.5.9-4.7 4.6 1.1 6.5L12 17.5l-5.8 3.1 1.1-6.5L2.6 9.5l6.5-.9z"/>';
@@ -1176,6 +1177,64 @@ V.about=()=>{
  <li><i>⑤</i><div><b>Bloc final</b> — le titre et le texte des deux boutons.</div></li></ul>
  <p class="hint" style="margin-top:14px">Sur la page : un bouton « ✎ Modifier cette page » apparaît quand vous êtes connecté. Chaque zone modifiable est entourée de pointillés dorés et porte une étiquette qui dit exactement ce que c'est. Cliquez sur « Enregistrer » pour publier.</p></div>`;
 };
+
+/* ===== Manager : vue produits (cartes / liste / défilement), formulaires simples, aperçu ===== */
+(()=>{
+  Object.values(E).forEach(e=>{(e.fields||[]).forEach(f=>{delete f.at;});e.cols=(e.cols||[]).filter(c=>c.l!=='Où ça apparaît');});
+  E.categories.fields=E.categories.fields.filter(f=>['department','name','is_active'].includes(f.k));
+  const c=document.createElement('style');c.textContent=`
+  details.locc,details.mloc{display:none!important}
+  .vs{display:flex;gap:4px;padding:4px;border-radius:30px;background:rgba(128,128,128,.14);width:max-content;max-width:100%;margin:0 0 14px}
+  .vs button{border:0;background:transparent;color:inherit;padding:8px 14px;border-radius:24px;font:600 12.5px inherit;cursor:pointer;white-space:nowrap}
+  .vs button.on{background:#7a1128;color:#fff}
+  .pg2{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+  .sw{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;-webkit-overflow-scrolling:touch}
+  .sw .pc2{flex:0 0 min(78%,300px);scroll-snap-align:center}
+  .swn{display:flex;justify-content:center;gap:12px;margin-top:6px}.swn button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--glass2,#fff);color:inherit;font-size:20px;cursor:pointer}
+  .pc2{border-radius:20px;overflow:hidden;background:var(--glass2,#fff);border:1px solid var(--line);display:flex;flex-direction:column}
+  .pc2.off{opacity:.55}.pc2 .im{position:relative;aspect-ratio:1;background:rgba(128,128,128,.12);display:grid;place-items:center;font-size:12px;opacity:.9}
+  .pc2 .im img{width:100%;height:100%;object-fit:cover}.pc2 .im i{position:absolute;left:8px;top:8px;background:#7a1128;color:#fff;font-style:normal;font-size:11px;padding:3px 9px;border-radius:20px}
+  .pc2 .bd{padding:12px;display:flex;flex-direction:column;gap:3px}.pc2 .bd span{font-size:12.5px;opacity:.65}
+  .pc2 .bt{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.pc2 .bt .btn{flex:1 1 auto}
+  .pl2{display:flex;flex-direction:column;gap:8px}.pl2 .pc2{flex-direction:row;align-items:center}.pl2 .pc2 .im{width:64px;height:64px;aspect-ratio:auto;flex:none}.pl2 .pc2 .bd{flex:1;min-width:0;padding:8px 12px}.pl2 .pc2 .bd b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #modal.pm{width:min(620px,100%)}
+  .pm .mh{padding-bottom:10px}.pm .mh h3{font-size:26px}.pm .mb{padding-top:6px}
+  .pm .fsec{background:rgba(128,128,128,.07);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-top:16px}
+  .pm input,.pm select,.pm textarea{border-radius:12px!important;padding:12px 14px!important;font-size:15px}
+  .pm .mf{position:sticky;bottom:0;background:var(--bg);box-shadow:0 -10px 20px rgba(0,0,0,.06)}
+  .pm .mf .btn{flex:1;padding:14px}
+  .pvc{display:flex;gap:14px;align-items:center;padding:12px;border-radius:18px;background:linear-gradient(135deg,rgba(122,17,40,.1),rgba(169,120,47,.12));margin-bottom:6px}
+  .pvc .pi{position:relative;width:84px;height:84px;border-radius:14px;overflow:hidden;background:rgba(128,128,128,.2);display:grid;place-items:center;font-size:28px;flex:none}
+  .pvc .pi img{width:100%;height:100%;object-fit:cover}.pvc .pi i{position:absolute;left:4px;top:4px;background:#7a1128;color:#fff;font-size:9.5px;font-style:normal;padding:2px 7px;border-radius:12px}
+  .pvc small{display:block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.6}.pvc b{display:block;font-size:17px}.pvc span{color:#7a1128;font-weight:700}`;
+  document.head.appendChild(c);
+
+  let vm='cards';try{vm=localStorage.getItem('wf_mgr_vm')||'cards';}catch(e){}
+  const _rl=renderList;
+  renderList=function(name){
+    if(name!=='products')return _rl(name);
+    let rows=cache.products||[];const q=(st.q.products||'').toLowerCase(),d=st.dept.products||'all';
+    if(q)rows=rows.filter(r=>E.products.search(r).toLowerCase().includes(q));
+    if(d!=='all')rows=rows.filter(r=>r.department===d);
+    const seg=`<div class="vs">${[['cards','▦ Cartes'],['list','☰ Liste'],['swipe','⇆ Défiler']].map(m=>`<button data-a="vm" data-m="${m[0]}" class="${vm===m[0]?'on':''}">${m[1]}</button>`).join('')}</div>`;
+    const card=r=>{const im=r.images&&r.images[0];return `<div class="pc2 ${r.is_active?'':'off'}"><div class="im">${im?`<img src="${esc(im)}" alt="" loading="lazy">`:'<span>Pas de photo</span>'}${r.badge?`<i>${esc(r.badge)}</i>`:''}</div><div class="bd"><b>${esc(r.name)}</b><span>${fnum(r.price_retail)} G · stock ${r.stock==null?0:r.stock}</span><div class="bt"><button class="btn sm" data-a="edit" data-e="products" data-id="${r.id}">Modifier</button><button class="btn ghost sm" data-a="tog" data-e="products" data-id="${r.id}">${r.is_active?'Masquer':'Afficher'}</button><button class="btn ghost sm" data-a="del" data-e="products" data-id="${r.id}" aria-label="Supprimer">🗑</button></div></div></div>`;};
+    const cls={cards:'pg2',list:'pl2',swipe:'sw'}[vm];
+    $('list').innerHTML=seg+(rows.length?`<div class="${cls}" id="pgrid">${rows.map(card).join('')}</div>`+(vm==='swipe'?'<div class="swn"><button data-a="swp" data-d="-1" aria-label="Précédent">‹</button><button data-a="swp" data-d="1" aria-label="Suivant">›</button></div>':''):'<div class="tbl"><div class="empty"><h3 class="serif">Aucun produit</h3></div></div>');
+  };
+  A.vm=d=>{vm=d.m;try{localStorage.setItem('wf_mgr_vm',vm);}catch(e){}renderList('products');};
+  A.swp=d=>{const g=$('pgrid');if(g)g.scrollBy({left:(+d.d)*g.clientWidth*.8,behavior:'smooth'});};
+
+  const _of=openForm;
+  openForm=function(name,id){
+    _of(name,id);$('modal').classList.add('pm');
+    if(name!=='products')return;const f=$('f');if(!f||document.querySelector('.pvc'))return;
+    const box=document.createElement('div');box.className='pvc';f.parentNode.insertBefore(box,f);
+    const up=()=>{const g=n=>f.elements[n]?f.elements[n].value:'';const im=(g('images')||'').split(/\n/)[0].trim();
+      box.innerHTML=`<div class="pi">${/^(https?:|data:)/.test(im)?`<img src="${esc(im)}" alt="">`:'📷'}${g('badge')?`<i>${esc(g('badge'))}</i>`:''}</div><div><small>Aperçu</small><b>${esc(g('name')||'Nom du produit')}</b><span>${fnum(g('price_retail'))} G</span></div>`;};
+    f.addEventListener('input',up);f.addEventListener('change',up);up();
+    const t=setInterval(()=>{if(!document.body.contains(box))clearInterval(t);else up();},800);
+  };
+})();
 
 /* ---------- démarrage ---------- */
 (async function boot(){
