@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Paiement — WINFUM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--ink:#1c1a17;--bg:#f7f5f0;--gold:#a9782f;--wine:#7a1128;--mut:rgba(28,26,23,.58);--line:rgba(28,26,23,.12);--card:#fff;--ok:#2f7a4b}
+@media(prefers-color-scheme:dark){:root{--ink:#f2ede4;--bg:#141210;--mut:rgba(242,237,228,.6);--line:rgba(242,237,228,.14);--card:#201d1a}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,sans-serif;padding:0 0 40px}
+.w{max-width:560px;margin:0 auto;padding:16px}h1,h2{font-family:'Cormorant Garamond',serif;margin:0}
+.top{display:flex;align-items:center;gap:10px;padding:6px 0 14px}.top a{color:var(--ink);text-decoration:none;font-size:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 6px 24px rgba(0,0,0,.05)}
+.card h2{font-size:21px;margin-bottom:12px}label{display:block;font-size:13px;font-weight:600;margin:12px 0 5px}
+input,select,textarea{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:transparent;color:inherit;font:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);border-color:transparent}textarea{min-height:96px;resize:vertical}
+.row{display:flex;justify-content:space-between;padding:6px 0}.tot{font-weight:700;font-size:18px;border-top:1px dashed var(--line);margin-top:6px;padding-top:12px}
+.pay{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pm{border:2px solid var(--line);border-radius:14px;padding:14px;text-align:center;cursor:pointer;background:transparent;color:inherit;font:inherit;transition:.2s}
+.pm b{display:block;font-size:16px}.pm small{color:var(--mut)}.pm.on{border-color:var(--wine);background:rgba(122,17,40,.07)}
+#proof{border:2px solid rgba(122,17,40,.35);border-radius:18px;padding:18px;margin-top:14px;display:none}#proof.on{display:block;animation:up .3s}
+#proof h3{color:var(--wine);letter-spacing:.08em;margin:0 0 4px;font-size:14px;text-transform:uppercase}
+.how{background:rgba(128,128,128,.08);border-left:5px solid var(--ac,#7a1128);border-radius:14px;padding:16px;margin:10px 0 6px;animation:up .3s}
+.how h4{margin:0 0 10px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.how ol{margin:0;padding-left:20px;font-size:14px}.how li{margin:7px 0}
+.acct{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.acct small{color:var(--mut);display:block;font-size:12px}.acct .nm{color:var(--ac);font-weight:700;font-size:17px}.acct .no{font-size:22px;font-weight:700;letter-spacing:.04em}
+.cp{border:1px solid var(--line);background:transparent;color:inherit;border-radius:20px;padding:8px 14px;font:600 12px Inter;cursor:pointer;white-space:nowrap}.cp.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+.file{border:2px dashed var(--line);border-radius:12px;padding:16px;text-align:center;color:var(--mut);cursor:pointer;display:block}
+.btn{width:100%;border:0;border-radius:30px;padding:15px;font:600 14px Inter;letter-spacing:.06em;cursor:pointer;margin-top:16px;background:var(--wine);color:#fff}
+.btn.wa{background:#25d366;color:#fff}.btn:disabled{opacity:.5}.or{text-align:center;color:var(--mut);font-size:12px;margin:14px 0 0}
+.lock{text-align:center;padding:10px}.lock a{color:var(--wine);font-weight:600}
+#done{display:none;text-align:center;padding:30px 20px}#done.on{display:block;animation:up .4s}
+.chk{width:72px;height:72px;border-radius:50%;background:var(--ok);color:#fff;font-size:38px;display:grid;place-items:center;margin:0 auto 14px;animation:pop .5s}
+@keyframes up{from{opacity:0;transform:translateY(10px)}}@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}}
+.err{color:#a4262c;font-size:13px;margin-top:10px;display:none}
+</style></head><body><div class="w">
+<div class="top"><a href="index.html" aria-label="Retour">←</a><h1>Finaliser la commande</h1></div>
+
+<div id="main">
+<div class="card"><h2>Votre commande</h2><div id="items"></div>
+<div class="row"><span>Livraison</span><span id="fee">—</span></div><div class="row tot"><span>Total</span><span id="total">0 G</span></div></div>
+
+<div class="card"><h2>Livraison</h2>
+<label>Zone *</label><select id="zone"></select>
+<label>Adresse, lieu et repères * <small style="font-weight:400;color:var(--mut)">(le plus d'infos possible)</small></label>
+<textarea id="addr" placeholder="Ville, quartier, rue, numéro, point de repère (près de…, en face de…), nom de la personne qui réceptionne, horaire préféré…"></textarea></div>
+
+<div class="card"><h2>Mode de paiement</h2>
+<div class="pay"><button class="pm" data-m="moncash"><b>MonCash</b><small>Digicel</small></button><button class="pm" data-m="natcash"><b>NatCash</b><small>Natcom</small></button></div>
+<div id="proof">
+ <div id="lock" class="lock" style="display:none">🔒 Connectez-vous pour envoyer votre preuve.<br><a href="espace.html">Se connecter / créer un compte →</a></div>
+ <div id="pf">
+  <h3 id="ptitle">Preuve de paiement</h3>
+  <div class="how" id="how"></div>
+  <label>Nom du payeur *</label><input id="pn" placeholder="Nom complet sur le compte">
+  <label>Téléphone utilisé *</label><input id="pp" inputmode="tel" placeholder="+509 XXXX XXXX">
+  <label>ID / N° de référence de la transaction *</label><input id="pt" placeholder="Ex : TX123456789">
+  <label>Capture d'écran du paiement *</label>
+  <label class="file" for="ps" id="pfl">⬆ Choisir un fichier (JPG, PNG, PDF, max 8 Mo)</label><input id="ps" type="file" accept="image/*,.pdf" hidden>
+  <button class="btn" id="send">Envoyer ma preuve</button>
+  <p class="hint" style="font-size:12.5px;color:var(--mut);margin:10px 0 0">🔒 Votre paiement sera vérifié manuellement. Vous recevrez une réponse dans « Mon espace » et par email.</p>
+ </div></div>
+<div class="err" id="err"></div>
+<p class="or">— ou —</p>
+<button class="btn wa" id="wa">💬 Paiement assisté sur WhatsApp</button>
+<p class="or" style="margin-top:6px">Sans compte : un conseiller vous guide pour payer.</p>
+</div></div>
+
+<div id="done" class="card"><div class="chk">✓</div><h2>Votre fiche a été envoyée</h2>
+<p style="color:var(--mut)">Vous recevrez une réponse sous peu depuis <a href="espace.html#commandes" style="color:var(--wine);font-weight:600">Mon espace</a> et par email.</p>
+<p style="color:var(--mut);font-size:13.5px">Pour plus d'infos, écrivez-nous sur WhatsApp.</p>
+<a class="btn wa" style="display:block;text-decoration:none;text-align:center" id="wa2" target="_blank" rel="noopener">Écrire sur WhatsApp</a></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB=supabase.createClient('https://cxobpfaffgevxblnbwft.supabase.co','sb_publishable_bA-89TIqjkUhoA5NIlf7uQ_UUbb8oSB');
+const WA='50948821521', ACC={moncash:{n:'MonCash',name:'Wilkenson Bredy',num:'4882 1521',c:'#d9232d'},natcash:{n:'NatCash',name:'Abelard Johanna',num:'3569 7028',c:'#e8710a'}};
+const $=i=>document.getElementById(i),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),G=n=>Number(n||0).toLocaleString('fr-FR')+' G';
+let items=[],zones=[],method=null,user=null,sub=0;
+(async function(){
+  const cart=JSON.parse(localStorage.getItem('winfum_cart')||'[]');
+  if(!cart.length){$('items').innerHTML='<p>Votre panier est vide. <a href="index.html">Retour à la boutique</a></p>';}
+  const [p,z,s]=await Promise.all([cart.length?SB.from('products').select('id,name,price_retail').in('id',cart.map(c=>c.id)):{data:[]},SB.from('delivery_zones').select('*').eq('is_active',true).order('sort_order'),SB.auth.getSession()]);
+  user=s.data.session?.user||null;zones=z.data||[];
+  items=cart.map(c=>{const r=(p.data||[]).find(x=>String(x.id)===String(c.id));return r&&{id:r.id,name:r.name,price:+r.price_retail||0,qty:c.qty}}).filter(Boolean);
+  sub=items.reduce((a,i)=>a+i.price*i.qty,0);
+  $('items').innerHTML=items.map(i=>`<div class="row"><span>${esc(i.name)} ×${i.qty}</span><span>${G(i.price*i.qty)}</span></div>`).join('');
+  $('zone').innerHTML='<option value="">Choisir…</option>'+zones.map(x=>`<option value="${x.id}">${esc(x.name)} — ${G(x.fee)}${x.eta?' · '+esc(x.eta):''}</option>`).join('');
+  calc();
+})();
+const zone=()=>zones.find(x=>x.id===$('zone').value);
+function calc(){const z=zone();$('fee').textContent=z?G(z.fee):'—';$('total').textContent=G(sub+(z?+z.fee:0));if(method)renderHow();}
+function renderHow(){const a=ACC[method];$('ptitle').textContent='Preuve de paiement '+a.n;const h=$('how');h.style.setProperty('--ac',a.c);
+ h.innerHTML=`<h4>📋 Instructions ${a.n}</h4><ol><li>Ouvrez votre application <b>${a.n}</b>.</li><li>Envoyez <b>${$('total').textContent}</b> à :</li></ol>
+ <div class="acct"><div><span class="nm">${a.name}</span><div class="no">+509 ${a.num}</div></div><button type="button" class="cp" id="cp">Copier</button></div>
+ <ol start="3"><li>Notez l'<b>ID de transaction</b> reçu par SMS ou email.</li><li>Faites une <b>capture d'écran</b> du reçu de paiement.</li><li>Remplissez la fiche ci-dessous pour joindre votre preuve à la commande.</li></ol>`;
+ $('cp').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText('509'+a.num.replace(/\s/g,''));$('cp').textContent='Copié ✓';$('cp').classList.add('ok');setTimeout(()=>{$('cp').textContent='Copier';$('cp').classList.remove('ok')},2000)};}
+$('zone').onchange=calc;
+document.querySelectorAll('.pm').forEach(b=>b.onclick=()=>{
+  method=b.dataset.m;document.querySelectorAll('.pm').forEach(x=>x.classList.toggle('on',x===b));
+  renderHow();
+  $('proof').classList.add('on');$('lock').style.display=user?'none':'block';$('pf').style.display=user?'block':'none';
+});
+$('ps').onchange=()=>{const f=$('ps').files[0];$('pfl').textContent=f?'📎 '+f.name:'⬆ Choisir un fichier (JPG, PNG, PDF, max 8 Mo)';};
+function bad(m){const e=$('err');e.textContent=m;e.style.display='block';e.scrollIntoView({block:'center',behavior:'smooth'});return false}
+function check(){$('err').style.display='none';if(!items.length)return bad('Panier vide.');if(!$('zone').value)return bad('Choisissez votre zone de livraison.');if($('addr').value.trim().length<10)return bad("Décrivez l'adresse avec plus de détails.");return true}
+const msgOf=()=>{const z=zone();return `Bonjour Winfum, je souhaite commander :\n${items.map(i=>`- ${i.name} ×${i.qty} (${G(i.price*i.qty)})`).join('\n')}\nLivraison : ${z?z.name:''}\nAdresse / repères : ${$('addr').value.trim()}\nTotal : ${$('total').textContent}`};
+const waLink=t=>`https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
+function finish(){localStorage.setItem('winfum_cart','[]');$('main').style.display='none';$('done').classList.add('on');$('wa2').href=waLink('Bonjour, je viens d\'envoyer ma fiche de paiement.');scrollTo(0,0)}
+async function makeOrder(pm){const z=zone();const {data,error}=await SB.from('orders').insert({customer_id:user?.id||null,customer_name:$('pn')?.value||null,items:items.map(i=>({id:i.id,name:i.name,qty:i.qty,price:i.price})),total:sub+(+z.fee),delivery_fee:z.fee,zone:z.name,address:$('addr').value.trim(),pay_method:pm,status:'nouvelle'}).select().single();if(error)throw error;return data}
+$('wa').onclick=async()=>{if(!check())return;
+  if(user){try{await makeOrder('whatsapp')}catch(e){}}  // enregistrée si connecté ; sinon la commande passe uniquement par WhatsApp
+  window.open(waLink(msgOf()),'_blank');finish();};
+$('send').onclick=async()=>{if(!check())return;
+  const f=$('ps').files[0],n=$('pn').value.trim(),p=$('pp').value.trim(),t=$('pt').value.trim();
+  if(!n||!p||!t||!f)return bad('Remplissez tous les champs et joignez la capture.');if(f.size>8*1048576)return bad('Fichier trop lourd (max 8 Mo).');
+  $('send').disabled=true;$('send').textContent='Envoi…';
+  try{const o=await makeOrder(method);const path=`${user.id}/${o.id}-${Date.now()}.${f.name.split('.').pop()}`;
+    const up=await SB.storage.from('proofs').upload(path,f);if(up.error)throw up.error;
+    const r=await SB.from('payment_proofs').insert({order_id:o.id,method,payer_name:n,phone:p,tx_ref:t,screenshot_url:path});if(r.error)throw r.error;finish();
+  }catch(e){bad("Échec de l'envoi : "+(e.message||e));$('send').disabled=false;$('send').textContent='Envoyer ma preuve';}};
+</script></body></html>

@@ -172,6 +172,62 @@ td.act{white-space:nowrap;text-align:right}td.act .ib{margin-left:6px}
 .ta{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:center}
 @media(max-width:520px){.ta{grid-template-columns:1fr 1fr}.ta .btn{grid-column:1/-1}}
 
+/* ===== Paiements, livraisons, zones, messages (WINFUM) ===== */
+Object.assign(icons,{payments:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>',messages:'<path d="M21 12a8 8 0 01-11.6 7.1L3 21l1.9-6.2A8 8 0 1121 12z"/>',zones:'<path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>'});
+const DS=[['preparation','Préparation'],['en_route','En cours de livraison'],['livree','Livrée']];
+const payPill=s=>`<span class="pill ${{verifie:'ok',refuse:'bad'}[s]||'warn'}">${{verifie:'Payé',refuse:'Refusé'}[s]||'À vérifier'}</span>`;
+const proofUrl=async p=>{const {data}=await sb.storage.from('proofs').createSignedUrl(p,3600);return data?data.signedUrl:'';};
+V.payments=async()=>{
+  $('view').innerHTML=head('Paiements','Vérifiez les preuves MonCash / NatCash envoyées par les clients.')+'<div id="list"><div class="spin"></div></div>';
+  const {data,error}=await sb.from('payment_proofs').select('*,orders(total,customer_name,zone)').order('created_at',{ascending:false}).limit(100);
+  if(error)return $('list').innerHTML=`<div class="tbl"><div class="empty"><h3 class="serif">Erreur</h3><p>${esc(err(error))}</p></div></div>`;
+  if(!data.length)return $('list').innerHTML='<div class="tbl"><div class="empty"><h3 class="serif">Aucune preuve</h3><p>Les preuves envoyées apparaîtront ici.</p></div></div>';
+  const urls=await Promise.all(data.map(p=>p.screenshot_url?proofUrl(p.screenshot_url):''));
+  $('list').innerHTML=data.map((p,i)=>`<div class="panel glass" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${esc(p.method==='moncash'?'MonCash':'NatCash')} · ${fnum(p.orders&&p.orders.total)} G</b>${payPill(p.status==='en_attente'?'':p.status)}</div>
+  <p class="hint" style="margin:6px 0">Payeur : <b>${esc(p.payer_name)}</b> · Tél : ${esc(p.phone)}<br>Référence : <b>${esc(p.tx_ref)}</b> · ${fdate(p.created_at)}</p>
+  <div class="qa">${urls[i]?`<a class="btn ghost sm" href="${esc(urls[i])}" target="_blank">Voir la capture</a>`:''}${p.status==='en_attente'?`<button class="btn sm" data-a="pay-ok" data-id="${p.id}" data-o="${p.order_id}">✓ Valider</button><button class="btn ghost sm" data-a="pay-no" data-id="${p.id}" data-o="${p.order_id}">Refuser</button>`:''}</div></div>`).join('');
+};
+const payDecide=async(d,ok)=>{
+  const [a,b]=await Promise.all([sb.from('payment_proofs').update({status:ok?'verifie':'refuse',reviewed_by:me.id}).eq('id',d.id),
+    sb.from('orders').update(ok?{pay_status:'verifie',status:'confirmée',updated_at:new Date().toISOString()}:{pay_status:'refuse',updated_at:new Date().toISOString()}).eq('id',d.o)]);
+  const e=a.error||b.error;if(e)return toast(err(e),1);toast(ok?'Paiement validé — le client est prévenu':'Paiement refusé');V.payments();};
+A['pay-ok']=d=>payDecide(d,true);A['pay-no']=d=>payDecide(d,false);
+
+V.orders=async()=>{
+  $('view').innerHTML=head('Commandes & livraison','Suivez chaque commande jusqu\'à la livraison.')+'<div id="list"><div class="spin"></div></div>';
+  const {data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false}).limit(200);
+  if(error)return $('list').innerHTML=`<div class="tbl"><div class="empty"><h3 class="serif">Erreur</h3><p>${esc(err(error))}</p></div></div>`;
+  if(!data.length)return $('list').innerHTML='<div class="tbl"><div class="empty"><h3 class="serif">Aucune commande</h3></div></div>';
+  $('list').innerHTML=data.map(o=>`<div class="panel glass" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${esc(o.customer_name||'Client')} · ${fnum(o.total)} G</b>${payPill(o.pay_status)}</div>
+  <p class="hint" style="margin:6px 0">${(o.items||[]).map(i=>`${esc(i.name)} ×${i.qty}`).join(' · ')}</p>
+  <p class="hint" style="margin:6px 0">📍 <b>${esc(o.zone||'—')}</b> — ${esc(o.address||'—')}${o.customer_phone?`<br>📞 <a href="https://wa.me/${String(o.customer_phone).replace(/\D/g,'')}" target="_blank">${esc(o.customer_phone)}</a>`:''}</p>
+  ${o.pay_status==='verifie'?`<select data-ds="${o.id}">${DS.map(s=>`<option value="${s[0]}" ${s[0]===o.delivery_status?'selected':''}>${s[1]}</option>`).join('')}</select>`:'<p class="hint">Livraison disponible après validation du paiement.</p>'}</div>`).join('');
+  $('list').querySelectorAll('[data-ds]').forEach(s=>s.onchange=async()=>{const v=s.value,{error}=await sb.from('orders').update({delivery_status:v,status:v==='livree'?'livrée':'confirmée',updated_at:new Date().toISOString()}).eq('id',s.dataset.ds);toast(error?err(error):'Livraison mise à jour',!!error);});
+};
+
+V.zones=async()=>{
+  $('view').innerHTML=head('Zones de livraison','Zones, frais et délais proposés aux clients.')+'<div class="panel glass" style="margin-bottom:14px"><div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px"><input id="z-n" placeholder="Zone (ex : Delmas)"><input id="z-f" type="number" placeholder="Frais (G)"><input id="z-e" placeholder="Délai (24 h)"><button class="btn" id="z-add">Ajouter</button></div></div><div id="list"><div class="spin"></div></div>';
+  const draw=async()=>{const {data,error}=await sb.from('delivery_zones').select('*').order('sort_order');if(error)return toast(err(error),1);
+    $('list').innerHTML=data.map(z=>`<div class="panel glass li" style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px"><div><b>${esc(z.name)}</b><br><span class="hint">${fnum(z.fee)} G · ${esc(z.eta||'—')}</span></div><div class="qa">${pill(z.is_active)}<button class="btn ghost sm" data-zt="${z.id}" data-on="${z.is_active}">${z.is_active?'Masquer':'Afficher'}</button><button class="btn ghost sm" data-zd="${z.id}">Supprimer</button></div></div>`).join('')||'<p class="hint">Aucune zone.</p>';
+    $('list').querySelectorAll('[data-zt]').forEach(b=>b.onclick=async()=>{await sb.from('delivery_zones').update({is_active:b.dataset.on!=='true'}).eq('id',b.dataset.zt);draw();});
+    $('list').querySelectorAll('[data-zd]').forEach(b=>b.onclick=async()=>{if(!confirm('Supprimer cette zone ?'))return;await sb.from('delivery_zones').delete().eq('id',b.dataset.zd);draw();});};
+  $('z-add').onclick=async()=>{const n=$('z-n').value.trim();if(!n)return toast('Nom requis',1);const {error}=await sb.from('delivery_zones').insert({name:n,fee:+$('z-f').value||0,eta:$('z-e').value.trim()});if(error)return toast(err(error),1);$('z-n').value=$('z-f').value=$('z-e').value='';draw();};
+  draw();};
+
+let msgCh=null;
+V.messages=async()=>{
+  $('view').innerHTML=head('Messages','Conversations avec les clients.')+'<div id="list"><div class="spin"></div></div>';
+  const [m,c]=await Promise.all([sb.from('order_messages').select('*').order('created_at'),sb.from('customers').select('*')]);
+  if(m.error)return $('list').innerHTML=`<div class="tbl"><div class="empty"><h3 class="serif">Erreur</h3><p>${esc(err(m.error))}</p></div></div>`;
+  const nm=id=>{const x=(c.data||[]).find(r=>r.id===id);return x?(x.full_name||x.name||x.email||x.phone||'Client'):'Client';};
+  const by={};(m.data||[]).forEach(x=>(by[x.customer_id]=by[x.customer_id]||[]).push(x));
+  const ids=Object.keys(by).sort((a,b)=>by[b].at(-1).created_at.localeCompare(by[a].at(-1).created_at));
+  if(!ids.length)return $('list').innerHTML='<div class="tbl"><div class="empty"><h3 class="serif">Aucun message</h3></div></div>';
+  $('list').innerHTML=ids.map(id=>`<details class="panel glass" style="margin-bottom:10px"><summary><b>${esc(nm(id))}</b> <span class="hint">· ${by[id].at(-1).sender==='client'?'⏳ à répondre':'répondu'}</span></summary><div style="max-height:260px;overflow:auto;margin:10px 0">${by[id].map(x=>`<p style="margin:6px 0;text-align:${x.sender==='client'?'left':'right'}"><span class="pill ${x.sender==='client'?'':'gold'}" style="white-space:normal">${esc(x.body)}</span></p>`).join('')}</div><form data-rp="${id}" style="display:flex;gap:8px"><input placeholder="Votre réponse…" style="flex:1"><button class="btn sm">Envoyer</button></form></details>`).join('');
+  $('list').querySelectorAll('[data-rp]').forEach(f=>f.onsubmit=async e=>{e.preventDefault();const i=f.querySelector('input'),t=i.value.trim();if(!t)return;const {error}=await sb.from('order_messages').insert({customer_id:f.dataset.rp,sender:'equipe',body:t});if(error)return toast(err(error),1);V.messages();});
+  if(!msgCh)msgCh=sb.channel('mgr-msg').on('postgres_changes',{event:'INSERT',schema:'public',table:'order_messages'},p=>{if(p.new.sender==='client')toast('💬 Nouveau message client');}).subscribe();
+};
+
 /* contenu du site */
 .cgroup{margin-bottom:20px}
 .cgroup h3{font-size:26px;font-style:italic;margin-bottom:12px}
@@ -519,9 +575,9 @@ async function enter(user){
 
 /* ---------- navigation ---------- */
 const NAV=[
- ['dash','Accueil','Vos raccourcis'],['map','Où modifier quoi','Plan du site'],
- ['sep','Ma boutique'],['products','Produits','Parfums et vins'],['categories','Catégories','Homme, Femme, Rouge…'],['reviews','Avis clients','Notes et commentaires'],['orders','Commandes','Suivi des commandes'],['customers','Clients','Comptes « Mon espace »'],
- ['sep','Pages du site'],['heroes','Affiches de l\'accueil','Grandes images qui défilent'],['announces','Annonces à la une','Nouveautés, promos'],['promos','Bannières promo','Bas des pages boutique'],['moments','Moments partagés','Photos et vidéos Fun For Us'],['content','Images & logo','Cartes, logo, affiches'],['about','À propos de nous','Page de présentation'],
+ ['dash','Accueil','Vos raccourcis'],
+ ['sep','Boutique'],['products','Produits','Ajouter, modifier, stock'],['categories','Catégories','Homme, Femme, Rouge…'],
+ ['sep','Ventes'],['payments','Paiements','Preuves MonCash / NatCash'],['orders','Commandes & livraison','En cours, livrée…'],['zones','Zones de livraison','Frais et délais'],['messages','Messages','Support clients'],
  ['sep','Équipe'],['managers','Comptes managers','Accès de l\'équipe','super']];
 function buildNav(){
   $('nav').innerHTML=NAV.filter(n=>n[3]!=='super'||me.role==='super_admin').map(n=>n[0]==='sep'?`<div class="nsep">${n[1]}</div>`:`<a href="#/${n[0]}" data-r="${n[0]}">${svg(n[0])}<span class="nt"><b>${n[1]}</b><small>${n[2]||''}</small></span></a>`).join('');
@@ -902,12 +958,10 @@ const V={};
 ['products','categories','reviews','heroes','announces','promos','moments'].forEach(n=>V[n]=()=>listView(n));
 
 const TODOS=[
- ['moments','Ajouter un moment partagé','Photos et vidéos d\'une soirée entre amis, des vendanges, d\'un dîner… affichées sur la page Fun For Us.',1,1],
- ['products','Ajouter un produit','Un nouveau parfum ou un nouveau vin : photos, prix, description.',1],
- ['announces','Publier une annonce','Une carte « À la une » sur l\'accueil : nouveauté, promo ou vidéo.',1],
- ['heroes','Changer les affiches de l\'accueil','Les grandes images qui défilent en haut de l\'accueil.',0],
- ['content','Changer les images des cartes','Rouge / Blanc / Rosé, Homme / Femme / Mixte, logo et affiches.',0],
- ['orders','Voir les commandes','Suivre les commandes et changer leur statut.',0]];
+ ['products','Ajouter un produit','Photos, prix, description, stock.',1,1],
+ ['payments','Vérifier les paiements','Valider les preuves MonCash / NatCash.',0],
+ ['orders','Suivre les livraisons','Préparation, en route, livrée.',0],
+ ['messages','Répondre aux clients','Messagerie du support.',0]];
 V.dash=async()=>{
   const cnt=async(t,f)=>{let q=sb.from(t).select('id',{count:'exact',head:true});if(f)q=f(q);const {count}=await q;return count||0;};
   const [prods,cats,ann,newOrd,ordersR,stockR]=await Promise.all([
