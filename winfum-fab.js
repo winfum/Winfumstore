@@ -24,13 +24,19 @@ var pop=document.createElement('div');pop.className='wf-pop';document.body.appen
 function cur(){try{return JSON.parse(ls('wf_notif')||'null');}catch(e){return null;}}
 function count(){try{return JSON.parse(ls('winfum_cart')||'[]').reduce(function(a,c){return a+(+c.qty||0);},0);}catch(e){return 0;}}
 var last=-1,lastN='';
+function blocked(){
+  if(document.querySelector('#search-overlay.open,#cart-drawer.open,#cart-overlay.open,#wf-drawer.open,#wf-ov.open,.ov.open'))return true;
+  var p=document.getElementById('preloader');
+  if(p&&!p.classList.contains('hide')){var cs=getComputedStyle(p);if(cs.display!=='none'&&cs.visibility!=='hidden')return true;}
+  return false;
+}
 function refresh(){
-  var c=count(),n=cur();
-  cart.classList.toggle('on',c>0);cart.innerHTML=ICON.cart+(c>0?'<span class="wf-b">'+c+'</span>':'');cart.setAttribute('aria-label','Panier ('+c+')');
-  if(c!==last){if(last>=0&&c>last){cart.classList.remove('on');void cart.offsetWidth;cart.classList.add('on');}last=c;}
-  nf.className='wf-fab wf-n wf-n-'+(n?n.k:'msg')+(n?' on':'');nf.innerHTML=n?ICON[n.k]+'<span class="wf-b">1</span>':'';nf.setAttribute('aria-label',n?n.t:'');
+  var c=count(),n=cur(),hid=blocked();
+  cart.classList.toggle('on',c>0&&!hid);cart.innerHTML=ICON.cart+(c>0?'<span class="wf-b">'+c+'</span>':'');cart.setAttribute('aria-label','Panier ('+c+')');
+  if(c!==last){if(last>=0&&c>last&&!hid){cart.classList.remove('on');void cart.offsetWidth;cart.classList.add('on');}last=c;}
+  nf.className='wf-fab wf-n wf-n-'+(n?n.k:'msg')+(n&&!hid?' on':'');nf.innerHTML=n?ICON[n.k]+'<span class="wf-b">1</span>':'';nf.setAttribute('aria-label',n?n.t:'');
   var w=wa();if(w)w.style.display=(c>0||n)?'none':'';
-  var key=n?n.k+n.t:'';if(n&&key!==lastN){var r=nf.getBoundingClientRect();pop.textContent=n.t;pop.style.top=Math.max(8,r.top-8)+'px';pop.style.left=Math.max(8,Math.min(innerWidth-240,r.left-170))+'px';pop.classList.add('on');setTimeout(function(){pop.classList.remove('on');},6000);}
+  var key=n?n.k+n.t:'';if(hid)pop.classList.remove('on');if(n&&!hid&&key!==lastN){var r=nf.getBoundingClientRect();pop.textContent=n.t;pop.style.top=Math.max(8,r.top-8)+'px';pop.style.left=Math.max(8,Math.min(innerWidth-240,r.left-170))+'px';pop.classList.add('on');setTimeout(function(){pop.classList.remove('on');},6000);}
   lastN=key;
 }
 function notify(k,t){ls('wf_notif',JSON.stringify({k:k,t:t}));refresh();}
