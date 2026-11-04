@@ -19,7 +19,7 @@ function mk(cls,pos,def,onTap){
 }
 var wa=function(){return document.querySelector('a.wa');};
 var cart=mk('wf-cart','wf_pos_cart',160,function(){if(typeof window.openCart==='function')window.openCart();else location.href='paiement.html';});
-var nf=mk('wf-n','wf_pos_notif',240,function(){var n=cur();ls('wf_notif',null);ls('wf_seen',new Date().toISOString());refresh();if(/espace\.html/.test(location.pathname)){var r=document.getElementById('wo-root');if(r)r.scrollIntoView({behavior:'smooth'});}else location.href='espace.html#'+(n&&n.k==='pay'?'commandes':'support');});
+var nf=mk('wf-n','wf_pos_notif',240,function(){var n=cur();ls('wf_notif',null);ls('wf_seen',new Date().toISOString());refresh();if(/espace\.html/.test(location.pathname)){var r=document.getElementById(n&&n.k==='msg'?'wo-support':'wo-root');if(r)r.scrollIntoView({behavior:'smooth'});}else location.href='espace.html#'+(n&&n.k==='pay'?'commandes':'support');});
 var pop=document.createElement('div');pop.className='wf-pop';document.body.appendChild(pop);
 function cur(){try{return JSON.parse(ls('wf_notif')||'null');}catch(e){return null;}}
 function count(){try{return JSON.parse(ls('winfum_cart')||'[]').reduce(function(a,c){return a+(+c.qty||0);},0);}catch(e){return 0;}}

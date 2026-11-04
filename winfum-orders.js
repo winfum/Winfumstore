@@ -21,12 +21,13 @@ function drawMsgs(){var b=$('#wc-m');if(!b)return;var atEnd=b.scrollHeight-b.scr
 function drawStatus(){var s=$('#wc-st');if(s)s.innerHTML=typing?'<span class="ty">écrit<i></i><i></i><i></i></span>':(teamOn?'<span class="on">● en ligne</span>':'Réponse sous peu');}
 function build(){var d=$('#dash');if(!d||$('#wo-root'))return;
   var r=document.createElement('div');r.id='wo-root';r.className='wo';r.style.marginTop='16px';
-  r.innerHTML='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px"><a class="wo-cta" style="flex:1;min-width:150px" href="paiement.html">'+I.card+' MonCash / NatCash</a><a class="wo-cta" style="flex:1;min-width:150px;background:#25d366" href="#support" id="wo-go">'+I.chat+' Support</a></div>'+
-  '<h3 class="wo-t">Mes commandes</h3><div id="wo-ord"></div><h3 class="wo-t" id="support">Support</h3>'+
-  '<div class="wc"><div class="wc-h"><div class="wc-a">W</div><div><b>Support Winfum</b><small id="wc-st"></small></div></div><div class="wc-m" id="wc-m"></div><form class="wc-f" id="wc-f"><input id="wc-i" placeholder="Votre message…" autocomplete="off" maxlength="1000"><button aria-label="Envoyer">'+I.send+'</button></form></div>'+
+  r.innerHTML='<h3 class="wo-t">Mes commandes</h3><div id="wo-ord"></div>'+
   '<a class="wo-wa" target="_blank" rel="noopener" href="https://wa.me/'+WA+'">'+I.wa+' Aide sur WhatsApp</a>';
   d.insertBefore(r,d.firstChild);
-  $('#wo-go').onclick=function(e){e.preventDefault();$('#support').scrollIntoView({behavior:'smooth'})};
+  var sp=document.createElement('div');sp.id='wo-support';sp.className='wo';sp.style.marginTop='28px';
+  sp.innerHTML='<h3 class="wo-t" id="support">Support</h3>'+
+  '<div class="wc"><div class="wc-h"><div class="wc-a">W</div><div><b>Support Winfum</b><small id="wc-st"></small></div></div><div class="wc-m" id="wc-m"></div><form class="wc-f" id="wc-f"><input id="wc-i" placeholder="Votre message…" autocomplete="off" maxlength="1000"><button aria-label="Envoyer">'+I.send+'</button></form></div>';
+  d.appendChild(sp);
   $('#wc-f').onsubmit=async function(e){e.preventDefault();var i=$('#wc-i'),t=i.value.trim();if(!t)return;i.value='';var x=await SB.from('order_messages').insert({customer_id:uid,sender:'client',body:t}).select().single();if(x.data&&!msgs.some(function(m){return m.id===x.data.id})){msgs.push(x.data);drawMsgs();}};
   $('#wc-i').addEventListener('input',function(){var n=Date.now();if(ch&&n-lastTy>1500){lastTy=n;ch.send({type:'broadcast',event:'typing',payload:{role:'client'}});}});}
 async function markRead(){if(document.hidden||!$('#wc-m'))return;if(!msgs.some(function(m){return m.sender==='equipe'&&!m.read}))return;
