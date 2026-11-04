@@ -939,13 +939,24 @@ V.orders=async()=>{
   $('list').querySelectorAll('[data-ost]').forEach(s=>s.addEventListener('change',async()=>{const {error}=await sb.from('orders').update({status:s.value}).eq('id',s.dataset.ost);toast(error?err(error):'Statut mis à jour',!!error);}));
 };
 
+/* ===== Historique : export / suppression ===== */
+const dlCsv=(name,rows)=>{if(!rows.length)return toast('Rien à exporter',1);const k=Object.keys(rows[0]),q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';const t='\ufeff'+[k.join(';'),...rows.map(r=>k.map(x=>q(r[x])).join(';'))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv;charset=utf-8'}));a.download=name+'-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();toast('Export téléchargé');};
+const histBtns=k=>`<button class="btn ghost sm" data-a="exp-${k}">⬇ Exporter</button>${me.role==='super_admin'?'<button class="btn ghost sm" data-a="del-hist">🗑 Supprimer l\'historique</button>':''}`;
+A['exp-orders']=async()=>{const {data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false});if(error)return toast(err(error),1);
+  dlCsv('commandes',data.map(o=>({Date:o.created_at,Client:o.customer_name,Telephone:o.customer_phone,Zone:o.zone,Adresse:o.address,Articles:(o.items||[]).map(i=>i.name+' x'+i.qty).join(' | '),Total_G:o.total,Paiement:o.pay_method,Statut_paiement:o.pay_status,Livraison:o.delivery_status})));};
+A['exp-pay']=async()=>{const {data,error}=await sb.from('payment_proofs').select('*,orders(total)').order('created_at',{ascending:false});if(error)return toast(err(error),1);
+  dlCsv('paiements',data.map(p=>({Date:p.created_at,Methode:p.method,Payeur:p.payer_name,Telephone:p.phone,Reference:p.tx_ref,Montant_G:p.orders&&p.orders.total,Statut:p.status})));};
+A['del-hist']=async()=>{if(me.role!=='super_admin')return;
+  if(!await ask('Supprimer l\'historique ?','Les commandes livrées ou refusées (avec leurs preuves) seront supprimées définitivement. Pensez à exporter avant.','Supprimer',1))return;
+  const {error}=await sb.from('orders').delete().or('delivery_status.eq.livree,pay_status.eq.refuse');if(error)return toast(err(error),1);toast('Historique supprimé');V.orders();};
+
 /* ===== Paiements, livraisons, zones, messages (WINFUM) ===== */
 Object.assign(icons,{payments:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>',messages:'<path d="M21 12a8 8 0 01-11.6 7.1L3 21l1.9-6.2A8 8 0 1121 12z"/>',zones:'<path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>'});
 const DS=[['preparation','Préparation'],['en_route','En cours de livraison'],['livree','Livrée']];
 const payPill=s=>`<span class="pill ${{verifie:'ok',refuse:'bad'}[s]||'warn'}">${{verifie:'Payé',refuse:'Refusé'}[s]||'À vérifier'}</span>`;
 const proofUrl=async p=>{const {data}=await sb.storage.from('proofs').createSignedUrl(p,3600);return data?data.signedUrl:'';};
 V.payments=async()=>{
-  $('view').innerHTML=head('Paiements','')+'<div id="list"><div class="spin"></div></div>';
+  $('view').innerHTML=head('Paiements','',histBtns('pay'))+'<div id="list"><div class="spin"></div></div>';
   const {data,error}=await sb.from('payment_proofs').select('*,orders(total,customer_name,zone)').order('created_at',{ascending:false}).limit(100);
   if(error)return $('list').innerHTML=`<div class="tbl"><div class="empty"><h3 class="serif">Erreur</h3><p>${esc(err(error))}</p></div></div>`;
   if(!data.length)return $('list').innerHTML='<div class="tbl"><div class="empty"><h3 class="serif">Aucune preuve</h3><p>Les preuves envoyées apparaîtront ici.</p></div></div>';
@@ -961,7 +972,7 @@ const payDecide=async(d,ok)=>{
 A['pay-ok']=d=>payDecide(d,true);A['pay-no']=d=>payDecide(d,false);
 
 V.orders=async()=>{
-  $('view').innerHTML=head('Livraisons','')+'<div id="list"><div class="spin"></div></div>';
+  $('view').innerHTML=head('Livraisons','',histBtns('orders'))+'<div id="list"><div class="spin"></div></div>';
   const {data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false}).limit(200);
   if(error)return $('list').innerHTML=`<div class="tbl"><div class="empty"><h3 class="serif">Erreur</h3><p>${esc(err(error))}</p></div></div>`;
   if(!data.length)return $('list').innerHTML='<div class="tbl"><div class="empty"><h3 class="serif">Aucune commande</h3></div></div>';
@@ -1111,7 +1122,7 @@ function howCard(n){
   const h=HOW[n];if(!h)return '';let closed=false;try{closed=localStorage.getItem('wf_how_'+n)==='1';}catch(e){}
   return `<details class="how glass" data-n="${n}" ${closed?'':'open'}><summary>💡 Comment ça marche ?</summary><ol>${h.map(x=>`<li>${x}</li>`).join('')}</ol></details>`;
 }
-function locCard(name){const L=LOCS[name];if(!L)return '';return `<details class="locc glass" open><summary>📍 Où ça apparaît sur le site</summary><div class="lbody">${L.map(x=>`<div class="lrow">${wire(x.p,x.hl)}<div class="lt"><div class="lp">Page · ${esc(WIRES[x.p].n)}</div><div class="lz">${esc(x.zone)}</div><p class="hint">${esc(x.what)}</p><a class="btn ghost sm" href="${WIRES[x.p].u}${x.a||''}" target="_blank">Voir cette zone sur le site ↗</a></div></div>`).join('')}</div></details>`;}
+function locCard(name){const L=LOCS[name];if(!L)return '';return `<details class="locc glass"><summary>📍 Où ça apparaît sur le site</summary><div class="lbody">${L.map(x=>`<div class="lrow">${wire(x.p,x.hl)}<div class="lt"><div class="lp">Page · ${esc(WIRES[x.p].n)}</div><div class="lz">${esc(x.zone)}</div><p class="hint">${esc(x.what)}</p><a class="btn ghost sm" href="${WIRES[x.p].u}${x.a||''}" target="_blank">Voir cette zone sur le site ↗</a></div></div>`).join('')}</div></details>`;}
 const chip=(p,z,a)=>`<a class="where" href="${WIRES[p].u}${a||''}" target="_blank" title="Ouvrir cette zone sur le site">📍 ${esc(WIRES[p].n)} › ${esc(z)}</a>`;
 const WHERE={
  heroes:()=>chip('home','Grande affiche','#hero-s'),
