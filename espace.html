@@ -173,6 +173,7 @@ nav.links a{opacity:.7;transition:.2s}nav.links a:hover{opacity:1}
 .badge.admin{background:linear-gradient(120deg,#a9782f,#d4af69);color:#fff;box-shadow:0 4px 14px rgba(169,120,47,.35)}
 .badge.team{background:var(--ink);color:#e9c988}
 .badge.member{background:rgba(169,120,47,.13);color:var(--gold)}
+a.badge{text-decoration:none;cursor:pointer;transition:transform .2s,box-shadow .2s}a.badge:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.25)}a.badge:active{transform:scale(.96)}
 .handle{font-size:13px;color:var(--muted);margin-top:4px}
 .chips{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
 .chip{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:20px;border:1px solid var(--line);color:var(--muted);background:rgba(255,255,255,.6)}
@@ -608,7 +609,7 @@ const SUPABASE_ANON_KEY="sb_publishable_bA-89TIqjkUhoA5NIlf7uQ_UUbb8oSB";
    sinon remplacez-le ci-dessous (même valeur à reporter dans admin.html et manager.html). */
 const DOM="@winfumstore.vercel.app";
 const WA="50948821521";
-const ADMIN_PAGE="admin";
+const ADMIN_PAGE="admin";const MANAGER_PAGE="manager";
 /* Catalogue local (mêmes identifiants que jbparfumerie.html / funforus.html) */
 const CATALOG={
  p1:{name:'Ambre Noir',cat:'homme',retail:65},p2:{name:'Cèdre Royal',cat:'homme',retail:58},
@@ -839,11 +840,11 @@ async function loadDashboard(){
   const name=prof?prof.full_name:(cust&&(cust.full_name||cust.pseudo))||user.email.split('@')[0];
   $('auth').hidden=true;$('dash').hidden=false;
   $('av').textContent=initials(name).toUpperCase()||'?';$('p-name').textContent=name;
-  $('p-badge').innerHTML=prof?(prof.role==='super_admin'?`<span class="badge admin">${I.star}Admin</span>`:`<span class="badge team">${I.team}Équipe Winfum</span>`):'<span class="badge member">Membre</span>';
+  $('p-badge').innerHTML=prof?(prof.role==='super_admin'?`<span class="badge admin">${I.star}Admin</span>`:`<a class="badge team" href="${MANAGER_PAGE}" title="Ouvrir l'espace manager" aria-label="Ouvrir l'espace manager">${I.team}Équipe Winfum</a>`):'<span class="badge member">Membre</span>';
   $('p-handle').textContent=cust?'@'+cust.pseudo:user.email;
   const ch=[];if(prof)ch.push('Équipe Winfum');if(cust&&cust.gender)ch.push(cust.gender.charAt(0).toUpperCase()+cust.gender.slice(1));if(cust&&cust.birth_year)ch.push((new Date().getFullYear()-cust.birth_year)+' ans');
   $('p-chips').innerHTML=ch.map(x=>`<span class="chip">${esc(x)}</span>`).join('');
-  $('admin-link').hidden=!prof;$('admin-link').href=ADMIN_PAGE;
+  $('admin-link').hidden=!prof;const isMgr=!!prof&&prof.role==='manager';$('admin-link').href=isMgr?MANAGER_PAGE:ADMIN_PAGE;{const t=isMgr?'Espace manager':'Administration';$('admin-link').title=t;$('admin-link').setAttribute('aria-label',t);const l=$('admin-link').querySelector('.lbl');if(l)l.textContent=t;}
   $('b-edit').hidden=!cust;
   const st=cust&&cust.status,nb=$('notice');
   nb.hidden=!(st==='pending'||st==='blocked');nb.classList.toggle('bad',st==='blocked');
