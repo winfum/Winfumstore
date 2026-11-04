@@ -521,7 +521,7 @@ async function enter(user){
 const NAV=[
  ['dash','Accueil','Vos raccourcis'],['map','Où modifier quoi','Plan du site'],
  ['sep','Ma boutique'],['products','Produits','Parfums et vins'],['categories','Catégories','Homme, Femme, Rouge…'],['reviews','Avis clients','Notes et commentaires'],['orders','Commandes','Suivi des commandes'],['customers','Clients','Comptes « Mon espace »'],
- ['sep','Pages du site'],['heroes','Affiches de l\'accueil','Grandes images qui défilent'],['announces','Annonces à la une','Nouveautés, promos'],['promos','Bannières promo','Bas des pages boutique'],['moments','Moments partagés','Photos et vidéos Fun For Us'],['content','Images & logo','Cartes, logo, affiches'],['about','À propos de nous','Page de présentation'],
+ ['sep','Ventes & livraison'],['payments','Paiements','Preuves MonCash / NatCash'],['orders','Commandes & livraison','En cours, livrée…'],['zones','Zones de livraison','Frais et durée'],['messages','Messages','Support clients'],['sep','Pages du site'],['heroes','Affiches de l\'accueil','Grandes images qui défilent'],['announces','Annonces à la une','Nouveautés, promos'],['promos','Bannières promo','Bas des pages boutique'],['moments','Moments partagés','Photos et vidéos Fun For Us'],['content','Images & logo','Cartes, logo, affiches'],['about','À propos de nous','Page de présentation'],
  ['sep','Équipe'],['managers','Comptes managers','Accès de l\'équipe','super']];
 function buildNav(){
   $('nav').innerHTML=NAV.filter(n=>n[3]!=='super'||me.role==='super_admin').map(n=>n[0]==='sep'?`<div class="nsep">${n[1]}</div>`:`<a href="#/${n[0]}" data-r="${n[0]}">${svg(n[0])}<span class="nt"><b>${n[1]}</b><small>${n[2]||''}</small></span></a>`).join('');
@@ -937,6 +937,69 @@ V.orders=async()=>{
   if(!data.length)return $('list').innerHTML='<div class="tbl"><div class="empty"><h3 class="serif">Aucune commande</h3><p>Les commandes passées via WhatsApp ne sont pas enregistrées ici.</p></div></div>';
   $('list').innerHTML=`<div class="tbl"><table><thead><tr><th>Date</th><th>Client</th><th>Articles</th><th>Total</th><th>Statut</th></tr></thead><tbody>${data.map(o=>`<tr><td>${fdate(o.created_at)}</td><td><div class="nm"><b>${esc(o.customer_name||'—')}</b><span>${o.customer_phone?`<a href="https://wa.me/${String(o.customer_phone).replace(/\D/g,'')}" target="_blank" style="text-decoration:underline">${esc(o.customer_phone)}</a>`:''}</span></div></td><td>${(o.items||[]).map(i=>`${esc(i.name)} ×${i.qty}`).join('<br>')}</td><td class="price">${fnum(o.total)} G</td><td><select data-ost="${o.id}" style="min-width:130px">${ST.map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>`;
   $('list').querySelectorAll('[data-ost]').forEach(s=>s.addEventListener('change',async()=>{const {error}=await sb.from('orders').update({status:s.value}).eq('id',s.dataset.ost);toast(error?err(error):'Statut mis à jour',!!error);}));
+};
+
+/* ===== Paiements, livraisons, zones, messages (WINFUM) ===== */
+Object.assign(icons,{payments:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>',messages:'<path d="M21 12a8 8 0 01-11.6 7.1L3 21l1.9-6.2A8 8 0 1121 12z"/>',zones:'<path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>'});
+const DS=[['preparation','Préparation'],['en_route','En cours de livraison'],['livree','Livrée']];
+const payPill=s=>`<span class="pill ${{verifie:'ok',refuse:'bad'}[s]||'warn'}">${{verifie:'Payé',refuse:'Refusé'}[s]||'À vérifier'}</span>`;
+const proofUrl=async p=>{const {data}=await sb.storage.from('proofs').createSignedUrl(p,3600);return data?data.signedUrl:'';};
+V.payments=async()=>{
+  $('view').innerHTML=head('Paiements','Vérifiez les preuves MonCash / NatCash envoyées par les clients.')+'<div id="list"><div class="spin"></div></div>';
+  const {data,error}=await sb.from('payment_proofs').select('*,orders(total,customer_name,zone)').order('created_at',{ascending:false}).limit(100);
+  if(error)return $('list').innerHTML=`<div class="tbl"><div class="empty"><h3 class="serif">Erreur</h3><p>${esc(err(error))}</p></div></div>`;
+  if(!data.length)return $('list').innerHTML='<div class="tbl"><div class="empty"><h3 class="serif">Aucune preuve</h3><p>Les preuves envoyées apparaîtront ici.</p></div></div>';
+  const urls=await Promise.all(data.map(p=>p.screenshot_url?proofUrl(p.screenshot_url):''));
+  $('list').innerHTML=data.map((p,i)=>`<div class="panel glass" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${esc(p.method==='moncash'?'MonCash':'NatCash')} · ${fnum(p.orders&&p.orders.total)} G</b>${payPill(p.status==='en_attente'?'':p.status)}</div>
+  <p class="hint" style="margin:6px 0">Payeur : <b>${esc(p.payer_name)}</b> · Tél : ${esc(p.phone)}<br>Référence : <b>${esc(p.tx_ref)}</b> · ${fdate(p.created_at)}</p>
+  <div class="qa">${urls[i]?`<a class="btn ghost sm" href="${esc(urls[i])}" target="_blank">Voir la capture</a>`:''}${p.status==='en_attente'?`<button class="btn sm" data-a="pay-ok" data-id="${p.id}" data-o="${p.order_id}">✓ Valider</button><button class="btn ghost sm" data-a="pay-no" data-id="${p.id}" data-o="${p.order_id}">Refuser</button>`:''}</div></div>`).join('');
+};
+const payDecide=async(d,ok)=>{
+  const [a,b]=await Promise.all([sb.from('payment_proofs').update({status:ok?'verifie':'refuse',reviewed_by:me.id}).eq('id',d.id),
+    sb.from('orders').update(ok?{pay_status:'verifie',status:'confirmée',updated_at:new Date().toISOString()}:{pay_status:'refuse',updated_at:new Date().toISOString()}).eq('id',d.o)]);
+  const e=a.error||b.error;if(e)return toast(err(e),1);toast(ok?'Paiement validé — le client est prévenu':'Paiement refusé');V.payments();};
+A['pay-ok']=d=>payDecide(d,true);A['pay-no']=d=>payDecide(d,false);
+
+V.orders=async()=>{
+  $('view').innerHTML=head('Commandes & livraison','Suivez chaque commande jusqu\'à la livraison.')+'<div id="list"><div class="spin"></div></div>';
+  const {data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false}).limit(200);
+  if(error)return $('list').innerHTML=`<div class="tbl"><div class="empty"><h3 class="serif">Erreur</h3><p>${esc(err(error))}</p></div></div>`;
+  if(!data.length)return $('list').innerHTML='<div class="tbl"><div class="empty"><h3 class="serif">Aucune commande</h3></div></div>';
+  $('list').innerHTML=data.map(o=>`<div class="panel glass" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${esc(o.customer_name||'Client')} · ${fnum(o.total)} G</b>${payPill(o.pay_status)}</div>
+  <p class="hint" style="margin:6px 0">${(o.items||[]).map(i=>`${esc(i.name)} ×${i.qty}`).join(' · ')}</p>
+  <p class="hint" style="margin:6px 0">📍 <b>${esc(o.zone||'—')}</b> — ${esc(o.address||'—')}${o.customer_phone?`<br>📞 <a href="https://wa.me/${String(o.customer_phone).replace(/\D/g,'')}" target="_blank">${esc(o.customer_phone)}</a>`:''}</p>
+  ${o.pay_status==='verifie'?`<select data-ds="${o.id}">${DS.map(s=>`<option value="${s[0]}" ${s[0]===o.delivery_status?'selected':''}>${s[1]}</option>`).join('')}</select>`:'<p class="hint">Livraison disponible après validation du paiement.</p>'}</div>`).join('');
+  $('list').querySelectorAll('[data-ds]').forEach(s=>s.onchange=async()=>{const v=s.value,{error}=await sb.from('orders').update({delivery_status:v,status:v==='livree'?'livrée':'confirmée',updated_at:new Date().toISOString()}).eq('id',s.dataset.ds);toast(error?err(error):'Livraison mise à jour',!!error);});
+};
+
+V.zones=async()=>{
+  $('view').innerHTML=head('Zones de livraison','Ajoutez, modifiez ou supprimez les zones. Les clients les voient au moment de payer.')+'<div class="panel glass" style="margin-bottom:14px"><b>Nouvelle zone</b><div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin:10px 0"><input id="z-n" placeholder="Zone (ex : Delmas)"><input id="z-f" type="number" placeholder="Frais (G)"><input id="z-e" placeholder="Durée (ex : 24 h)"></div><button class="btn" id="z-add">+ Ajouter la zone</button></div><div id="list"><div class="spin"></div></div>';
+  const draw=async()=>{const {data,error}=await sb.from('delivery_zones').select('*').order('sort_order').order('name');if(error)return toast(err(error),1);
+    $('list').innerHTML=data.map(z=>`<div class="panel glass" style="margin-bottom:10px"><div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px"><input data-f="name" value="${esc(z.name)}"><input data-f="fee" type="number" value="${z.fee||0}" title="Frais (G)"><input data-f="eta" value="${esc(z.eta||'')}" placeholder="Durée"></div><div class="qa" style="margin-top:10px" data-z="${z.id}">${pill(z.is_active)}<button class="btn sm" data-zs>Enregistrer</button><button class="btn ghost sm" data-zt="${z.is_active}">${z.is_active?'Masquer':'Afficher'}</button><button class="btn ghost sm" data-zd>Supprimer</button></div></div>`).join('')||'<p class="hint">Aucune zone.</p>';
+    $('list').querySelectorAll('[data-z]').forEach(r=>{const id=r.dataset.z,card=r.parentElement,val=k=>card.querySelector(`[data-f=${k}]`).value;
+      r.querySelector('[data-zs]').onclick=async()=>{const {error}=await sb.from('delivery_zones').update({name:val('name').trim(),fee:+val('fee')||0,eta:val('eta').trim()}).eq('id',id);toast(error?err(error):'Zone enregistrée',!!error);};
+      r.querySelector('[data-zt]').onclick=async e=>{await sb.from('delivery_zones').update({is_active:e.target.dataset.zt!=='true'}).eq('id',id);draw();};
+      r.querySelector('[data-zd]').onclick=async()=>{if(!confirm('Supprimer cette zone ?'))return;await sb.from('delivery_zones').delete().eq('id',id);draw();};});};
+  $('z-add').onclick=async()=>{const n=$('z-n').value.trim();if(!n)return toast('Nom requis',1);const {error}=await sb.from('delivery_zones').insert({name:n,fee:+$('z-f').value||0,eta:$('z-e').value.trim()});if(error)return toast(err(error),1);$('z-n').value=$('z-f').value=$('z-e').value='';toast('Zone ajoutée');draw();};
+  draw();};
+
+/* Messagerie façon WhatsApp */
+(()=>{const c=document.createElement('style');c.textContent='.wm{display:grid;grid-template-columns:300px 1fr;gap:12px;height:68vh}.wm-l,.wm-r{overflow:auto;border-radius:16px;background:var(--glass,rgba(255,255,255,.7));border:1px solid var(--line,rgba(0,0,0,.1))}.wm-r{display:flex;flex-direction:column}.wm-c{display:flex;gap:10px;padding:12px;cursor:pointer;border-bottom:1px solid var(--line,rgba(0,0,0,.08));align-items:center}.wm-c.on,.wm-c:hover{background:rgba(122,17,40,.08)}.wm-a{width:40px;height:40px;border-radius:50%;background:#7a1128;color:#fff;display:grid;place-items:center;font-weight:700;flex:none}.wm-c p{margin:0;font-size:12.5px;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}.wm-dot{width:10px;height:10px;border-radius:50%;background:#25d366;margin-left:auto;flex:none}.wm-t{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:7px}.wm-b{max-width:75%;padding:8px 12px;border-radius:14px;font-size:14px;background:rgba(128,128,128,.18)}.wm-b.me{align-self:flex-end;background:#d9fdd3;color:#111}.wm-b small{display:block;font-size:10px;opacity:.55;text-align:right}.wm-f{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line,rgba(0,0,0,.1))}.wm-f input{flex:1;border-radius:22px}@media(max-width:760px){.wm{grid-template-columns:1fr;height:auto}.wm-l{max-height:230px}.wm-r{height:60vh}}';document.head.appendChild(c)})();
+let msgCh=null,curC=null;
+V.messages=async()=>{
+  $('view').innerHTML=head('Messages','Conversations avec les clients.')+'<div class="wm"><div class="wm-l" id="wm-l"><div class="spin"></div></div><div class="wm-r" id="wm-r"><p class="hint" style="margin:auto">Choisissez une conversation</p></div></div>';
+  const [m,c]=await Promise.all([sb.from('order_messages').select('*').order('created_at'),sb.from('customers').select('*')]);
+  if(m.error)return $('wm-l').innerHTML=`<p class="hint" style="padding:14px">${esc(err(m.error))}</p>`;
+  const nm=id=>{const x=(c.data||[]).find(r=>r.id===id);return x?(x.full_name||x.name||x.email||x.phone||'Client'):'Client '+id.slice(0,4);};
+  const by={};(m.data||[]).forEach(x=>(by[x.customer_id]=by[x.customer_id]||[]).push(x));
+  const ids=Object.keys(by).sort((a,b)=>by[b].at(-1).created_at.localeCompare(by[a].at(-1).created_at));
+  $('wm-l').innerHTML=ids.map(id=>{const l=by[id].at(-1),un=by[id].some(x=>x.sender==='client'&&!x.read);return `<div class="wm-c ${id===curC?'on':''}" data-c="${id}"><div class="wm-a">${esc(nm(id)[0].toUpperCase())}</div><div><b>${esc(nm(id))}</b><p>${esc(l.body)}</p></div>${un?'<span class="wm-dot"></span>':''}</div>`}).join('')||'<p class="hint" style="padding:14px">Aucun message pour le moment.</p>';
+  const open=async id=>{curC=id;document.querySelectorAll('.wm-c').forEach(e=>e.classList.toggle('on',e.dataset.c===id));
+    $('wm-r').innerHTML=`<div class="wm-c" style="cursor:default"><div class="wm-a">${esc(nm(id)[0].toUpperCase())}</div><b>${esc(nm(id))}</b></div><div class="wm-t" id="wm-t">${by[id].map(x=>`<div class="wm-b ${x.sender==='equipe'?'me':''}">${esc(x.body)}<small>${new Date(x.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</small></div>`).join('')}</div><form class="wm-f" id="wm-f"><input id="wm-i" placeholder="Écrire un message…" autocomplete="off"><button class="btn sm">Envoyer</button></form>`;
+    $('wm-t').scrollTop=1e6;sb.from('order_messages').update({read:true}).eq('customer_id',id).eq('sender','client').eq('read',false).then(()=>{});
+    $('wm-f').onsubmit=async e=>{e.preventDefault();const t=$('wm-i').value.trim();if(!t)return;const {error}=await sb.from('order_messages').insert({customer_id:id,sender:'equipe',body:t});if(error)return toast(err(error),1);V.messages();};};
+  document.querySelectorAll('.wm-c[data-c]').forEach(e=>e.onclick=()=>open(e.dataset.c));if(curC&&by[curC])open(curC);
+  if(!msgCh)msgCh=sb.channel('mgr-msg').on('postgres_changes',{event:'INSERT',schema:'public',table:'order_messages'},p=>{if(p.new.sender==='client'){toast('💬 Nouveau message client');if(location.hash.includes('messages'))V.messages();}}).subscribe();
 };
 
 /* contenu du site */
