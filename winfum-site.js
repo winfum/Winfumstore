@@ -60,7 +60,7 @@
       var s = document.createElement('script');
       s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
       s.onload = res; s.onerror = rej; document.head.appendChild(s);
-    }).then(function () { return window.WINFUM_SB || (window.WINFUM_SB = window.supabase.createClient(URL_, KEY)); });
+    }).then(function () { return window.WINFUM_SB || (window.WINFUM_SB = window.supabase.createClient(URL_, KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})); });
     return sbP;
   }
 

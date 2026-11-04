@@ -825,7 +825,7 @@ const SUPABASE_URL="https://cxobpfaffgevxblnbwft.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_bA-89TIqjkUhoA5NIlf7uQ_UUbb8oSB";
 async function getSb(){
   if(!window.supabase){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
-  return window.WINFUM_SB||(window.WINFUM_SB=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY));
+  return window.WINFUM_SB||(window.WINFUM_SB=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}));
 }
 function fallbackHero(){   /* sans affiche créée dans l'admin : les 2 affiches « Parfums / Vins » de Images & logo, si elles existent */
   const c=WinfumSite.cached(),L=[];
@@ -1163,5 +1163,6 @@ window.addEventListener('pageshow',e=>{if(e.persisted)reloadFromStore();});
 </script>
 <script src="winfum-account.js"></script>
 <script src="winfum-fab.js"></script>
+<script src="winfum-session.js"></script>
 </body>
 </html>

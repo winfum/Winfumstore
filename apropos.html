@@ -412,7 +412,7 @@ window.addEventListener('beforeunload',e=>{if(editing&&dirty){e.preventDefault()
 
 /* ---------- Supabase ---------- */
 async function getSb(){if(sb)return sb;if(!window.supabase)await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});
- return sb=window.WINFUM_SB||(window.WINFUM_SB=window.supabase.createClient(SB_URL,SB_KEY));}
+ return sb=window.WINFUM_SB||(window.WINFUM_SB=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}));}
 async function fetchContent(){const c=await getSb();const {data,error}=await c.from('site_content').select('value').eq('key',KEY).maybeSingle();if(error)throw error;
  if(!data||!data.value)return clone(DEF);let v=data.value;if(typeof v==='string'){try{v=JSON.parse(v);}catch(e){return clone(DEF);}}return merge(DEF,v);}
 const errMsg=e=>{const m=(e&&e.message)||String(e);return /row-level security|permission denied/i.test(m)?"Droits insuffisants : exécutez le fichier winfum_apropos_setup.sql dans Supabase (SQL Editor).":m;};
@@ -567,5 +567,6 @@ paintAll();
 <script src="winfum-cart.js"></script>
 <script src="winfum-account.js"></script>
 <script src="winfum-fab.js"></script>
+<script src="winfum-session.js"></script>
 </body>
 </html>

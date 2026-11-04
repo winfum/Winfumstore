@@ -101,7 +101,7 @@
   function ensureClient() {
     return new Promise(function (res, rej) {
       if (window.WINFUM_SB) { sb = window.WINFUM_SB; return res(); }
-      var make = function () { sb = window.supabase.createClient(URL_, KEY); window.WINFUM_SB = sb; res(); };
+      var make = function () { sb = window.WINFUM_SB || (window.WINFUM_SB = window.supabase.createClient(URL_, KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})); res(); };
       if (window.supabase) return make();
       var s = document.createElement('script');
       s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';

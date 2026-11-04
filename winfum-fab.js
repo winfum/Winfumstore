@@ -44,7 +44,7 @@ function notify(k,t){ls('wf_notif',JSON.stringify({k:k,t:t}));refresh();}
 setInterval(refresh,800);addEventListener('storage',refresh);refresh();
 function withSB(cb){if(window.supabase&&window.supabase.createClient)return cb();var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=cb;document.head.appendChild(s);}
 function start(){
-  var sb=window.supabase.createClient(URL_,KEY_);
+  var sb=window.WINFUM_SB||(window.WINFUM_SB=window.supabase.createClient(URL_,KEY_,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}));
   function go(uid){
     var seen=ls('wf_seen')||'1970-01-01T00:00:00Z';
     sb.from('order_messages').select('id').eq('customer_id',uid).eq('sender','equipe').gt('created_at',seen).limit(1).then(function(r){if(r.data&&r.data.length&&!cur())notify('msg','Vous avez un nouveau message');});

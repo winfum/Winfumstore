@@ -624,8 +624,8 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CATL={homme:'Homme',femme:'Femme',mixte:'Mixte',rouge:'Rouge',blanc:'Blanc',rose:'Rosé'};
 document.querySelectorAll('.logo-img').forEach(i=>i.src=LOGO_URL);
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-window.WINFUM_SB=sb;window.WINFUM_MANUAL=true;
+const sb=window.WINFUM_SB||(window.WINFUM_SB=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}));
+window.WINFUM_MANUAL=true;
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2400);}
 let catState='loading';
 async function loadCatalog(){
@@ -830,9 +830,21 @@ $('f-signup').addEventListener('submit',async e=>{
 document.querySelectorAll('[data-eye]').forEach(()=>{});
 
 /* ---------- TABLEAU DE BORD ---------- */
-let cust=null;
+let cust=null,shownUid=null;
+/* Session : on regarde d'abord si une connexion est mémorisée sur l'appareil. Si oui, on insiste (quelques essais + rafraîchissement)
+   au lieu d'afficher la page de connexion à la moindre hésitation. */
+const hasStored=()=>{try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/^sb-.+-auth-token$/.test(k)){const v=JSON.parse(localStorage.getItem(k)||'null');if(v&&(v.refresh_token||(v.currentSession&&v.currentSession.refresh_token)))return true;}}}catch(e){}return false;};
+async function getSess(){
+  for(let i=0;i<4;i++){
+    try{const r=await sb.auth.getSession();if(r&&r.data&&r.data.session)return r.data.session;}catch(e){}
+    if(!hasStored())return null;
+    await new Promise(r=>setTimeout(r,300*(i+1)));
+  }
+  try{const r=await sb.auth.refreshSession();if(r&&r.data&&r.data.session)return r.data.session;}catch(e){}
+  return null;
+}
 async function loadDashboard(){
-  const {data:{session}}=await sb.auth.getSession();const user=session&&session.user;
+  const session=await getSess();const user=session&&session.user;shownUid=user?user.id:null;
   if(!user){$('dash').hidden=true;$('auth').hidden=false;requestAnimationFrame(layoutAuth);return;}
   if(!loadDashboard.cat){loadDashboard.cat=1;await loadCatalog();}
   const [c,p]=await Promise.all([sb.from('customers').select('*').eq('id',user.id).maybeSingle(),sb.from('profiles').select('full_name,role,is_active').eq('id',user.id).maybeSingle()]);
@@ -872,11 +884,16 @@ $('ed-btn').onclick=async()=>{
   closeEd();toast('Profil mis à jour');loadDashboard();
 };
 window.addEventListener('load',loadDashboard);
+/* La session reste vivante : retour sur l'onglet, retour arrière du navigateur, déconnexion détectée depuis un autre onglet */
+window.addEventListener('pageshow',e=>{if(e.persisted)loadDashboard();});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&$('dash').hidden&&hasStored())loadDashboard();});
+sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT'&&shownUid){shownUid=null;setTimeout(loadDashboard,0);}});
 function toggleTheme(){const html=document.documentElement,isDark=html.getAttribute('data-theme')==='dark';if(isDark){html.removeAttribute('data-theme');try{localStorage.setItem('winfum_theme','light')}catch(e){}}else{html.setAttribute('data-theme','dark');try{localStorage.setItem('winfum_theme','dark')}catch(e){}}}
 document.addEventListener('click',e=>{document.querySelectorAll('.cat-dd[open]').forEach(d=>{if(!d.contains(e.target))d.removeAttribute('open')})});
 </script>
 <script src="winfum-account.js"></script>
 <script src="winfum-orders.js"></script>
 <script src="winfum-fab.js"></script>
+<script src="winfum-session.js"></script>
 </body>
 </html>

@@ -76,7 +76,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);border-col
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SB=supabase.createClient('https://cxobpfaffgevxblnbwft.supabase.co','sb_publishable_bA-89TIqjkUhoA5NIlf7uQ_UUbb8oSB');
+const SB=window.WINFUM_SB||(window.WINFUM_SB=supabase.createClient('https://cxobpfaffgevxblnbwft.supabase.co','sb_publishable_bA-89TIqjkUhoA5NIlf7uQ_UUbb8oSB',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}));
 const WA='50948821521', ACC={moncash:{n:'MonCash',name:'Wilkenson Bredy',num:'4882 1521',c:'#d9232d'},natcash:{n:'NatCash',name:'Abelard Johanna',num:'3569 7028',c:'#e8710a'}};
 const $=i=>document.getElementById(i),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),G=n=>Number(n||0).toLocaleString('fr-FR')+' G';
 let items=[],zones=[],method=null,user=null,sub=0;
@@ -128,4 +128,5 @@ $('send').onclick=async()=>{if(!check())return;
     const up=await SB.storage.from('proofs').upload(path,f);if(up.error)throw up.error;
     const r=await SB.from('payment_proofs').insert({order_id:o.id,method,payer_name:n,phone:p,tx_ref:t,screenshot_url:path});if(r.error)throw r.error;finish();
   }catch(e){bad("Échec de l'envoi : "+(e.message||e));$('send').disabled=false;$('send').textContent='Envoyer ma preuve';}};
-</script></body></html>
+</script>
+<script src="winfum-session.js"></script></body></html>

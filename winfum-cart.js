@@ -43,7 +43,7 @@
   window.WinfumGetSb = function () {
     return new Promise(function (res, rej) {
       if (window.WINFUM_SB) return res(window.WINFUM_SB);
-      var make = function () { window.WINFUM_SB = window.WINFUM_SB || window.supabase.createClient(SB_URL, SB_KEY); res(window.WINFUM_SB); };
+      var make = function () { window.WINFUM_SB = window.WINFUM_SB || window.supabase.createClient(SB_URL, SB_KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}); res(window.WINFUM_SB); };
       if (window.supabase) return make();
       var s = document.createElement('script');
       s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
