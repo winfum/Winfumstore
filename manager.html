@@ -346,6 +346,7 @@ input[type=date]{width:100%;padding:12px 14px;border:1px solid var(--line);borde
 .ccard .urlfield{margin-top:2px}
 @media(max-width:700px){.todo{padding:14px}.todo .ti{width:40px;height:40px}}
 details.mloc{display:block}details.mloc summary{cursor:pointer;font-weight:600}
+.wm-d{align-self:center;font-size:11px;padding:3px 12px;border-radius:12px;background:rgba(128,128,128,.2);margin:6px 0 2px}
 </style>
 <script src="winfum-fiche.js"></script>
 <script src="winfum-3d.js"></script>
@@ -1026,6 +1027,8 @@ function supJoin(cid){
 }
 A['wm-end']=()=>{if(supCh){sb.removeChannel(supCh);supCh=null;}supCid=null;curC=null;pres=false;typ=false;document.querySelectorAll('.wm-c[data-c]').forEach(e=>e.classList.remove('on'));const r=document.getElementById('wm-r');if(r)r.innerHTML='<p class="hint" style="margin:auto">Choisissez une conversation</p>';};
 A['wm-list-close']=()=>{A['wm-end']();location.hash='#/dash';};
+const dayLab=d=>{d=new Date(d);const t=new Date();t.setHours(0,0,0,0);const x=new Date(d);x.setHours(0,0,0,0);const n=Math.round((t-x)/864e5);return n<=0?"Aujourd'hui":n===1?'Hier':n===2?'Avant-hier':d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});};
+const thr=arr=>{let ld='';return arr.map(x=>{const dl=dayLab(x.created_at),sp=dl!==ld?`<div class="wm-d">${dl}</div>`:'';ld=dl;return sp+`<div class="wm-b ${x.sender==='equipe'?'me':''}">${esc(x.body)}<small>${new Date(x.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}${x.sender==='equipe'?tick(x):''}</small></div>`;}).join('');};
 V.messages=async()=>{
   let kp=(document.getElementById('wm-i')||{}).value||'';
   $('view').innerHTML=head('Messages','',WMX)+'<div class="wm"><div class="wm-l" id="wm-l"><div class="spin"></div></div><div class="wm-r" id="wm-r"><p class="hint" style="margin:auto">Choisissez une conversation</p></div></div>';
@@ -1036,7 +1039,7 @@ V.messages=async()=>{
   const ids=Object.keys(by).sort((a,b)=>by[b].at(-1).created_at.localeCompare(by[a].at(-1).created_at));
   $('wm-l').innerHTML=ids.map(id=>{const l=by[id].at(-1),un=by[id].filter(x=>x.sender==='client'&&!x.read).length;return `<div class="wm-c ${id===curC?'on':''}" data-c="${id}"><div class="wm-a">${esc(nm(id)[0].toUpperCase())}</div><div><b>${esc(nm(id))}</b><p>${esc(l.body)}</p></div>${un?`<span class="wm-dot" style="width:auto;min-width:20px;height:20px;border-radius:10px;padding:0 6px;color:#fff;font:700 11px/20px sans-serif;text-align:center">${un}</span>`:''}</div>`}).join('')||'<p class="hint" style="padding:14px">Aucun message pour le moment.</p>';
   const open=async id=>{curC=id;supJoin(id);document.querySelectorAll('.wm-c[data-c]').forEach(e=>e.classList.toggle('on',e.dataset.c===id));
-    $('wm-r').innerHTML=`<div class="wm-c" style="cursor:default"><div class="wm-a">${esc(nm(id)[0].toUpperCase())}</div><div class="wm-hd"><b>${esc(nm(id))}</b><small id="wm-st"></small></div>${WMXC}</div><div class="wm-t" id="wm-t">${by[id].map(x=>`<div class="wm-b ${x.sender==='equipe'?'me':''}">${esc(x.body)}<small>${new Date(x.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}${x.sender==='equipe'?tick(x):''}</small></div>`).join('')}<div class="wm-b tb" id="wm-ty" hidden><i></i><i></i><i></i></div></div><form class="wm-f" id="wm-f"><input id="wm-i" placeholder="Écrire un message…" autocomplete="off"><button class="btn sm" aria-label="Envoyer">➤</button></form>`;
+    $('wm-r').innerHTML=`<div class="wm-c" style="cursor:default"><div class="wm-a">${esc(nm(id)[0].toUpperCase())}</div><div class="wm-hd"><b>${esc(nm(id))}</b><small id="wm-st"></small></div>${WMXC}</div><div class="wm-t" id="wm-t">${thr(by[id])}<div class="wm-b tb" id="wm-ty" hidden><i></i><i></i><i></i></div></div><form class="wm-f" id="wm-f"><input id="wm-i" placeholder="Écrire un message…" autocomplete="off"><button class="btn sm" aria-label="Envoyer">➤</button></form>`;
     $('wm-t').scrollTop=1e6;supStat();
     if(by[id].some(x=>x.sender==='client'&&!x.read))sb.from('order_messages').update({read:true}).eq('customer_id',id).eq('sender','client').eq('read',false).then(()=>{});
     const inp=$('wm-i');if(kp){inp.value=kp;inp.focus();kp='';}
